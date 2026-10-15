@@ -1,0 +1,88 @@
+{
+  "milestone": "M0",
+  "git_sha": "4b745c7",
+  "date": "2026-10-15T16:00:24+00:00",
+  "etalon_version": "0.0.1",
+  "backend": "cuda",
+  "device": "cuda:0 NVIDIA GeForce RTX 4060 Ti",
+  "dispersion": [
+    {
+      "dl_um": 0.1,
+      "angle_deg": 0.0,
+      "cells_per_wavelength": [
+        9.0,
+        18.0
+      ],
+      "max_abs_residual_vs_yee": 0.00012515466113383056,
+      "min_v_over_c": 0.989080742232306
+    },
+    {
+      "dl_um": 0.1,
+      "angle_deg": 45.0,
+      "cells_per_wavelength": [
+        9.0,
+        18.0
+      ],
+      "max_abs_residual_vs_yee": 0.00012869585761765556,
+      "min_v_over_c": 0.9999184262281544
+    },
+    {
+      "dl_um": 0.05,
+      "angle_deg": 0.0,
+      "cells_per_wavelength": [
+        18.0,
+        36.0
+      ],
+      "max_abs_residual_vs_yee": 3.465732324736681e-05,
+      "min_v_over_c": 0.9973515611887512
+    },
+    {
+      "dl_um": 0.05,
+      "angle_deg": 45.0,
+      "cells_per_wavelength": [
+        18.0,
+        36.0
+      ],
+      "max_abs_residual_vs_yee": 3.429147603628557e-05,
+      "min_v_over_c": 0.9999787861332526
+    },
+    {
+      "dl_um": 0.025,
+      "angle_deg": 0.0,
+      "cells_per_wavelength": [
+        36.0,
+        72.0
+      ],
+      "max_abs_residual_vs_yee": 1.1392624344463975e-05,
+      "min_v_over_c": 0.999341193267804
+    },
+    {
+      "dl_um": 0.025,
+      "angle_deg": 45.0,
+      "cells_per_wavelength": [
+        36.0,
+        72.0
+      ],
+      "max_abs_residual_vs_yee": 1.0217395526757045e-05,
+      "min_v_over_c": 0.9999936108727628
+    }
+  ],
+  "cpml_reflection": {
+    "side": 2.680478706400633e-05,
+    "corner": 1.9523275633007784e-05
+  },
+  "late_time_final_energy_rel": 2.5896845085125866e-14,
+  "green_function_max_rel_error": 0.003745369322887442,
+  "throughput": {
+    "backend": "cuda",
+    "device": "cuda:0 NVIDIA GeForce RTX 4060 Ti",
+    "precision": "single",
+    "cells": [
+      2024,
+      2024
+    ],
+    "steps": 500,
+    "wall_time_s": 0.7081296001560986,
+    "cell_updates_per_s": 2892532665.6991596
+  }
+}
