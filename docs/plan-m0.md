@@ -216,3 +216,27 @@ Environment, needed before step 3:
 - **2D wake.** A 2D Green's function has a tail behind the wavefront. Truncating the DFT early biases the phase. V1 re-runs with doubled `run_time` and requires the result to change by < 1e-4.
 - **Citations.** I can't check section and equation numbers in Taflove & Hagness from here. Docstrings cite chapters until each number is verified against the book; Schneider's text is free online and gets checked directly.
 - **Windows + CuPy.** NVRTC discovery without a toolkit install is the most likely friction point. The NumPy path does not depend on it.
+
+## 10. Outcome (2026-10-16)
+
+All acceptance criteria are met. Measured values are in `bench/results/<sha>.json` and `bench/results/m0_vacuum.png`.
+
+| | Result |
+| --- | --- |
+| V1 dispersion vs Yee relation | 1.3e-4 (9–18 cells/λ), 3.5e-5 (18–36), 1.1e-5 (36–72); converges at second order; doubling `run_time` changes it by 1e-7 |
+| V2 raw ṽp/c, ≥ 20 cells/λ | within 0.21 % of 1 |
+| V4 CPML, 12 layers | −91 dB side, −94 dB corner |
+| V5 late time, 30 000 steps | monotone decay to 2.6e-14 of peak |
+| V6 Green's function | 0.37 % at 26 cells/λ, 0.09 % at 52 |
+| G1–G4 CUDA vs NumPy | bit-for-bit identical, float32 and float64 |
+| G6 throughput | 2.9e9 cell-updates/s float32, 1.5e9 float64 (RTX 4060 Ti, 2024² cells); NumPy 3e7 |
+| Tests | 66 pass (unit, validation, gpu); ruff and mypy clean |
+
+Departures from this plan:
+
+- **Validation cases live in `etalon/validation/`**, not only in `tests/`, so Studio's Validation page and the bench script can run the same code. Throughput measurement is there too (`validation/throughput.py`), for Studio's time-estimate calibration.
+- **One bench script, not two.** `bench/validate_m0.py` writes the plot and a single `<sha>.json` with throughput included, so there's one record per commit.
+- **V4 is guarded at 1e-4 (−80 dB)**, tighter than the planned 1e-3, because the measured value is −91 dB and a regression to −65 dB should fail.
+- **NVIDIA's CUDA wheels are not declared** in `pyproject.toml`: they are proprietary (see `THIRD_PARTY.md`). CuPy needs them, from a CUDA toolkit or `pip install cupy-cuda12x[ctk]`.
+- **`summary()` prints ASCII** ("um", "dt"). Printing µ or Δ fails on cp1252 pipes and GBK consoles.
+- **Each 2D TE monitor records Ex, Ey and Hz by default.**
