@@ -15,19 +15,36 @@ dependencies = [
     "pydantic>=2.7",
     "xarray>=2024.1",
     "matplotlib>=3.8",
+    "fastapi>=0.143",
+    "uvicorn>=0.54",
 ]
 
 [project.optional-dependencies]
 gpu = ["cupy-cuda12x>=13.0"]
 
+[project.scripts]
+etalon = "etalon.cli:main"
+
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.6", "mypy>=1.10"]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "httpx2>=2.13",
+]
 
 [tool.hatch.version]
 path = "etalon/__init__.py"
 
+[tool.hatch.build]
+# The built Studio SPA is gitignored but must ship in the wheel (`pnpm --dir studio build`).
+artifacts = ["etalon/studio/static/**"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["etalon"]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+# hatch_build.py: refuses to build a wheel without the Studio SPA.
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -56,7 +73,7 @@ python_version = "3.11"
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = "etalon.core.*"
+module = ["etalon.core.*", "etalon.studio.*", "etalon.cli"]
 strict = true
 
 [[tool.mypy.overrides]]

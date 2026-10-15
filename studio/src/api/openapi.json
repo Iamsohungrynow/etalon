@@ -1,0 +1,524 @@
+{
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "description": "Body of every error response the API sends itself (validation errors excepted).",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ApiError",
+        "type": "object"
+      },
+      "Device": {
+        "description": "A CUDA device as CuPy reports it.",
+        "properties": {
+          "compute_capability": {
+            "title": "Compute Capability",
+            "type": "string"
+          },
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "memory_bytes": {
+            "title": "Memory Bytes",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "name",
+          "memory_bytes",
+          "compute_capability"
+        ],
+        "title": "Device",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "SimulationRow": {
+        "description": "One simulation script and the state of its last run.",
+        "properties": {
+          "backend": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "``cuda:0``, ``cpu``, ...",
+            "title": "Backend"
+          },
+          "cells": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cells"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "GPU or CPU model the run used.",
+            "title": "Device"
+          },
+          "eta_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eta S"
+          },
+          "id": {
+            "description": "12 hex characters of sha256(relative POSIX path): stable while the file is not moved.",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_run": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the last run finished (or started, while it runs).",
+            "title": "Last Run"
+          },
+          "modified": {
+            "description": "Last modification time of the script.",
+            "format": "date-time",
+            "title": "Modified",
+            "type": "string"
+          },
+          "name": {
+            "description": "File name, e.g. ``ring_r10_g200.py``.",
+            "title": "Name",
+            "type": "string"
+          },
+          "path": {
+            "description": "Path relative to the workspace folder, with ``/`` separators.",
+            "title": "Path",
+            "type": "string"
+          },
+          "stale": {
+            "default": false,
+            "description": "The script changed after its last finished run.",
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "running",
+              "done",
+              "failed",
+              "cancelled",
+              "unknown"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "status_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unreadable",
+                  "invalid_json",
+                  "invalid_fields"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the status is \"unknown\".",
+            "title": "Status Reason"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "total_steps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Steps"
+          },
+          "wall_time_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wall Time S"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "path",
+          "status",
+          "modified"
+        ],
+        "title": "SimulationRow",
+        "type": "object"
+      },
+      "StudioSettings": {
+        "additionalProperties": false,
+        "description": "What the Settings screen edits (ui-ux-spec §5.7).",
+        "properties": {
+          "backend": {
+            "default": "auto",
+            "description": "Backend for runs: \"auto\" (a CUDA device if there is one, else the CPU), \"cpu\" or \"cuda:N\".",
+            "pattern": "^(auto|cpu|cuda:\\d+)$",
+            "title": "Backend",
+            "type": "string"
+          },
+          "language": {
+            "default": "system",
+            "description": "UI language; \"system\" follows the browser.",
+            "enum": [
+              "system",
+              "en",
+              "zh-CN"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "live_snapshots": {
+            "default": false,
+            "description": "Show a live low-resolution field while a simulation runs.",
+            "title": "Live Snapshots",
+            "type": "boolean"
+          },
+          "theme": {
+            "default": "dark",
+            "description": "Colour theme; \"system\" follows the OS.",
+            "enum": [
+              "dark",
+              "light",
+              "system"
+            ],
+            "title": "Theme",
+            "type": "string"
+          },
+          "units": {
+            "default": "um",
+            "description": "Length unit for display.",
+            "enum": [
+              "um",
+              "nm"
+            ],
+            "title": "Units",
+            "type": "string"
+          },
+          "workspace": {
+            "description": "Absolute path of the folder whose scripts Studio lists.",
+            "title": "Workspace",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace"
+        ],
+        "title": "StudioSettings",
+        "type": "object"
+      },
+      "SystemInfo": {
+        "description": "What this machine and this install are.",
+        "properties": {
+          "cupy_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The error message when ``cupy_status`` is \"error\".",
+            "title": "Cupy Detail"
+          },
+          "cupy_status": {
+            "description": "\"missing\": CuPy is not installed (``etalon[gpu]``); \"error\": CuPy or the driver failed.",
+            "enum": [
+              "ok",
+              "missing",
+              "error"
+            ],
+            "title": "Cupy Status",
+            "type": "string"
+          },
+          "devices": {
+            "description": "Empty when there is no usable CUDA device; runs then use the CPU backend.",
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            },
+            "title": "Devices",
+            "type": "array"
+          },
+          "etalon_version": {
+            "title": "Etalon Version",
+            "type": "string"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          },
+          "python_version": {
+            "title": "Python Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "etalon_version",
+          "python_version",
+          "platform",
+          "cupy_status",
+          "cupy_detail",
+          "devices"
+        ],
+        "title": "SystemInfo",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Workspace": {
+        "description": "``GET /api/workspace``.",
+        "properties": {
+          "folder": {
+            "description": "Absolute path of the workspace folder, in the platform's own notation.",
+            "title": "Folder",
+            "type": "string"
+          },
+          "simulations": {
+            "description": "Sorted by path, case-insensitively.",
+            "items": {
+              "$ref": "#/components/schemas/SimulationRow"
+            },
+            "title": "Simulations",
+            "type": "array"
+          },
+          "truncated": {
+            "description": "True when the scan stopped at MAX_SCRIPTS scripts.",
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "folder",
+          "simulations",
+          "truncated"
+        ],
+        "title": "Workspace",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "etalon Studio",
+    "version": "0.0.1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/settings": {
+      "get": {
+        "operationId": "getSettings",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudioSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings"
+      },
+      "put": {
+        "operationId": "putSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudioSettings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudioSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Settings"
+      }
+    },
+    "/api/system": {
+      "get": {
+        "operationId": "getSystem",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get System"
+      }
+    },
+    "/api/workspace": {
+      "get": {
+        "operationId": "getWorkspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "workspace folder not found"
+          }
+        },
+        "summary": "Get Workspace"
+      }
+    }
+  }
+}
