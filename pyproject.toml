@@ -33,6 +33,10 @@ packages = ["etalon"]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
+filterwarnings = [
+    # CuPy cannot name a CUDA_PATH when the toolkit comes from NVIDIA's pip wheels; it still works.
+    "ignore:CUDA path could not be detected:UserWarning",
+]
 markers = [
     "gpu: needs CuPy and a CUDA device (skipped otherwise)",
     "validation: physics validation against analytic results (slower, CPU)",
@@ -54,3 +58,8 @@ plugins = ["pydantic.mypy"]
 [[tool.mypy.overrides]]
 module = "etalon.core.*"
 strict = true
+
+[[tool.mypy.overrides]]
+# No type stubs ship with these.
+module = ["scipy.*", "cupy", "cupy.*"]
+ignore_missing_imports = true

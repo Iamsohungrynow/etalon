@@ -1,6 +1,6 @@
 """The Simulation model: everything that defines one FDTD run."""
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import Field, PositiveFloat, model_validator
 
@@ -11,6 +11,9 @@ from etalon.core.medium import Medium
 from etalon.core.monitor import DFTMonitor
 from etalon.core.source import PointSource
 from etalon.geometry.box import Box
+
+if TYPE_CHECKING:
+    from etalon.io.result import SimulationResult
 
 
 class Simulation(EtalonModel):
@@ -111,8 +114,12 @@ class Simulation(EtalonModel):
 
     def summary(self) -> str:
         """Cells, time step, number of steps and memory, before anything runs."""
-        raise NotImplementedError("Simulation.summary() is implemented in M0 step 3")
+        from etalon.fdtd.summary import summary
 
-    def run(self) -> object:
-        """Run the simulation; returns an ``etalon.SimulationResult``."""
-        raise NotImplementedError("Simulation.run() is implemented in M0 step 3")
+        return summary(self)
+
+    def run(self) -> "SimulationResult":
+        """Run the simulation to ``run_time`` and return its monitor data."""
+        from etalon.fdtd.solver import run
+
+        return run(self)

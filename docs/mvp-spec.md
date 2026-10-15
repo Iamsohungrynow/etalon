@@ -29,17 +29,23 @@ sim = et.Simulation(
     structures=[wg],
     grid=et.AutoGrid(min_steps_per_wvl=20),
     boundary=et.PML(layers=12),
-    sources=[et.ModeSource(center=(-4, 0, 0), size=(0, 3, 2),
-                           wavelength=1.55, bandwidth=0.10, mode_index=0)],
-    monitors=[et.ModePortMonitor(name="out", center=(4, 0, 0), size=(0, 3, 2),
-                                 wavelengths=wls, mode_index=0)],
-    run_time=2e-12,            # seconds
-    backend="cuda",            # or "numpy"
+    sources=[
+        et.ModeSource(
+            center=(-4, 0, 0), size=(0, 3, 2), wavelength=1.55, bandwidth=0.10, mode_index=0
+        )
+    ],
+    monitors=[
+        et.ModePortMonitor(
+            name="out", center=(4, 0, 0), size=(0, 3, 2), wavelengths=wls, mode_index=0
+        )
+    ],
+    run_time=2e-12,  # seconds
+    backend="cuda",  # or "numpy"
 )
 
-result = sim.run()             # -> et.SimulationResult, saved to HDF5
-S = result.s_matrix()          # xarray: dims (wavelength, port_in, port_out)
-result.plot_field("Ey", z=0)   # matplotlib
+result = sim.run()  # -> et.SimulationResult, saved to HDF5
+S = result.s_matrix()  # xarray: dims (wavelength, port_in, port_out)
+result.plot_field("Ey", z=0)  # matplotlib
 ```
 
 Design intent: a Tidy3D or Lumerical user should recognise every concept and port a script in one day. Names may resemble theirs; implementation is ours.

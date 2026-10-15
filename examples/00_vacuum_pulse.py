@@ -57,10 +57,10 @@ v_measured = et.analysis.measured_phase_velocity(
 # Yee numerical dispersion for the same cell size, time step and direction (0° = along x)
 v_theory = et.analysis.numerical_phase_velocity(wavelengths, grid=result.grid, angle=0.0)
 
-print(" λ (µm)   v/c measured   v/c Yee theory   difference")
+print("wl (um)   v/c measured   v/c Yee theory   difference")
 for wl, vm, vt in zip(wavelengths, v_measured, v_theory, strict=True):
     print(f"{wl:7.3f}   {vm:12.6f}   {vt:14.6f}   {vm - vt:+.1e}")
-print(f"max |measured − theory| = {np.max(np.abs(v_measured - v_theory)):.1e}  (accept < 5e-3)")
+print(f"max |measured - theory| = {np.max(np.abs(v_measured - v_theory)):.1e}  (accept < 5e-3)")
 
 hz = result["field"]["Hz"].sel(wavelength=1.55)  # complex, dims (x, y), on the Hz Yee nodes
 vmax = float(np.abs(hz.real).max())

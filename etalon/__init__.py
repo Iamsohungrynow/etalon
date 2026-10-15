@@ -14,6 +14,9 @@ from etalon.geometry.box import Box
 
 __version__ = "0.0.1"
 
+from etalon import analysis
+from etalon.io.result import SimulationResult
+
 __all__ = [
     "C_0",
     "PML",
@@ -23,8 +26,10 @@ __all__ = [
     "Medium",
     "PointSource",
     "Simulation",
+    "SimulationResult",
     "UniformGrid",
     "__version__",
+    "analysis",
     "freq_to_wvl",
     "wvl_to_freq",
 ]

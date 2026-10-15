@@ -165,8 +165,3 @@ def test_monitor_larger_than_region():
     big = et.DFTMonitor(name="big", size=(9.0, 8.0, 0.0), wavelengths=[1.55])
     with pytest.raises(ValidationError, match="'big' spans x"):
         vacuum_sim(monitors=[big])
-
-
-def test_run_is_not_wired_yet():
-    with pytest.raises(NotImplementedError):
-        vacuum_sim().run()
