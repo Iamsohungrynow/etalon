@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Studio frontend (U0+)
+node_modules/
+studio/dist/
+etalon/studio/static/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

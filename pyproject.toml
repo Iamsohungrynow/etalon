@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "etalon"
+dynamic = ["version"]
+description = "GPU-accelerated, on-premise photonic FDTD and eigenmode solver with a Python-native API"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pydantic>=2.7",
+    "xarray>=2024.1",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+gpu = ["cupy-cuda12x>=13.0"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.6", "mypy>=1.10"]
+
+[tool.hatch.version]
+path = "etalon/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["etalon"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+markers = [
+    "gpu: needs CuPy and a CUDA device (skipped otherwise)",
+    "validation: physics validation against analytic results (slower, CPU)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "NPY", "RUF"]
+# Physics docstrings and comments use Greek letters and µ on purpose.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "etalon.core.*"
+strict = true
