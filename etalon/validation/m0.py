@@ -155,7 +155,7 @@ def cpml_reflection_case(
             solver.step()
             for k, (i, j) in enumerate(idx):
                 trace[n, k] = float(solver.state.hz[i, j])
-        t = (np.arange(solver.n_steps) + 0.5) * solver.grid.dt
+        t = np.asarray((np.arange(solver.n_steps) + 0.5) * solver.grid.dt, dtype=np.float64)
         return t, trace
 
     t, small = record(size)
