@@ -5,7 +5,7 @@ import type { SimulationRow } from "../../api/client";
 import { Table, type Column } from "../../components/Table";
 import { Value } from "../../components/Value";
 import { formatCount, formatDuration, formatEta } from "../../format/numbers";
-import { formatLastRun } from "../../format/time";
+import { formatFullDateTime, formatLastRun } from "../../format/time";
 import { rowTarget } from "./rowTarget";
 import { StatusCell } from "./StatusCell";
 
@@ -34,7 +34,7 @@ export function WorkspaceTable({ rows, now }: WorkspaceTableProps) {
               to={rowTarget(row)}
               translate="no"
               title={row.path}
-              className="stretched-link block truncate font-mono text-text outline-none"
+              className="stretched-link block truncate font-mono text-text focus-visible:outline-none"
             >
               {folder ? <span className="text-muted">{folder}</span> : null}
               {row.name}
@@ -65,7 +65,7 @@ export function WorkspaceTable({ rows, now }: WorkspaceTableProps) {
           }
           if (!row.last_run) return <span className="text-muted">{EMPTY}</span>;
           return (
-            <span className="tabular-nums" title={row.last_run}>
+            <span className="tabular-nums" title={formatFullDateTime(row.last_run, locale)}>
               {formatLastRun(row.last_run, today, locale, t)}
             </span>
           );

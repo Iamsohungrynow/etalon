@@ -12,12 +12,16 @@ export default tseslint.config(
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
-    plugins: { "react-hooks": reactHooks },
     rules: {
-      ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/consistent-type-imports": "error",
     },
+  },
+  {
+    // React code only: Playwright fixtures call a `use()` that is not React's.
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
+    rules: reactHooks.configs.recommended.rules,
   },
   {
     files: ["src/**/*.tsx"],

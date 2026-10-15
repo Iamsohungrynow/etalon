@@ -1,0 +1,10 @@
+{
+  "status": "done",
+  "started_at": "2026-10-15T05:58:00Z",
+  "finished_at": "2026-10-15T06:01:12Z",
+  "backend": "cuda:0",
+  "device": "NVIDIA GeForce RTX 4060 Ti",
+  "cells": 1250000,
+  "wall_time_s": 192.0,
+  "script_sha256": "676af756616645805422f2e94ad5096493a94b94ec6d9e722557fb7b7969962f"
+}

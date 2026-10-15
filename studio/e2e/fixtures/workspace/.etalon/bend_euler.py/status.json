@@ -1,0 +1,7 @@
+{
+  "status": "cancelled",
+  "started_at": "2026-10-13T08:00:00Z",
+  "finished_at": "2026-10-13T09:04:00Z",
+  "backend": "cpu",
+  "wall_time_s": 3840.0
+}

@@ -1,0 +1,9 @@
+{
+  "status": "running",
+  "started_at": "2026-10-16T06:10:00Z",
+  "backend": "cuda:0",
+  "cells": 42300000,
+  "step": 11000,
+  "total_steps": 26400,
+  "eta_s": 130.0
+}

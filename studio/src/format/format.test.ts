@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { createI18n } from "../i18n";
 import { formatBytes, formatCount, formatDuration, formatEta } from "./numbers";
-import { formatLastRun } from "./time";
+import { formatFullDateTime, formatLastRun } from "./time";
 
 describe("V5: numbers", () => {
   it("uses SI prefixes with 4 significant figures", () => {
@@ -52,5 +52,11 @@ describe("V5: last run", () => {
     expect(formatLastRun(local(16, 14, 2), now, "zh-CN", t)).toBe("今天 14:02");
     expect(formatLastRun(local(15, 9, 10), now, "zh-CN", t)).toBe("昨天 09:10");
     expect(formatLastRun(local(12, 9, 10), now, "zh-CN", t)).toBe("2026年10月12日");
+  });
+
+  it("gives the full date and time for hover", () => {
+    const iso = local(12, 9, 10);
+    expect(formatFullDateTime(iso, "en")).toBe("Oct 12, 2026, 9:10:00 AM");
+    expect(formatFullDateTime(iso, "zh-CN")).toBe("2026年10月12日 09:10:00");
   });
 });

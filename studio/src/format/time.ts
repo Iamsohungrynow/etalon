@@ -8,6 +8,13 @@ function sameLocalDay(a: Date, b: Date): boolean {
   );
 }
 
+/** The full local date and time, for hover (spec §6: full precision on hover). */
+export function formatFullDateTime(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "medium" }).format(
+    new Date(iso),
+  );
+}
+
 /** "14:02 today", "yesterday 09:10", else a date, in the active language. */
 export function formatLastRun(iso: string, now: Date, locale: string, t: TFunction): string {
   const date = new Date(iso);

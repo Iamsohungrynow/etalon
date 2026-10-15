@@ -89,7 +89,8 @@ export function Table<Row>({
               key={rowKey(row)}
               role="row"
               aria-rowindex={item.index + 2}
-              className="absolute right-0 left-0 grid items-center gap-3 border-b border-rule-subtle px-4 text-dense focus-within:bg-hover hover:bg-hover"
+              // A focused link inside the row rings the whole row (the link covers it).
+              className="absolute right-0 left-0 grid items-center gap-3 border-b border-rule-subtle px-4 text-dense focus-within:bg-hover hover:bg-hover has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-accent-ink"
               style={{
                 ...template,
                 height: rowHeight,

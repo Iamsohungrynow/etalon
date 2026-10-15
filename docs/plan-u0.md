@@ -313,9 +313,9 @@ pydantic, pydantic-core, typing-extensions, typing-inspection and annotated-type
 
 | Package | Version | License | Notes |
 | --- | --- | --- | --- |
-| httpx | 0.28.1 | BSD-3-Clause | FastAPI's `TestClient` |
-| httpcore | 1.0.9 | BSD-3-Clause | httpx |
-| certifi | 2026.7.22 | **MPL-2.0** | httpx; never imported by etalon, never shipped (D4) |
+| httpx2 | 2.13.1 | BSD-3-Clause | the test client Starlette 1.8 asks for (see §11) |
+| httpcore2 | 2.13.1 | BSD-3-Clause | httpx2 |
+| truststore | 0.10.5 | MIT | httpx2 |
 
 ### JS, shipped: bundled into `etalon/studio/static`
 
@@ -432,3 +432,33 @@ Each one has a recommendation; say "OK" to take them all.
 - **pnpm 10** blocks dependency install scripts by default. Vite 8 (rolldown), lightningcss and Tailwind's oxide ship native binaries as optional dependencies, without scripts. I'll confirm the build works with no scripts allowed.
 - **Windows paths:** backslashes, case-insensitive sorting, long paths. Ids and API paths use POSIX separators, and the UI shows the native path.
 - **zh-CN quality:** written by me and checked by V1, P4 and a native speaker in U4.
+
+## 11. Outcome (2026-10-16)
+
+All four acceptance criteria are met on this machine (Windows 11, RTX 4060 Ti).
+
+| Criterion | Measured |
+| --- | --- |
+| Opens in < 2 s | P3: `etalon studio` → 50 rows on screen in 1.65–1.68 s over three runs; the server answers after ~1.44 s |
+| Lists a workspace of 50 scripts | S8: the scan of 50 scripts with sidecars takes well under 100 ms; P2: all 50 listed, the last reachable, rows open their screens |
+| Language switch flips every string | P4: after switching to 简体中文, 9 routes show no Latin word outside `translate="no"` data and the technical-term allowlist (`src/i18n/latinTerms.ts`) |
+| Playwright smoke passes | P1–P9: 12 tests pass, with no console error and no request leaving 127.0.0.1 |
+
+| Suite | Result |
+| --- | --- |
+| pytest, whole repository | 164 pass, 2 skipped (POSIX-only: token file mode, symlinks). Studio: 94; package import: 4 |
+| vitest | 60 pass (V1–V9) |
+| Playwright | 12 pass (P1–P9) |
+| ruff, mypy (strict on `core`, `studio`, `cli`), ESLint, tsc | clean |
+
+`import etalon` went from ~12 s to ~1 s with D1. Most of what remains of P3's 1.44 s is Python start-up and importing FastAPI, pydantic and NumPy. On a slower or busier machine the margin is about 0.3 s, so P3 is the test most likely to fail first.
+
+Departures from this plan:
+
+- **D1 covers `SimulationResult` too.** `etalon/io/result.py` imports xarray (and pandas with it) at module level. A lazy `analysis` alone would have left xarray in Studio's start-up. Same file and mechanism; the public API is unchanged.
+- **httpx2 instead of httpx.** Starlette 1.8 deprecates httpx for its `TestClient` in favour of pydantic's httpx2 (BSD-3-Clause). The switch also removes certifi (MPL-2.0) from the tree.
+- **No inlined assets.** The CSP caught Vite inlining one small font subset as a `data:` URI, which `font-src 'self'` blocks. `assetsInlineLimit: 0` makes every asset a file, rather than loosening the CSP.
+- **`/docs` and `/redoc` serve the SPA** (its 404 screen), not a server 404. FastAPI's Swagger and ReDoc pages are never served, and S4 checks for that.
+- **Three helper components** besides the ten: `Value` (data, `translate="no"`), `Skeleton`, and `Cmd` (a command inside a translated sentence, via `<Trans>` and `<cmd>` tags).
+- **The Last-run tooltip** shows the localised full date and time (spec §6: full precision on hover). P4 caught the raw ISO timestamp the first version showed.
+- **Keyboard focus rings the whole table row.** The row's link covers the row, so the ring sits on the row (`has-[:focus-visible]`). P9 checks it.
