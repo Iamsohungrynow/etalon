@@ -1,6 +1,6 @@
 # U0 plan — Studio shell
 
-Status: draft for review · 2026-10-16 · Studio milestone U0 of `ui-ux-spec.md` §10 (gated on M0, which is done)
+Status: approved 2026-10-16 (all §8 recommendations accepted) · Studio milestone U0 of `ui-ux-spec.md` §10 (gated on M0, which is done)
 
 ## 1. What U0 delivers
 
