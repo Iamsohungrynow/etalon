@@ -1,0 +1,167 @@
+{
+  "app": {
+    "brandName": "etalon",
+    "brandProduct": "Studio",
+    "documentTitle": "{{screen}} · etalon Studio"
+  },
+  "nav": {
+    "label": "Main",
+    "workspace": "Workspace",
+    "settings": "Settings",
+    "modes": "Mode Solver",
+    "validation": "Validation"
+  },
+  "strip": {
+    "label": "Status",
+    "backend": "Backend",
+    "workspace": "Workspace",
+    "simulations_one": "simulation",
+    "simulations_other": "simulations",
+    "version": "etalon",
+    "offline": "Offline",
+    "offlineHint": "Studio makes no network requests.",
+    "detecting": "Detecting GPU…",
+    "loading": "Loading…"
+  },
+  "workspace": {
+    "title": "Workspace",
+    "filter": "Filter by name or folder",
+    "clearFilter": "Clear filter",
+    "rescan": "Rescan the workspace folder",
+    "count_one": "{{count}} simulation",
+    "count_other": "{{count}} simulations",
+    "countFiltered": "{{shown}} of {{total}}",
+    "tableLabel": "Simulations in this workspace",
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "lastRun": "Last run",
+      "backend": "Backend",
+      "cells": "Cells",
+      "time": "Time"
+    },
+    "loading": "Scanning workspace…",
+    "empty": {
+      "title": "No simulation scripts here yet",
+      "body": "Studio lists every <cmd>.py</cmd> file in this folder and its subfolders. Add a simulation script here, or choose another folder in Settings.",
+      "action": "Choose another folder"
+    },
+    "noMatch": "No scripts match “{{filter}}”.",
+    "noGpu": "No CUDA device found; runs use the CPU backend.",
+    "noGpuAction": "Backend settings",
+    "truncated": "This folder holds more than {{limit}} scripts, so only the first {{limit}} are listed. Choose a smaller folder in Settings.",
+    "step": "step",
+    "stale": "stale",
+    "staleHint": "The script changed after this run.",
+    "missing": "The workspace folder no longer exists.",
+    "openSettings": "Open Settings"
+  },
+  "status": {
+    "draft": "draft",
+    "running": "running",
+    "done": "done",
+    "failed": "failed",
+    "cancelled": "cancelled",
+    "unknown": "unknown",
+    "reason": {
+      "unreadable": "The run status file cannot be read.",
+      "invalid_json": "The run status file is not valid JSON.",
+      "invalid_fields": "The run status file has unexpected contents."
+    }
+  },
+  "time": {
+    "today": "{{time}} today",
+    "yesterday": "yesterday {{time}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "loading": "Loading settings…",
+    "saving": "Saving…",
+    "saveFailed": "The change was not saved.",
+    "backend": {
+      "label": "Backend",
+      "help": "Where simulations run. Auto uses the first CUDA device, or the CPU when there is none.",
+      "auto": "Auto",
+      "cpu": "CPU",
+      "notFound": "not found",
+      "detecting": "Detecting GPU…",
+      "devices": "Detected devices",
+      "noDevice": "No CUDA device found; runs use the CPU backend.",
+      "cupyMissing": "CuPy is not installed, so runs use the CPU. Install <cmd>etalon[gpu]</cmd> to use an NVIDIA GPU.",
+      "cupyError": "CuPy could not query the GPU, so runs use the CPU.",
+      "memory": "Memory",
+      "compute": "Compute capability"
+    },
+    "workspace": {
+      "label": "Workspace folder",
+      "help": "Studio lists the simulation scripts in this folder. <cmd>etalon studio FOLDER</cmd> sets it at launch; a change here lasts until Studio stops.",
+      "field": "Folder path",
+      "apply": "Apply",
+      "errors": {
+        "workspace_not_found": "This folder does not exist.",
+        "workspace_not_a_directory": "This is a file, not a folder.",
+        "workspace_not_absolute": "Enter the full path of the folder.",
+        "other": "The server rejected this folder."
+      }
+    },
+    "language": {
+      "label": "Language",
+      "system": "System"
+    },
+    "theme": {
+      "label": "Theme",
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "units": {
+      "label": "Length units",
+      "help": "How lengths are shown. Scripts always use micrometres."
+    },
+    "snapshots": {
+      "label": "Live field snapshots",
+      "help": "Show a low-resolution field while a simulation runs. Costs a little speed."
+    },
+    "privacy": {
+      "label": "Privacy",
+      "body": "Studio makes no network requests. Fonts and assets are bundled. Nothing leaves this machine."
+    },
+    "about": {
+      "label": "About",
+      "version": "etalon version",
+      "python": "Python",
+      "platform": "Platform",
+      "licences": "Third-party licences",
+      "interLicence": "Inter font licence",
+      "monoLicence": "JetBrains Mono font licence",
+      "thirdParty": "All dependencies and their licences"
+    }
+  },
+  "simulation": {
+    "back": "Back to Workspace",
+    "notFound": "No simulation with this id in the workspace.",
+    "notFoundHint": "The script may have been moved, renamed or deleted."
+  },
+  "notYet": {
+    "title": "Not in this version yet",
+    "setup": "Setup (structure tree, 3D preview, cost estimate) is not in this version yet.",
+    "run": "Run monitoring (progress, energy decay, live field, log) is not in this version yet.",
+    "results": "The results viewer (S-parameters, fields, modes, export) is not in this version yet.",
+    "modes": "The Mode Solver page is not in this version yet.",
+    "validation": "The validation report page is not in this version yet."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "There is no Studio page at this address."
+  },
+  "errors": {
+    "retry": "Retry",
+    "network": "Cannot reach the Studio server. Is <cmd>etalon studio</cmd> still running?",
+    "server": "The Studio server answered with an error ({{status}}).",
+    "loadFailed": "This could not be loaded."
+  },
+  "session": {
+    "title": "This Studio session has ended",
+    "body": "Run <cmd>etalon studio</cmd> again and open the link it prints."
+  }
+}

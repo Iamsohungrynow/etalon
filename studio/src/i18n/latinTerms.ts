@@ -1,0 +1,27 @@
+/**
+ * Latin-script names that stay Latin in Chinese text: the brand and technical terms.
+ * Used by the catalogue test (V1) and by Playwright's language check (P4), which both
+ * assert that Chinese UI text contains no other Latin words.
+ */
+export const LATIN_TERMS = [
+  "S 参数",
+  "JetBrains Mono",
+  "etalon",
+  "Studio",
+  "CUDA",
+  "GPU",
+  "CPU",
+  "CuPy",
+  "Python",
+  "NVIDIA",
+  "JSON",
+  "Inter",
+  "ID",
+] as const;
+
+/** The Latin words left in `text` once <cmd> code, {{placeholders}} and LATIN_TERMS are removed. */
+export function latinOutsideTerms(text: string): string {
+  let rest = text.replace(/<cmd>.*?<\/cmd>/g, "").replace(/\{\{\s*\w+\s*\}\}/g, "");
+  for (const term of LATIN_TERMS) rest = rest.split(term).join("");
+  return rest.match(/[A-Za-z]+/g)?.join(" ") ?? "";
+}

@@ -1,0 +1,85 @@
+/*
+ * Design tokens (ui-ux-spec §7, docs/plan-u0.md §5.4). Dark is the default; light is
+ * the paper palette of docs/design/studio-reference.html; "system" follows the OS.
+ * Every text colour reaches 4.5:1 on bg, surface and raised, and every control
+ * outline 3:1, in both themes (checked by src/styles/tokens.test.ts).
+ */
+
+:root {
+  --et-spectrum: linear-gradient(
+    to right,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #8f00ff
+  );
+  --et-motion: 120ms;
+}
+
+:root,
+:root[data-theme="dark"],
+:root[data-theme="system"] {
+  color-scheme: dark;
+  --et-bg: #0e1013;
+  --et-surface: #15181d;
+  --et-raised: #1c2027;
+  --et-hover: #1c2027;
+  --et-rule: #3a414c;
+  --et-rule-subtle: #2a2f38;
+  --et-control: #6b7380;
+  --et-text: #eceef2;
+  --et-secondary: #a6adba;
+  --et-muted: #858d9a;
+  --et-accent: #e8b34a;
+  --et-accent-ink: #e8b34a;
+  --et-on-accent: #0e1013;
+  --et-ok: #4cc38a;
+  --et-warn: #e8b34a;
+  --et-error: #ec5d62;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --et-bg: #f2f0e4;
+  --et-surface: #ffffff;
+  --et-raised: #e8e6d9;
+  --et-hover: #e4e2d6;
+  --et-rule: #000000;
+  --et-rule-subtle: #c9c7ba;
+  --et-control: #000000;
+  --et-text: #000000;
+  --et-secondary: #444444;
+  --et-muted: #666666;
+  --et-accent: #b8862b;
+  --et-accent-ink: #7a5a12;
+  --et-on-accent: #000000;
+  --et-ok: #166b3c;
+  --et-warn: #7e5c14;
+  --et-error: #b3261e;
+}
+
+/* Same values as [data-theme="light"]; the token test keeps the two blocks identical. */
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    color-scheme: light;
+    --et-bg: #f2f0e4;
+    --et-surface: #ffffff;
+    --et-raised: #e8e6d9;
+    --et-hover: #e4e2d6;
+    --et-rule: #000000;
+    --et-rule-subtle: #c9c7ba;
+    --et-control: #000000;
+    --et-text: #000000;
+    --et-secondary: #444444;
+    --et-muted: #666666;
+    --et-accent: #b8862b;
+    --et-accent-ink: #7a5a12;
+    --et-on-accent: #000000;
+    --et-ok: #166b3c;
+    --et-warn: #7e5c14;
+    --et-error: #b3261e;
+  }
+}

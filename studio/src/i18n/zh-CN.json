@@ -1,0 +1,165 @@
+{
+  "app": {
+    "brandName": "etalon",
+    "brandProduct": "Studio",
+    "documentTitle": "{{screen}} · etalon Studio"
+  },
+  "nav": {
+    "label": "主导航",
+    "workspace": "工作区",
+    "settings": "设置",
+    "modes": "模式求解器",
+    "validation": "验证"
+  },
+  "strip": {
+    "label": "状态",
+    "backend": "后端",
+    "workspace": "工作区",
+    "simulations_other": "个仿真",
+    "version": "etalon",
+    "offline": "离线",
+    "offlineHint": "Studio 不发出任何网络请求。",
+    "detecting": "正在检测 GPU…",
+    "loading": "加载中…"
+  },
+  "workspace": {
+    "title": "工作区",
+    "filter": "按名称或文件夹筛选",
+    "clearFilter": "清除筛选",
+    "rescan": "重新扫描工作区文件夹",
+    "count_other": "{{count}} 个仿真",
+    "countFiltered": "{{shown}} / {{total}}",
+    "tableLabel": "此工作区中的仿真",
+    "columns": {
+      "name": "名称",
+      "status": "状态",
+      "lastRun": "上次运行",
+      "backend": "后端",
+      "cells": "网格数",
+      "time": "用时"
+    },
+    "loading": "正在扫描工作区…",
+    "empty": {
+      "title": "这里还没有仿真脚本",
+      "body": "Studio 会列出此文件夹及其子文件夹中的所有 <cmd>.py</cmd> 文件。请在此添加仿真脚本，或在设置中选择其他文件夹。",
+      "action": "选择其他文件夹"
+    },
+    "noMatch": "没有与“{{filter}}”匹配的脚本。",
+    "noGpu": "未找到 CUDA 设备，运行将使用 CPU 后端。",
+    "noGpuAction": "后端设置",
+    "truncated": "此文件夹中的脚本超过 {{limit}} 个，仅列出前 {{limit}} 个。请在设置中选择更小的文件夹。",
+    "step": "步",
+    "stale": "已过时",
+    "staleHint": "此次运行之后脚本已被修改。",
+    "missing": "工作区文件夹已不存在。",
+    "openSettings": "打开设置"
+  },
+  "status": {
+    "draft": "草稿",
+    "running": "运行中",
+    "done": "完成",
+    "failed": "失败",
+    "cancelled": "已取消",
+    "unknown": "未知",
+    "reason": {
+      "unreadable": "无法读取运行状态文件。",
+      "invalid_json": "运行状态文件不是有效的 JSON。",
+      "invalid_fields": "运行状态文件的内容不符合预期。"
+    }
+  },
+  "time": {
+    "today": "今天 {{time}}",
+    "yesterday": "昨天 {{time}}"
+  },
+  "settings": {
+    "title": "设置",
+    "loading": "正在加载设置…",
+    "saving": "正在保存…",
+    "saveFailed": "更改未保存。",
+    "backend": {
+      "label": "后端",
+      "help": "仿真在何处运行。“自动”使用第一个 CUDA 设备；没有 CUDA 设备时使用 CPU。",
+      "auto": "自动",
+      "cpu": "CPU",
+      "notFound": "未找到",
+      "detecting": "正在检测 GPU…",
+      "devices": "已检测到的设备",
+      "noDevice": "未找到 CUDA 设备，运行将使用 CPU 后端。",
+      "cupyMissing": "未安装 CuPy，运行将使用 CPU。安装 <cmd>etalon[gpu]</cmd> 即可使用 NVIDIA GPU。",
+      "cupyError": "CuPy 无法查询 GPU，运行将使用 CPU。",
+      "memory": "显存",
+      "compute": "计算能力"
+    },
+    "workspace": {
+      "label": "工作区文件夹",
+      "help": "Studio 列出此文件夹中的仿真脚本。启动时由 <cmd>etalon studio FOLDER</cmd> 设定；在此处的更改在 Studio 停止前有效。",
+      "field": "文件夹路径",
+      "apply": "应用",
+      "errors": {
+        "workspace_not_found": "此文件夹不存在。",
+        "workspace_not_a_directory": "这是一个文件，不是文件夹。",
+        "workspace_not_absolute": "请输入文件夹的完整路径。",
+        "other": "服务器拒绝了此文件夹。"
+      }
+    },
+    "language": {
+      "label": "语言",
+      "system": "跟随系统"
+    },
+    "theme": {
+      "label": "主题",
+      "dark": "深色",
+      "light": "浅色",
+      "system": "跟随系统"
+    },
+    "units": {
+      "label": "长度单位",
+      "help": "长度的显示方式。脚本中始终使用微米。"
+    },
+    "snapshots": {
+      "label": "实时场快照",
+      "help": "仿真运行时显示低分辨率的场分布，会略微降低速度。"
+    },
+    "privacy": {
+      "label": "隐私",
+      "body": "Studio 不发出任何网络请求。字体和资源均已内置。任何数据都不会离开本机。"
+    },
+    "about": {
+      "label": "关于",
+      "version": "etalon 版本",
+      "python": "Python",
+      "platform": "平台",
+      "licences": "第三方许可证",
+      "interLicence": "Inter 字体许可证",
+      "monoLicence": "JetBrains Mono 字体许可证",
+      "thirdParty": "所有依赖及其许可证"
+    }
+  },
+  "simulation": {
+    "back": "返回工作区",
+    "notFound": "工作区中没有此 ID 的仿真。",
+    "notFoundHint": "该脚本可能已被移动、重命名或删除。"
+  },
+  "notYet": {
+    "title": "此版本尚未提供",
+    "setup": "此版本尚未提供“设置”页面（结构树、三维预览、成本估算）。",
+    "run": "此版本尚未提供运行监控（进度、能量衰减、实时场、日志）。",
+    "results": "此版本尚未提供结果查看器（S 参数、场、模式、导出）。",
+    "modes": "此版本尚未提供模式求解器页面。",
+    "validation": "此版本尚未提供验证报告页面。"
+  },
+  "notFound": {
+    "title": "未找到页面",
+    "body": "此地址没有 Studio 页面。"
+  },
+  "errors": {
+    "retry": "重试",
+    "network": "无法连接 Studio 服务器。<cmd>etalon studio</cmd> 是否仍在运行？",
+    "server": "Studio 服务器返回错误（{{status}}）。",
+    "loadFailed": "无法加载。"
+  },
+  "session": {
+    "title": "此 Studio 会话已结束",
+    "body": "请重新运行 <cmd>etalon studio</cmd>，并打开它输出的链接。"
+  }
+}
