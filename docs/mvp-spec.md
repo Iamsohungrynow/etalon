@@ -93,7 +93,7 @@ Gate after M2: if accuracy < 1 % cannot be reached on any device, stop and diagn
 | 1×2 MMI | width 6, length ≈ 42 (tune) | 1.50–1.60 | |S21|², |S31|², imbalance |
 | Ring resonator (add–drop) | radius 10, gap 0.2 | 1.54–1.56 | resonance λ, FSR, Q, extinction |
 
-Meep settings are frozen in `bench/meep/config.yaml` (resolution, PML, run time, courant) and mirrored one-to-one in etalon.
+Shared settings (resolution, PML, run time, Courant, band, geometry) are frozen in `bench/config.yaml`, which both the Meep scripts and the etalon side read, so the comparison is one-to-one. Plan: `docs/plan-bench.md`.
 
 ## 6. Validation ladder (run before every benchmark)
 
