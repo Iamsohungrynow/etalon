@@ -36,6 +36,8 @@ export function makeRow(overrides: Partial<SimulationRow> & Pick<SimulationRow, 
     eta_s: null,
     stale: false,
     modified: "2026-10-16T06:00:00Z",
+    job_id: null,
+    last_result_id: null,
     ...overrides,
   };
 }
@@ -85,6 +87,13 @@ export function fakeServer(
       return json(state.settings);
     },
     "GET /api/system": () => json(state.system),
+    "GET /api/templates": () =>
+      json(
+        ["vacuum_pulse", "strip_waveguide", "sharp_bend", "phc_waveguide"].map((id) => ({
+          id,
+          file: `${id}.py`,
+        })),
+      ),
     ...overrides,
   };
   const fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {

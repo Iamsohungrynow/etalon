@@ -6,9 +6,12 @@ import { expect, open, putSettings, test, workspaceRows } from "./guards";
 
 const LISTED = [
   "bend_euler.py",
+  "broken_script.py",
   "broken_status.py",
   "dc_gap200.py",
+  "misplaced_strip.py",
   "mmi_1x2_sweep.py",
+  "phc_waveguide.py",
   "rings/ring_r10_g180.py",
   "rings/ring_r10_g200.py",
   "straight_wg.py",
@@ -16,7 +19,7 @@ const LISTED = [
 
 test("P1: the fixture workspace lists every status, and skips what it should", async ({ page }) => {
   await open(page, "/");
-  await expect(page.getByTestId("workspace-count")).toHaveText("7 simulations");
+  await expect(page.getByTestId("workspace-count")).toHaveText("10 simulations");
   const names = await page.getByRole("table").getByRole("link").allTextContents();
   expect(names).toEqual(LISTED);
   const row = (path: string) => page.getByRole("row").filter({ has: page.getByRole("link", { name: path, exact: true }) });
@@ -95,7 +98,7 @@ test.describe("P3: opening time", () => {
 
 test("P9: the keyboard reaches navigation, filter and rows; Enter opens a row", async ({ page, request }) => {
   await open(page, "/");
-  await expect(page.getByTestId("workspace-count")).toHaveText("7 simulations");
+  await expect(page.getByTestId("workspace-count")).toHaveText("10 simulations");
   const visited: string[] = [];
   for (let i = 0; i < 20; i++) {
     await page.keyboard.press("Tab");

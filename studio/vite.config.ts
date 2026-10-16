@@ -44,7 +44,7 @@ export default defineConfig({
     strictPort: true,
     // `etalon studio --no-browser` in another terminal, then open
     // http://127.0.0.1:5173/?token=<token it printed>.
-    proxy: { "/api": { target: "http://127.0.0.1:8787", changeOrigin: true } },
+    proxy: { "/api": { target: "http://127.0.0.1:8787", changeOrigin: true, ws: true } },
   },
   test: {
     environment: "jsdom",

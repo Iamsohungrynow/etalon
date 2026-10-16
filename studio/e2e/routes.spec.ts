@@ -1,17 +1,16 @@
-// P7, P8: the routes whose screens arrive later, unknown addresses, and an ended session.
+// P7, P8: simulation routes for scripts that cannot run, unknown addresses, an ended session.
 import { ORIGIN } from "./env";
 import { expect, open, test, workspaceRows } from "./guards";
 
-test("P7: Setup, Run and Results resolve the simulation and say they are not here yet", async ({ page, request }) => {
+test("P7: a script without a Simulation: Setup explains, Run is idle, Results are empty", async ({ page, request }) => {
   const id = (await workspaceRows(request)).find((r) => r.path === "rings/ring_r10_g200.py")?.id;
-  for (const view of ["setup", "run", "results"]) {
-    await open(page, `/sim/${id}/${view}`);
-    await expect(page.getByRole("heading", { name: "ring_r10_g200.py" })).toBeVisible();
-    await expect(page.getByText("rings/ring_r10_g200.py")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Not in this version yet" })).toBeVisible();
-  }
-  await page.getByRole("link", { name: "Back to Workspace" }).click();
-  await expect(page).toHaveURL(`${ORIGIN}/`);
+  await open(page, `/sim/${id}/setup`);
+  await expect(page.getByRole("heading", { name: "ring_r10_g200.py" })).toBeVisible();
+  await expect(page.getByText("This script defines no etalon Simulation")).toBeVisible();
+  await page.getByRole("navigation", { name: "Simulation views" }).getByRole("link", { name: "Run" }).click();
+  await expect(page.getByRole("heading", { name: "This simulation is not running" })).toBeVisible();
+  await page.getByRole("navigation", { name: "Simulation views" }).getByRole("link", { name: "Results" }).click();
+  await expect(page.getByRole("heading", { name: "No results yet" })).toBeVisible();
 });
 
 test("P7: Mode Solver and Validation have their routes, not yet their navigation", async ({ page }) => {
@@ -30,6 +29,8 @@ test("P7: an unknown simulation id and an unknown page", async ({ page }) => {
   await open(page, "/no/such/page");
   await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
   await expect(page.getByText("/no/such/page")).toBeVisible();
+  await page.getByRole("link", { name: "Back to Workspace" }).click();
+  await expect(page).toHaveURL(`${ORIGIN}/`);
 });
 
 test.describe("P8: without a token", () => {

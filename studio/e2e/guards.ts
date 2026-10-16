@@ -55,13 +55,31 @@ export async function putSettings(
   expect(response.status(), await response.text()).toBe(200);
 }
 
-export async function workspaceRows(
-  request: APIRequestContext,
-): Promise<{ id: string; path: string; status: string }[]> {
+export interface FixtureRow {
+  id: string;
+  path: string;
+  status: string;
+  last_result_id: string | null;
+}
+
+export async function workspaceRows(request: APIRequestContext): Promise<FixtureRow[]> {
   const response = await request.get(`${ORIGIN}/api/workspace`, {
     headers: { "X-Etalon-Token": TOKEN },
   });
   expect(response.ok()).toBe(true);
-  return ((await response.json()) as { simulations: { id: string; path: string; status: string }[] })
-    .simulations;
+  return ((await response.json()) as { simulations: FixtureRow[] }).simulations;
+}
+
+/** GET a binary §13.1 array through the API, decoded on the test side. */
+export async function fetchArray(
+  request: APIRequestContext,
+  path: string,
+): Promise<{ header: { shape: [number, number]; extent: [number, number, number, number] }; data: Float32Array }> {
+  const response = await request.get(`${ORIGIN}${path}`, { headers: { "X-Etalon-Token": TOKEN } });
+  expect(response.ok(), path).toBe(true);
+  const body = await response.body();
+  const buffer = body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength);
+  const n = new DataView(buffer).getUint32(0, true);
+  const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buffer, 4, n)));
+  return { header, data: new Float32Array(buffer, Math.ceil((4 + n) / 4) * 4) };
 }

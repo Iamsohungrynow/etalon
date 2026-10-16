@@ -90,3 +90,15 @@ export async function unwrap<T>(call: Promise<FetchResult<T>>): Promise<T> {
   }
   return result.data;
 }
+
+/** Like unwrap, for answers that carry no body (204). */
+export async function unwrapNoContent(call: Promise<FetchResult<unknown>>): Promise<void> {
+  let result: FetchResult<unknown>;
+  try {
+    result = await call;
+  } catch (cause) {
+    throw new NetworkError(cause);
+  }
+  if (result.response.status === 401) throw new SessionEndedError();
+  if (!result.response.ok) throw new ServerError(result.response.status, result.error);
+}

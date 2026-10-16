@@ -1,19 +1,34 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { Api } from "./client";
 
-const ApiContext = createContext<Api | null>(null);
+interface ApiContextValue {
+  api: Api;
+  /** The Studio token; WebSockets carry it as a subprotocol (browsers cannot set headers). */
+  token: string | null;
+}
+
+const ApiContext = createContext<ApiContextValue | null>(null);
 
 interface ApiProviderProps {
   api: Api;
+  token: string | null;
   children: ReactNode;
 }
 
-export function ApiProvider({ api, children }: ApiProviderProps) {
-  return <ApiContext.Provider value={api}>{children}</ApiContext.Provider>;
+export function ApiProvider({ api, token, children }: ApiProviderProps) {
+  return <ApiContext.Provider value={{ api, token }}>{children}</ApiContext.Provider>;
+}
+
+function useApiContext(): ApiContextValue {
+  const value = useContext(ApiContext);
+  if (!value) throw new Error("useApi() outside <ApiProvider>");
+  return value;
 }
 
 export function useApi(): Api {
-  const api = useContext(ApiContext);
-  if (!api) throw new Error("useApi() outside <ApiProvider>");
-  return api;
+  return useApiContext().api;
+}
+
+export function useApiToken(): string | null {
+  return useApiContext().token;
 }

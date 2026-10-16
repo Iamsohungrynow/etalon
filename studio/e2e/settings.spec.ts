@@ -42,7 +42,7 @@ test.describe("P6: a folder that does not exist", () => {
     await expect(page.getByText("This folder does not exist.")).toBeVisible();
     await expect(field).toHaveAttribute("aria-invalid", "true");
     await page.getByRole("link", { name: "Workspace", exact: true }).click();
-    await expect(page.getByTestId("workspace-count")).toHaveText("7 simulations");
+    await expect(page.getByTestId("workspace-count")).toHaveText("10 simulations");
   });
 });
 

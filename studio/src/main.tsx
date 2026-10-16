@@ -18,6 +18,6 @@ const root = document.getElementById("root");
 if (!root) throw new Error("index.html has no #root");
 createRoot(root).render(
   <StrictMode>
-    <App api={createApi(token)} i18n={createI18n(initialLanguage())} router={router} />
+    <App api={createApi(token)} token={token} i18n={createI18n(initialLanguage())} router={router} />
   </StrictMode>,
 );

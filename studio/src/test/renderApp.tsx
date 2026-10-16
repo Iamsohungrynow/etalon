@@ -15,7 +15,7 @@ export function renderApp(path = "/", server: FakeServer = fakeServer(), languag
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   const i18n = createI18n(language);
   const api = createApi(TEST_TOKEN, server.fetch);
-  const utils = render(<App api={api} i18n={i18n} router={router} />);
+  const utils = render(<App api={api} token={TEST_TOKEN} i18n={i18n} router={router} />);
   return { ...utils, router, server, i18n };
 }
 

@@ -5,6 +5,26 @@
  */
 export const LATIN_TERMS = [
   "S 参数",
+  "DFTMonitor",
+  "Courant",
+  "CPML",
+  "PML",
+  "NaN",
+  "PNG",
+  "CSV",
+  "rad",
+  "µm",
+  "nm",
+  "TE",
+  "TM",
+  "Ex",
+  "Ey",
+  "Ez",
+  "Hx",
+  "Hy",
+  "Hz",
+  "M1",
+  "M2",
   "JetBrains Mono",
   "etalon",
   "Studio",
@@ -19,9 +39,16 @@ export const LATIN_TERMS = [
   "ID",
 ] as const;
 
-/** The Latin words left in `text` once <cmd> code, {{placeholders}} and LATIN_TERMS are removed. */
+/** Code (`<cmd>…</cmd>`) and values (`<v>…</v>`) inside a translation are data. */
+const TAGGED_DATA = /<(cmd|v)>.*?<\/\1>/g;
+const PLACEHOLDER = /\{\{\s*\w+\s*\}\}/g;
+
+/**
+ * The Latin words left in `text` once <cmd> code, <v> values, {{placeholders}} and
+ * LATIN_TERMS are removed.
+ */
 export function latinOutsideTerms(text: string): string {
-  let rest = text.replace(/<cmd>.*?<\/cmd>/g, "").replace(/\{\{\s*\w+\s*\}\}/g, "");
+  let rest = text.replace(TAGGED_DATA, "").replace(PLACEHOLDER, "");
   for (const term of LATIN_TERMS) rest = rest.split(term).join("");
   return rest.match(/[A-Za-z]+/g)?.join(" ") ?? "";
 }

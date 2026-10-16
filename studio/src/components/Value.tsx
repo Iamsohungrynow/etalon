@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { cx } from "./cx";
 
 interface ValueProps {
-  children: ReactNode;
+  /** Optional only so `<Trans components={{ v: <Value /> }}>` can fill it in. */
+  children?: ReactNode;
   /** JetBrains Mono with tabular figures (default); false keeps the UI font. */
   mono?: boolean;
   /** Full precision or the full path, shown on hover. */

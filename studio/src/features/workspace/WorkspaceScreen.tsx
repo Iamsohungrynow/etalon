@@ -1,4 +1,4 @@
-import { RefreshCw, Search, X } from "lucide-react";
+import { Plus, RefreshCw, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -15,6 +15,7 @@ import { IconButton } from "../../components/IconButton";
 import { Skeleton } from "../../components/Skeleton";
 import { TextField } from "../../components/TextField";
 import { Value } from "../../components/Value";
+import { NewSimulationForm } from "./NewSimulationForm";
 import { WorkspaceTable } from "./WorkspaceTable";
 
 const SCAN_LIMIT = 5000; // etalon/studio/workspace.py MAX_SCRIPTS
@@ -31,6 +32,7 @@ export function WorkspaceScreen({ now }: WorkspaceScreenProps) {
   const system = useSystem();
   const settings = useSettings();
   const [filter, setFilter] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const rows = workspace.data?.simulations;
   const needle = filter.trim().toLowerCase();
@@ -69,16 +71,19 @@ export function WorkspaceScreen({ now }: WorkspaceScreenProps) {
     );
   } else if (rows && rows.length === 0) {
     content = (
-      <EmptyState
-        title={t("workspace.empty.title")}
-        action={
-          <Button asChild>
-            <Link to="/settings">{t("workspace.empty.action")}</Link>
-          </Button>
-        }
-      >
-        <Trans i18nKey="workspace.empty.body" components={{ cmd: <Cmd /> }} />
-      </EmptyState>
+      <>
+        <EmptyState
+          title={t("workspace.empty.title")}
+          action={
+            <Button asChild>
+              <Link to="/settings">{t("workspace.empty.action")}</Link>
+            </Button>
+          }
+        >
+          <Trans i18nKey="workspace.empty.body" components={{ cmd: <Cmd /> }} />
+        </EmptyState>
+        {creating ? null : <NewSimulationForm />}
+      </>
     );
   } else if (shown && shown.length === 0) {
     content = (
@@ -107,6 +112,14 @@ export function WorkspaceScreen({ now }: WorkspaceScreenProps) {
               : t("workspace.count", { count: rows.length })}
           </span>
         ) : null}
+        <Button
+          variant={creating ? "secondary" : "primary"}
+          icon={<Plus size={14} aria-hidden />}
+          aria-expanded={creating}
+          onClick={() => setCreating((open) => !open)}
+        >
+          {t("workspace.new.open")}
+        </Button>
         <div className="flex items-center gap-1">
           <TextField
             label={t("workspace.filter")}
@@ -132,6 +145,7 @@ export function WorkspaceScreen({ now }: WorkspaceScreenProps) {
           />
         </div>
       </div>
+      {creating ? <NewSimulationForm onCancel={() => setCreating(false)} /> : null}
       {noGpu ? (
         <Banner
           action={

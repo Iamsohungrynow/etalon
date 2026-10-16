@@ -52,7 +52,20 @@
     "stale": "已过时",
     "staleHint": "此次运行之后脚本已被修改。",
     "missing": "工作区文件夹已不存在。",
-    "openSettings": "打开设置"
+    "openSettings": "打开设置",
+    "new": {
+      "open": "从模板新建",
+      "title": "从模板新建仿真",
+      "template": "模板",
+      "name": "文件名",
+      "nameHelp": "将创建",
+      "create": "创建",
+      "creating": "正在创建…",
+      "cancel": "取消",
+      "exists": "此处已有同名脚本。",
+      "bad_name": "只能使用字母、数字、- 和 _，最多 64 个字符。",
+      "failed": "无法创建脚本。"
+    }
   },
   "status": {
     "draft": "草稿",
@@ -139,7 +152,12 @@
   "simulation": {
     "back": "返回工作区",
     "notFound": "工作区中没有此 ID 的仿真。",
-    "notFoundHint": "该脚本可能已被移动、重命名或删除。"
+    "notFoundHint": "该脚本可能已被移动、重命名或删除。",
+    "views": "仿真视图",
+    "setup": "设置",
+    "run": "运行",
+    "results": "结果",
+    "loading": "仿真"
   },
   "notYet": {
     "title": "此版本尚未提供",
@@ -162,5 +180,290 @@
   "session": {
     "title": "此 Studio 会话已结束",
     "body": "请重新运行 <cmd>etalon studio</cmd>，并打开它输出的链接。"
+  },
+  "templates": {
+    "vacuum_pulse": {
+      "title": "真空脉冲",
+      "description": "点源发出的高斯脉冲在真空中传播，进入无反射的 CPML。"
+    },
+    "strip_waveguide": {
+      "title": "条形波导（二维）",
+      "description": "氧化硅中的硅条形波导，由靠近波导起点的点源激发。"
+    },
+    "sharp_bend": {
+      "title": "直角弯曲（二维）",
+      "description": "两段硅波导以直角相接：观察尖角处辐射出的光。"
+    },
+    "phc_waveguide": {
+      "title": "光子晶体波导（二维）",
+      "description": "硅中方形空气孔晶格的线缺陷：带隙把光束缚在缺陷线中。"
+    }
+  },
+  "setup": {
+    "openEditor": "在编辑器中打开",
+    "run": "运行",
+    "alreadyRunning": "此仿真已在运行。",
+    "runFailed": "无法启动运行。",
+    "building": "正在构建仿真…",
+    "stage": "视图区",
+    "viewport": "三维仿真视图",
+    "tree": {
+      "label": "结构",
+      "media": "材料",
+      "background": "背景",
+      "structures": "结构",
+      "sources": "光源",
+      "monitors": "监视器",
+      "boundary": "边界",
+      "grid": "网格",
+      "pml": "CPML 层数",
+      "hide": "在视图中隐藏",
+      "show": "在视图中显示",
+      "unnamedStructure": "长方体 {{index}}",
+      "unnamedSource": "光源 {{index}}"
+    },
+    "geometry": {
+      "point": "点",
+      "line": "线",
+      "plane": "面",
+      "box": "体"
+    },
+    "view": {
+      "label": "视图",
+      "3d": "三维",
+      "slice": "切片",
+      "hint3d": "拖动旋转，滚轮缩放；<cmd>1</cmd> <cmd>2</cmd> <cmd>3</cmd> 切换俯视、正视、侧视，<cmd>F</cmd> 对准所选对象。",
+      "hintSlice": "求解器自身在仿真平面上的介电常数：即将运行的正是这个。"
+    },
+    "inspector": {
+      "label": "属性",
+      "empty": "在结构树或视图中选择一个对象。",
+      "medium": "材料",
+      "index": "折射率",
+      "permittivity": "介电常数",
+      "usedBy": "使用此材料的结构",
+      "kind": "类型",
+      "center": "中心",
+      "size": "尺寸",
+      "component": "分量",
+      "wavelength": "波长",
+      "bandwidth": "带宽",
+      "geometry": "几何",
+      "wavelengths": "波长",
+      "components": "分量",
+      "layers": "层数",
+      "thickness": "厚度",
+      "cell": "网格尺寸",
+      "cells": "网格数",
+      "regionCells": "区域网格数",
+      "dt": "时间步长",
+      "courant": "Courant 因子",
+      "steps": "步数"
+    },
+    "slice": {
+      "loading": "正在读取介电常数…",
+      "label": "仿真平面上的相对介电常数，含 CPML",
+      "scale": "相对介电常数",
+      "pml": "外侧 {{cells}} 个网格：CPML",
+      "hint": "指向图中任意位置查看数值。"
+    },
+    "estimate": {
+      "label": "估算",
+      "cells": "网格数",
+      "memory": "内存",
+      "steps": "步数",
+      "dt": "时间步长",
+      "time": "时间",
+      "fromRuns": "依据以往运行",
+      "fromCalibration": "依据校准",
+      "unknown": "运行或校准之前未知",
+      "calibrate": "校准",
+      "calibrating": "正在校准…",
+      "calibrateHint": "运行求解器约 10 秒，测量本机速度。",
+      "none": "此仿真没有估算。"
+    },
+    "warnings": {
+      "label": "警告",
+      "show": "显示",
+      "mesh_coarse": "网格：在 <v>{{wavelength}}</v> 处，<v>{{medium}}</v> 中每个波长只有 <v>{{cells}}</v> 个网格，至少需要 <v>{{minimum}}</v> 个。",
+      "pml_thin": "CPML 厚度为 <v>{{thickness}}</v>，不足半个波长（<v>{{half}}</v>）：可能有反射返回。",
+      "near_pml": "<v>{{object}}</v> 距 CPML 仅 <v>{{cells}}</v> 个网格。",
+      "memory_large": "此次运行需要 <v>{{memory}}</v> 内存。",
+      "unsupported_3d": "三维仿真将在 <v>{{milestone}}</v> 提供；当前版本仅支持二维 TE。",
+      "unsupported_tm": "二维 TM 分量（Ez、Hx、Hy）将在 <v>{{milestone}}</v> 提供；当前版本仅支持二维 TE。"
+    },
+    "scriptError": {
+      "script_error": "脚本运行失败",
+      "script_timeout": "脚本在 60 秒内未执行到运行步骤",
+      "no_simulation": "此脚本没有定义 etalon 仿真",
+      "atLine": "位于第",
+      "traceback": "错误回溯",
+      "output": "脚本输出"
+    }
+  },
+  "run": {
+    "start": "运行",
+    "again": "再次运行",
+    "cancel": "取消",
+    "cancelling": "正在取消…",
+    "idle": {
+      "title": "此仿真未在运行",
+      "body": "在此处或设置页启动。求解器运行时，这里会显示进度、场能量和实时场。",
+      "lastResults": "打开上次的结果"
+    },
+    "confirm": {
+      "body": "要取消此次运行吗？它已运行 {{time}}；已记录的数据会保留。",
+      "yes": "取消运行",
+      "no": "继续运行"
+    },
+    "reconnect": "重新连接",
+    "lost": "与运行的连接已断开。运行仍在服务器上继续。",
+    "progress": "进度",
+    "step": "步",
+    "elapsed": "已用",
+    "left": "剩余",
+    "rate": "次网格更新/秒",
+    "preparing": "正在准备求解器…",
+    "connecting": "正在连接运行…",
+    "energy": {
+      "title": "场能量",
+      "series": "能量",
+      "view": "能量视图",
+      "chart": "图表",
+      "table": "表格",
+      "label": "场能量随时间步的变化，相对于峰值，对数坐标",
+      "x": "步数",
+      "y": "能量 / 峰值"
+    },
+    "live": {
+      "title": "实时 <v>{{component}}</v>",
+      "label": "正在运行的仿真的实时 {{component}} 场",
+      "scale": "场",
+      "step": "步",
+      "waiting": "正在等待第一帧…",
+      "off": "此次运行未开启实时场。",
+      "settings": "在设置中开启。"
+    },
+    "log": {
+      "label": "运行日志",
+      "empty": "暂无输出。"
+    },
+    "done": {
+      "finished": "运行已完成。",
+      "cancelled": "运行已取消。取消前记录的数据会保留。",
+      "failed": "运行失败。",
+      "openResults": "打开结果"
+    },
+    "suggestion": {
+      "out_of_memory": "内存不足：请使用更粗的网格或单精度。",
+      "nan": "场出现了 NaN：请降低 Courant 因子，或把光源移离结构边缘。",
+      "unsupported": "当前版本尚不能运行此仿真；设置页会说明哪个里程碑将支持。"
+    }
+  },
+  "results": {
+    "runAgain": "再次运行",
+    "loading": "正在加载结果…",
+    "stale": "这些结果来自此脚本的早期版本。",
+    "partial": "此次运行已取消：场数据只包含已完成的步数。",
+    "none": {
+      "title": "暂无结果",
+      "body": "运行此仿真后，这里会显示它的场和频谱。"
+    },
+    "tabs": {
+      "label": "结果视图",
+      "fields": "场",
+      "spectra": "频谱",
+      "sparams": "S 参数",
+      "sparamsHint": "S 参数将随模式求解器和端口监视器提供（M1–M2）。"
+    },
+    "meta": {
+      "finished": "完成于",
+      "version": "etalon 版本",
+      "backend": "后端",
+      "precision": "精度",
+      "grid": "网格",
+      "steps": "步数",
+      "wall": "用时",
+      "rate": "网格更新/秒",
+      "script": "脚本"
+    },
+    "fields": {
+      "none": "没有场监视器",
+      "noneHint": "此结果没有面或线监视器。为 DFTMonitor 设置尺寸即可记录场。",
+      "loading": "正在加载场…",
+      "label": "监视器 {{monitor}} 上的 {{component}}",
+      "scale": "场",
+      "hint": "拖动平移，滚轮缩放，双击复位；指向任意位置查看数值。",
+      "stage": "场视图",
+      "monitor": "监视器",
+      "component": "分量",
+      "quantity": "物理量",
+      "wavelength": "波长",
+      "log": "对数坐标",
+      "outlines": "结构轮廓",
+      "exportPng": "导出 PNG",
+      "resetView": "复位视图"
+    },
+    "quantity": {
+      "abs": "幅值",
+      "real": "实部",
+      "imag": "虚部",
+      "phase": "相位"
+    },
+    "spectra": {
+      "none": "没有点监视器",
+      "noneHint": "此结果没有点监视器。尺寸为 (0, 0, 0) 的 DFTMonitor 会记录频谱。",
+      "loading": "正在加载频谱…",
+      "monitor": "监视器",
+      "view": "频谱视图",
+      "chart": "图表",
+      "table": "表格",
+      "magnitude": "频谱幅值",
+      "phase": "频谱相位",
+      "magnitudeOf": "{{component}} 幅值",
+      "phaseOf": "{{component}} 相位",
+      "x": "波长（µm）",
+      "yMagnitude": "幅值",
+      "yPhase": "相位（rad）",
+      "exportCsv": "导出 CSV"
+    }
+  },
+  "kitchen": {
+    "title": "组件一览",
+    "body": "所有组件及其各种状态。此处的场、图表和几何均为解析测试图样，不是求解器结果。",
+    "buttons": "按钮",
+    "primary": "主要",
+    "secondary": "次要",
+    "ghost": "幽灵",
+    "disabled": "禁用",
+    "iconButton": "图标按钮",
+    "inputs": "输入",
+    "text": "文本框",
+    "textError": "带错误的文本框",
+    "errorText": "此文件夹不存在。",
+    "number": "波长",
+    "numberNm": "以纳米表示的波长",
+    "numberInvalid": "请输入长度，例如 1.55 µm 或 1550 nm。",
+    "numberRange": "超出允许范围。",
+    "toggle": "开关",
+    "toggleHelp": "带说明文字的开关。",
+    "segmented": "分段选择",
+    "select": "下拉选择",
+    "tabs": "标签页",
+    "panelA": "第一个面板。",
+    "panelB": "第二个面板。",
+    "treeInspector": "结构树、属性与三维视图",
+    "viewport": "三维测试几何",
+    "table": "虚拟化表格",
+    "status": "横幅、进度与状态",
+    "emptyBody": "空状态说明缺少什么、该做什么。",
+    "log": "日志",
+    "chart": "图表",
+    "chartLabel": "测试图样：洛伦兹线型",
+    "chartSeries": "洛伦兹测试线",
+    "chartY": "透射率",
+    "field": "场画布与色标",
+    "fieldLabel": "测试图样：二维柱面波的形状",
+    "fieldScale": "测试图样"
   }
 }

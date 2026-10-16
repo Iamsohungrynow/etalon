@@ -12,16 +12,17 @@ export type StudioRouter = ReturnType<typeof createBrowserRouter>;
 
 interface AppProps {
   api: Api;
+  token: string | null;
   i18n: i18n;
   router: StudioRouter;
 }
 
-export function App({ api, i18n, router }: AppProps) {
+export function App({ api, token, i18n, router }: AppProps) {
   const [ended, setEnded] = useState(false);
   const [queryClient] = useState(() => createQueryClient(() => setEnded(true)));
   return (
     <I18nextProvider i18n={i18n}>
-      <ApiProvider api={api}>
+      <ApiProvider api={api} token={token}>
         <QueryClientProvider client={queryClient}>
           {ended ? <SessionEndedScreen /> : <RouterProvider router={router} />}
         </QueryClientProvider>

@@ -54,7 +54,20 @@
     "stale": "stale",
     "staleHint": "The script changed after this run.",
     "missing": "The workspace folder no longer exists.",
-    "openSettings": "Open Settings"
+    "openSettings": "Open Settings",
+    "new": {
+      "open": "New from template",
+      "title": "New simulation from a template",
+      "template": "Template",
+      "name": "File name",
+      "nameHelp": "Creates",
+      "create": "Create",
+      "creating": "Creating…",
+      "cancel": "Cancel",
+      "exists": "A script with this name already exists here.",
+      "bad_name": "Use letters, digits, - and _ only, at most 64.",
+      "failed": "The script could not be created."
+    }
   },
   "status": {
     "draft": "draft",
@@ -141,7 +154,12 @@
   "simulation": {
     "back": "Back to Workspace",
     "notFound": "No simulation with this id in the workspace.",
-    "notFoundHint": "The script may have been moved, renamed or deleted."
+    "notFoundHint": "The script may have been moved, renamed or deleted.",
+    "views": "Simulation views",
+    "setup": "Setup",
+    "run": "Run",
+    "results": "Results",
+    "loading": "Simulation"
   },
   "notYet": {
     "title": "Not in this version yet",
@@ -164,5 +182,290 @@
   "session": {
     "title": "This Studio session has ended",
     "body": "Run <cmd>etalon studio</cmd> again and open the link it prints."
+  },
+  "templates": {
+    "vacuum_pulse": {
+      "title": "Vacuum pulse",
+      "description": "A Gaussian pulse from a point source spreads through vacuum into a quiet CPML."
+    },
+    "strip_waveguide": {
+      "title": "Strip waveguide (2D)",
+      "description": "A silicon strip in oxide, driven by a point source near the start of the strip."
+    },
+    "sharp_bend": {
+      "title": "Sharp 90° bend (2D)",
+      "description": "Two silicon strips meet at a right angle: see what a sharp corner radiates."
+    },
+    "phc_waveguide": {
+      "title": "Photonic-crystal waveguide (2D)",
+      "description": "A line defect in a square lattice of air holes in silicon: the band gap keeps the light in the line."
+    }
+  },
+  "setup": {
+    "openEditor": "Open in editor",
+    "run": "Run",
+    "alreadyRunning": "This simulation is already running.",
+    "runFailed": "The run could not be started.",
+    "building": "Building simulation…",
+    "stage": "Stage",
+    "viewport": "The simulation in 3D",
+    "tree": {
+      "label": "Structure",
+      "media": "Media",
+      "background": "background",
+      "structures": "Structures",
+      "sources": "Sources",
+      "monitors": "Monitors",
+      "boundary": "Boundary",
+      "grid": "Grid",
+      "pml": "CPML layers",
+      "hide": "Hide in the view",
+      "show": "Show in the view",
+      "unnamedStructure": "box {{index}}",
+      "unnamedSource": "source {{index}}"
+    },
+    "geometry": {
+      "point": "point",
+      "line": "line",
+      "plane": "plane",
+      "box": "box"
+    },
+    "view": {
+      "label": "View",
+      "3d": "3D",
+      "slice": "Slice",
+      "hint3d": "Drag to orbit, scroll to zoom; <cmd>1</cmd> <cmd>2</cmd> <cmd>3</cmd> for top, front and side, <cmd>F</cmd> to frame.",
+      "hintSlice": "The solver's own permittivity on the simulated plane: exactly what will run."
+    },
+    "inspector": {
+      "label": "Inspector",
+      "empty": "Select an object in the tree or the view.",
+      "medium": "Medium",
+      "index": "Refractive index",
+      "permittivity": "Permittivity",
+      "usedBy": "Used by structures",
+      "kind": "Kind",
+      "center": "Centre",
+      "size": "Size",
+      "component": "Component",
+      "wavelength": "Wavelength",
+      "bandwidth": "Bandwidth",
+      "geometry": "Geometry",
+      "wavelengths": "Wavelengths",
+      "components": "Components",
+      "layers": "Layers",
+      "thickness": "Thickness",
+      "cell": "Cell size",
+      "cells": "Cells",
+      "regionCells": "Region cells",
+      "dt": "Time step",
+      "courant": "Courant factor",
+      "steps": "Steps"
+    },
+    "slice": {
+      "loading": "Reading the permittivity…",
+      "label": "Relative permittivity on the simulated plane, CPML included",
+      "scale": "Relative permittivity",
+      "pml": "outer {{cells}} cells: CPML",
+      "hint": "Point at the map for the value."
+    },
+    "estimate": {
+      "label": "Estimate",
+      "cells": "Cells",
+      "memory": "Memory",
+      "steps": "Steps",
+      "dt": "Time step",
+      "time": "Time",
+      "fromRuns": "from earlier runs",
+      "fromCalibration": "from calibration",
+      "unknown": "unknown until a run or a calibration",
+      "calibrate": "Calibrate",
+      "calibrating": "Calibrating…",
+      "calibrateHint": "Runs the solver for about 10 s to measure this machine's speed.",
+      "none": "No estimate for this simulation."
+    },
+    "warnings": {
+      "label": "Warnings",
+      "show": "Show",
+      "mesh_coarse": "Mesh: <v>{{cells}}</v> cells per wavelength in <v>{{medium}}</v> at <v>{{wavelength}}</v>; at least <v>{{minimum}}</v> are needed.",
+      "pml_thin": "The CPML is <v>{{thickness}}</v> thick, less than half a wavelength (<v>{{half}}</v>): reflections may come back.",
+      "near_pml": "<v>{{object}}</v> is only <v>{{cells}}</v> cells from the CPML.",
+      "memory_large": "This run needs <v>{{memory}}</v> of memory.",
+      "unsupported_3d": "3D simulations arrive in <v>{{milestone}}</v>; this build runs 2D TE only.",
+      "unsupported_tm": "2D TM components (Ez, Hx, Hy) arrive in <v>{{milestone}}</v>; this build runs 2D TE only."
+    },
+    "scriptError": {
+      "script_error": "The script failed",
+      "script_timeout": "The script did not reach run() within 60 s",
+      "no_simulation": "This script defines no etalon Simulation",
+      "atLine": "at line",
+      "traceback": "Traceback",
+      "output": "Script output"
+    }
+  },
+  "run": {
+    "start": "Run",
+    "again": "Run again",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling…",
+    "idle": {
+      "title": "This simulation is not running",
+      "body": "Start it here or from Setup. Progress, the field energy and the live field appear as the solver steps.",
+      "lastResults": "Open the last results"
+    },
+    "confirm": {
+      "body": "Cancel this run? It has been running for {{time}}; the data recorded so far is kept.",
+      "yes": "Cancel the run",
+      "no": "Keep running"
+    },
+    "reconnect": "Reconnect",
+    "lost": "Lost the connection to the run. It keeps going on the server.",
+    "progress": "Progress",
+    "step": "step",
+    "elapsed": "elapsed",
+    "left": "left",
+    "rate": "cell updates per second",
+    "preparing": "Preparing the solver…",
+    "connecting": "Connecting to the run…",
+    "energy": {
+      "title": "Field energy",
+      "series": "Energy",
+      "view": "Energy view",
+      "chart": "Chart",
+      "table": "Table",
+      "label": "Field energy against time step, relative to its peak, on a log scale",
+      "x": "Step",
+      "y": "Energy / peak"
+    },
+    "live": {
+      "title": "Live <v>{{component}}</v>",
+      "label": "Live {{component}} field of the running simulation",
+      "scale": "Field",
+      "step": "step",
+      "waiting": "Waiting for the first frame…",
+      "off": "The live field is off for this run.",
+      "settings": "Turn it on in Settings."
+    },
+    "log": {
+      "label": "Run log",
+      "empty": "No output yet."
+    },
+    "done": {
+      "finished": "The run finished.",
+      "cancelled": "The run was cancelled. The data recorded up to that point is kept.",
+      "failed": "The run failed.",
+      "openResults": "Open results"
+    },
+    "suggestion": {
+      "out_of_memory": "Out of memory: use a coarser grid or single precision.",
+      "nan": "The fields became NaN: lower the Courant factor, or move a source away from a structure edge.",
+      "unsupported": "This build cannot run this simulation yet; Setup says which milestone adds it."
+    }
+  },
+  "results": {
+    "runAgain": "Run again",
+    "loading": "Loading the result…",
+    "stale": "These results are from an earlier version of this script.",
+    "partial": "This run was cancelled: the fields hold only the steps it completed.",
+    "none": {
+      "title": "No results yet",
+      "body": "Run this simulation to see its fields and spectra here."
+    },
+    "tabs": {
+      "label": "Result views",
+      "fields": "Fields",
+      "spectra": "Spectra",
+      "sparams": "S-parameters",
+      "sparamsHint": "S-parameters arrive with the mode solver and port monitors (M1–M2)."
+    },
+    "meta": {
+      "finished": "Finished",
+      "version": "etalon",
+      "backend": "Backend",
+      "precision": "Precision",
+      "grid": "Grid",
+      "steps": "Steps",
+      "wall": "Wall time",
+      "rate": "Cell updates/s",
+      "script": "Script"
+    },
+    "fields": {
+      "none": "No field monitor",
+      "noneHint": "This result has no plane or line monitor. Add a DFTMonitor with a size to record a field.",
+      "loading": "Loading the field…",
+      "label": "{{component}} on monitor {{monitor}}",
+      "scale": "Field",
+      "hint": "Drag to pan, scroll to zoom, double-click to reset; point for the value.",
+      "stage": "Field view",
+      "monitor": "Monitor",
+      "component": "Component",
+      "quantity": "Quantity",
+      "wavelength": "Wavelength",
+      "log": "Log scale",
+      "outlines": "Structure outlines",
+      "exportPng": "Export PNG",
+      "resetView": "Reset view"
+    },
+    "quantity": {
+      "abs": "|F|",
+      "real": "Re",
+      "imag": "Im",
+      "phase": "Phase"
+    },
+    "spectra": {
+      "none": "No point monitor",
+      "noneHint": "This result has no point monitor. A DFTMonitor with size (0, 0, 0) records a spectrum.",
+      "loading": "Loading the spectrum…",
+      "monitor": "Monitor",
+      "view": "Spectra view",
+      "chart": "Chart",
+      "table": "Table",
+      "magnitude": "Spectrum magnitude",
+      "phase": "Spectrum phase",
+      "magnitudeOf": "|{{component}}|",
+      "phaseOf": "phase of {{component}}",
+      "x": "Wavelength (µm)",
+      "yMagnitude": "Magnitude",
+      "yPhase": "Phase (rad)",
+      "exportCsv": "Export CSV"
+    }
+  },
+  "kitchen": {
+    "title": "Kitchen sink",
+    "body": "Every component in its states. The field, chart and geometry here are analytic test patterns, not solver results.",
+    "buttons": "Buttons",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "ghost": "Ghost",
+    "disabled": "Disabled",
+    "iconButton": "Icon button",
+    "inputs": "Inputs",
+    "text": "Text field",
+    "textError": "Text field with an error",
+    "errorText": "This folder does not exist.",
+    "number": "Wavelength",
+    "numberNm": "Wavelength in nanometres",
+    "numberInvalid": "Enter a length, such as 1.55 µm or 1550 nm.",
+    "numberRange": "Outside the allowed range.",
+    "toggle": "Toggle",
+    "toggleHelp": "A switch with help text.",
+    "segmented": "Segmented",
+    "select": "Select",
+    "tabs": "Tabs",
+    "panelA": "The first panel.",
+    "panelB": "The second panel.",
+    "treeInspector": "Tree, inspector and 3D view",
+    "viewport": "Test geometry in 3D",
+    "table": "Virtualised table",
+    "status": "Banners, progress and states",
+    "emptyBody": "An empty state explains what is missing and what to do.",
+    "log": "Log",
+    "chart": "Chart",
+    "chartLabel": "Test pattern: a Lorentzian line",
+    "chartSeries": "Lorentzian test line",
+    "chartY": "Transmission",
+    "field": "Field canvas and colour scales",
+    "fieldLabel": "Test pattern: the shape of a 2D cylindrical wave",
+    "fieldScale": "Test pattern"
   }
 }

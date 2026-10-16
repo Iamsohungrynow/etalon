@@ -22,6 +22,8 @@ export const E2E_ROOT = join(tmpdir(), "etalon-e2e");
 export const CONFIG_DIR = join(E2E_ROOT, "config");
 export const TIMING_CONFIG_DIR = join(E2E_ROOT, "config-timing");
 export const WS50 = join(E2E_ROOT, "ws50");
+/** The Run test creates its script here, so the committed fixtures stay untouched. */
+export const RUN_WS = join(E2E_ROOT, "run-ws");
 
 export const DEFAULT_SETTINGS = {
   backend: "auto",
