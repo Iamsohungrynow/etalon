@@ -21,6 +21,7 @@ pnpm --dir studio licenses list
 | matplotlib | 3.11.2 | Matplotlib License (PSF-based) | plots |
 | fastapi | 0.143.2 | MIT | Studio server (`etalon studio`) |
 | uvicorn | 0.54.0 | BSD-3-Clause | Studio server |
+| websockets | 17.2 | BSD-3-Clause | Studio job progress over WebSocket (uvicorn needs it); no dependencies of its own |
 
 ## Runtime — pulled in by the above
 
