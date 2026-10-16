@@ -60,7 +60,7 @@ In 2D, every device except the ring takes minutes in Meep. The ring takes about 
 
 Both codes are standard Yee at the same Δx and Δt, so they share the same numerical dispersion. T should agree to ~1e-5. The gate is 1e-3, and anything above 1e-4 gets investigated before M1. This is a convention check, not a physics device.
 
-Adapters for the five devices check what the installed etalon offers. They look for `et.ModeSource`, `et.ModePortMonitor` and `et.PolySlab`, and for 3D they ask `fdtd.capabilities.check_supported`. They raise `NeedsMilestone("M1", missing=[...])`. The harness catches it, prints it and writes `status: "unsupported"` to `bench/etalon/out/<device>.json`. The M2 session fills in each adapter's `build()` once M1 lands; the contract is in §6.
+Adapters for the five devices check what the installed etalon offers. They look for `et.ModeSource`, `et.ModePortMonitor` and `et.PolySlab`, and for 3D they ask `fdtd.capabilities.check_supported`. They raise `NeedsMilestone("M1", missing=[...])`. The harness catches it, prints it and writes `status: "unsupported"` to `bench/etalon/out/<tier>/<device>.json`. The M2 session fills in each adapter's `build()` once M1 lands; the contract is in §6.
 
 ## 4. Files
 
@@ -80,10 +80,10 @@ bench/
   meep/                    the only place that imports meep; never imported by anything in etalon's env
     env.yaml               conda-forge: pymeep=1.35.0=mpi_mpich_*, python 3.12, numpy, pyyaml, pydantic, mpi4py (pinned)
     env.lock.txt           explicit lock exported after the first install
-    run_device.py          config → mp.Simulation → out/<device>.json; run as `python -m mpi4py -m bench.meep.run_device`
-    out/<device>.json      reference results, committed with their provenance
+    run_device.py          config → mp.Simulation → out/<tier>/<device>.json; run as `python -m mpi4py -m bench.meep.run_device`
+    out/<tier>/<device>.json  reference results, committed with their provenance
   etalon/
-    run_device.py          config → et.Simulation → out/<device>.json; point2d now, the five via NeedsMilestone
+    run_device.py          config → et.Simulation → out/<tier>/<device>.json; point2d now, the five via NeedsMilestone
     out/                   git-ignored
   results/<sha>.md, <sha>.json
 tests/bench/               see §10
@@ -131,7 +131,7 @@ devices:
   mmi:      {width: 6.0, length: 33.6, taper_width: 1.5, taper_length: 5.0, output_offset: 1.5,
              region: {center: [0, 0], size: [47.6, 8.0]}, band: [1.50, 1.60, 51], run_time_fs: 2000}
   ring:     {radius: 10.0, gap: 0.2, straight_x: 4.0, straight_y: 0.6, shape: circular,
-             region: {center: [0, 0], size: [30.0, 24.6]}, band: [1.54, 1.56, 401], run_time_fs: 10000}
+             region: {center: [0, 0], size: [28.0, 24.6]}, band: [1.54, 1.56, 401], run_time_fs: 10000}
 ```
 
 The `run_time_fs` values are placeholders. Pilot P2 sets them so that the field energy at every output port decays to ≤ 1e-5 of its peak (Liu & Poon's shutoff level), and then they are frozen. Port centres, normals and the source plane are derived in `devices.py` (§6), not typed in by hand.
@@ -155,7 +155,7 @@ Ports are numbered as in `mvp-spec.md` §5, and port 1 is always driven, along +
 | bend | input along y = 0, circular 90° arc of R = 5 about (0, 5), output along x = 5 | 1 (−1, 0) −x · 2 (5, 6) +y | \|S21\| |
 | dc | two arms: cosine S-bends (pitch 4 → gap 0.236 over 10 µm), 20 µm coupled section | 1 (−21, −2) −x · 2 (−21, +2) −x · 3 (+21, −2) +x · 4 (+21, +2) +x | \|S31\|², \|S41\|², coupling ratio |
 | mmi | 0.5 µm input, linear tapers 0.5 → 1.5 over 5 µm, 6 × 33.6 µm body, outputs at y = ±1.5 | 1 (−22.8, 0) −x · 2 (+22.8, +1.5) +x · 3 (+22.8, −1.5) +x | \|S21\|², \|S31\|², imbalance |
-| ring | add–drop racetrack: R = 10 circular quarter arcs, 4 µm coupling straights, 0.6 µm side straights, buses at y = ±11.0 (gap 0.2) | 1 in (−14, −11) −x · 2 through (+14, −11) +x · 3 drop (−14, +11) −x · 4 add (+14, +11) +x | λ_res, FSR, Q, extinction |
+| ring | add–drop racetrack: R = 10 circular quarter arcs, 4 µm coupling straights, 0.6 µm side straights, buses at y = ±11.0 (gap 0.2) | 1 in (−13, −11) −x · 2 through (+13, −11) +x · 3 drop (−13, +11) −x · 4 add (+13, +11) +x | λ_res, FSR, Q, extinction |
 
 In 3D, every polygon is a 0.22 µm slab centred on z = 0 in SiO₂ above and below. In 2D the same polygons become z-invariant with n = `core_index`. The ring is two polygons, the Si outer racetrack and then the SiO₂ inner one. In both codes "later structures win", so the order gives the hole.
 
@@ -204,7 +204,7 @@ In 3D, every polygon is a 0.22 µm slab centred on z = 0 in SiO₂ above and bel
 **Headline number.** Every device also reports **max |ΔS|** = max over the band and all measured entries of | |S_e| − |S_m| |. It gives one comparable number per row, and it is the column the CLAUDE.md "definition of done" refers to.
 
 **Ring metrics** are computed by one function in `metrics.py` from each side's spectrum, so the extraction is identical:
-- λ_res and Q come from a Lorentzian fit to each drop-port peak (|S31|²) over ±FSR/4.
+- λ_res and Q come from an Airy fit, peak/(1 + F sin²(π(λ − λ0)/FSR)), to each drop-port peak (|S31|²) over ±FSR/2. A Lorentzian fit was tried first and biased Q by 1 % through the neighbouring peaks' tails (§14).
 - FSR is the spacing between adjacent resonances.
 - Extinction is 10 log₁₀ of the off-resonance through-port maximum over its minimum.
 - The 1.54–1.56 band holds 2–3 resonances at the expected FSR of 7–9 nm, and 401 points give about 30 samples per FWHM at the expected Q ≈ 900.
@@ -222,7 +222,7 @@ In 3D, every polygon is a 0.22 µm slab centred on z = 0 in SiO₂ above and bel
 
 **Row status.** Unsupported devices show "needs M1 (...)" with Meep's timing only. A device whose decay exceeds 1e-5 on either side is marked "not converged" and is not gated. The same summary goes into the `meep_comparison` section of `results/<sha>.json`.
 
-## 9. Out-file schema (both sides): `bench/<solver>/out/<device>.json`
+## 9. Out-file schema (both sides): `bench/<solver>/out/<tier>/<device>.json`
 
 ```json
 {
@@ -259,7 +259,7 @@ In 3D, every polygon is a 0.22 µm slab centred on z = 0 in SiO₂ above and bel
 | B1 | config: loads; an unknown key fails with its name; extents are an even number of cells; pml × res is an integer; tier device lists exist; courant map; Meep units (1.55 µm → 0.645161, 1 fs → 0.299792 a/c); Meep fwidth reproduces etalon's τ; hash is stable under key reordering and changes when any number changes |
 | B2 | geometry: polygons closed and simple; strip width 0.5 along every normal; DC gap 0.236 and ring gap 0.2 measured from the polygons; ports on centrelines with normals along the axis; each port plane inside the region and holding one strip; source upstream of port 1; 2D and 3D share the in-plane polygons |
 | B3 | schema: round trip; [re, im] encoding; missing port / wrong length / NaN rejected |
-| B4 | metrics: synthetic Lorentzian combs recover λ_res, Q, FSR and ER to 1e-4, also with noise; imbalance and coupling ratio; complex vs magnitude differences |
+| B4 | metrics: synthetic Airy ring spectra recover λ_res, Q, FSR and ER to 1e-4, also with noise; imbalance and coupling ratio; complex vs magnitude differences |
 | B5 | report on mocked Meep and etalon files: every device row; "needs M1"; stale hash refused; mismatched wavelengths refused; gate pass/fail; "not converged"; "est." timing; Meep sanity flags; `<sha>.json` section written |
 | B6 | runner: exact command lines for the `native` and `wsl` runners (never executed); Meep cache: missing / fresh / stale |
 | B7 | import guard (AST): no `meep` import outside `bench/meep/`; no `etalon` import inside it |
@@ -317,7 +317,7 @@ Say "OK" to take every recommendation.
    - fixed run times frozen after P2
    - etalon in single precision (Meep's conda build is double)
    - no symmetry planes in either code
-8. **Meep data in git.** Commit `bench/meep/out/*.json` as reference data; git-ignore `bench/etalon/out/`. Meep's output is not covered by its GPL.
+8. **Meep data in git.** Commit `bench/meep/out/<tier>/*.json` as reference data; git-ignore `bench/etalon/out/`. Meep's output is not covered by its GPL.
 9. **Config reader.** PyYAML 6.0.3 (MIT, checked on PyPI 2026-10-16) in a new `bench` dependency group, not an etalon runtime dependency. The config is parsed into pydantic models, which the Meep env also has (conda-forge pyyaml and pydantic, both MIT).
    - `THIRD_PARTY.md` gains PyYAML, plus a section for **Meep 1.35.0 (GPL-2.0-or-later): external benchmark, not a dependency, never imported by etalon, run only in `bench/meep/env.yaml`'s environment**, together with that environment's tools (micromamba, mpich, mpi4py).
 10. **`results/<sha>.json` collision.** `validate_m0.py` already writes that file. Both scripts would merge their own top-level section (`m0`, `meep_comparison`) through `record.py`. The existing `4b745c7.json` stays as it is.

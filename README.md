@@ -69,8 +69,33 @@ uv run pytest
 - `tests/unit`: fast checks on CPU.
 - `tests/validation`: physics against analytic results, CPU, about 40 s.
 - `tests/gpu`: CUDA vs NumPy equality and throughput; skipped without CuPy.
+- `tests/bench`: the Meep comparison harness, with mocked Meep results; needs neither Meep nor a GPU.
 
 The full suite takes about a minute.
+
+## Benchmark against Meep
+
+`bench/` compares etalon with [Meep](https://meep.readthedocs.io/) on the five reference devices of `docs/mvp-spec.md` §5. The plan, the S-parameter definition and the gates are in [`docs/plan-bench.md`](docs/plan-bench.md). Every shared number (geometry, band, resolution, PML, Courant, run time) is in [`bench/config.yaml`](bench/config.yaml), and both codes read it. [`bench/results/bench_devices.png`](bench/results/bench_devices.png) shows the layouts.
+
+Meep is GPL-2.0-or-later, so it is kept outside etalon:
+- It runs only as a subprocess, in its own conda environment ([`bench/meep/env.yaml`](bench/meep/env.yaml)).
+- Only `bench/meep/` imports it.
+- On Windows the environment lives in WSL2, because conda-forge has no Windows build of `pymeep`.
+
+One-time setup inside WSL (Ubuntu 24.04), as root:
+
+```bash
+curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/local bin/micromamba
+micromamba create -y -r /opt/micromamba -n etalon-meep -f bench/meep/env.yaml
+```
+
+Run the comparison and write `bench/results/<git-sha>.md`:
+
+```bash
+uv run python -m bench.run_meep_comparison --tier 2d
+```
+
+Meep results are cached in `bench/meep/out/` and reused while the config and the Meep scripts are unchanged. Until M1, etalon runs only the `point2d` convention check; the five devices are reported as "needs M1".
 
 ## Licence
 
