@@ -19,7 +19,10 @@ OUTPUTS = ("bench/results", "bench/meep/out", "bench/etalon/out")
 
 
 def git_sha(repo: Path = REPO) -> str:
-    """Short HEAD sha, with "-dirty" if tracked files changed outside OUTPUTS (untracked files don't count)."""
+    """Short HEAD sha, with "-dirty" if tracked files changed outside OUTPUTS.
+
+    Untracked files (a slide deck, notes) do not count.
+    """
 
     def git(*args: str) -> str:
         return subprocess.run(

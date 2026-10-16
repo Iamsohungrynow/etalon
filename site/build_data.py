@@ -42,9 +42,12 @@ def cases():
         "keys": ["VACUUM", "CYLINDRICAL WAVE", "CPML", "HZ"],
         "component": "Hz",
         "sim": et.Simulation(
-            size=(8.0, 8.0, 0.0), grid=et.UniformGrid(dl=0.04),
+            size=(8.0, 8.0, 0.0),
+            grid=et.UniformGrid(dl=0.04),
             sources=[et.PointSource(center=(-2.5, 0, 0), component="Hz", pulse=pulse())],
-            monitors=[field_monitor((8.0, 8.0, 0.0))], run_time=150e-15, backend="cuda",
+            monitors=[field_monitor((8.0, 8.0, 0.0))],
+            run_time=150e-15,
+            backend="cuda",
         ),
     }
     core = et.Box(center=(0, 0, 0), size=(20.0, 0.5, 0.22), medium=SI)
@@ -57,9 +60,14 @@ def cases():
         "keys": ["SILICON", "TE MODE", "GUIDED", "EY"],
         "component": "Ey",
         "sim": et.Simulation(
-            size=(8.0, 4.0, 0.0), medium=SIO2, structures=[core], grid=et.UniformGrid(dl=0.025),
+            size=(8.0, 4.0, 0.0),
+            medium=SIO2,
+            structures=[core],
+            grid=et.UniformGrid(dl=0.025),
             sources=[et.PointSource(center=(-3.5, 0, 0), component="Ey", pulse=pulse())],
-            monitors=[field_monitor((8.0, 4.0, 0.0))], run_time=200e-15, backend="cuda",
+            monitors=[field_monitor((8.0, 4.0, 0.0))],
+            run_time=200e-15,
+            backend="cuda",
         ),
     }
     arms = [
@@ -75,9 +83,14 @@ def cases():
         "keys": ["BEND", "SCATTERING", "SILICON", "EY"],
         "component": "Ey",
         "sim": et.Simulation(
-            size=(6.0, 6.0, 0.0), medium=SIO2, structures=arms, grid=et.UniformGrid(dl=0.025),
+            size=(6.0, 6.0, 0.0),
+            medium=SIO2,
+            structures=arms,
+            grid=et.UniformGrid(dl=0.025),
             sources=[et.PointSource(center=(-2.6, -1.0, 0), component="Ey", pulse=pulse())],
-            monitors=[field_monitor((6.0, 6.0, 0.0))], run_time=250e-15, backend="cuda",
+            monitors=[field_monitor((6.0, 6.0, 0.0))],
+            run_time=250e-15,
+            backend="cuda",
         ),
     }
     period, n_periods = 0.37, 8
@@ -94,9 +107,14 @@ def cases():
         "keys": ["BRAGG", "STOPBAND", "INTERFERENCE", "HZ"],
         "component": "Hz",
         "sim": et.Simulation(
-            size=(8.0, 6.0, 0.0), medium=SIO2, structures=layers, grid=et.UniformGrid(dl=0.025),
+            size=(8.0, 6.0, 0.0),
+            medium=SIO2,
+            structures=layers,
+            grid=et.UniformGrid(dl=0.025),
             sources=[et.PointSource(center=(-2.0, 0, 0), component="Hz", pulse=pulse())],
-            monitors=[field_monitor((8.0, 6.0, 0.0))], run_time=250e-15, backend="cuda",
+            monitors=[field_monitor((8.0, 6.0, 0.0))],
+            run_time=250e-15,
+            backend="cuda",
         ),
     }
 
@@ -116,8 +134,12 @@ def run_case(case):
         if solver.n % every == 0 or solver.n == solver.n_steps:
             solver.backend.synchronize()
             f = solver.fields()
-            energy = float(sum(np.sum(v.astype(np.float64) ** 2 / (377.0 if k != "Hz" else 1 / 377.0))
-                               for k, v in f.items()))
+            energy = float(
+                sum(
+                    np.sum(v.astype(np.float64) ** 2 / (377.0 if k != "Hz" else 1 / 377.0))
+                    for k, v in f.items()
+                )
+            )
             log.append([solver.n, energy, time.perf_counter() - start])
     solver.backend.synchronize()
     wall = time.perf_counter() - start
@@ -128,8 +150,10 @@ def run_case(case):
     data = data[::step, ::step]
     scale = float(np.abs(data).max())
     peak_log = max(e for _, e, _ in log) or 1.0
-    eps = [[float(b.center[0]), float(b.center[1]), float(b.size[0]), float(b.size[1]),
-            b.medium.n] for b in sim.structures]
+    eps = [
+        [float(b.center[0]), float(b.center[1]), float(b.size[0]), float(b.size[1]), b.medium.n]
+        for b in sim.structures
+    ]
     grid = result.grid
     return {
         "id": case["id"],
@@ -140,8 +164,12 @@ def run_case(case):
         "component": case["component"],
         "wavelength_um": WL,
         "shape": list(data.shape),
-        "extent_um": [float(field.x.min()), float(field.x.max()),
-                      float(field.y.min()), float(field.y.max())],
+        "extent_um": [
+            float(field.x.min()),
+            float(field.x.max()),
+            float(field.y.min()),
+            float(field.y.max()),
+        ],
         "re": quantize(data.real, scale),
         "im": quantize(data.imag, scale),
         "structures": eps,
