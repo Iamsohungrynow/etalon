@@ -261,3 +261,39 @@ These return `{code: "not_implemented", endpoint, arrives_in}`:
 - `GET /api/results/{id}/modes/{monitor}`: M1
 - `POST /api/modes/solve`: M1
 - `GET /api/validation/latest`, `POST /api/validation/run`: U4
+
+## 14. Outcome (2026-10-16)
+
+Built as planned: the server side in its own session (`claude/u1-server-af24bb`, merged here), the frontend in this one, with three subagents for the components (forms and tree, field canvas, chart and 3D viewport).
+
+| Check | Result |
+| --- | --- |
+| U1 Setup: the template renders; a wrong layer is visibly wrong | Playwright: the photonic-crystal template shows its tree, 3D view, estimate and slice. Hovering the slice centre reads εr = 12.08 (Si, the line defect). For `misplaced_strip.py` it reads 2.085 (SiO2): the strip is not where the script meant it |
+| U2 Run: progress ≥ 2 Hz, cancel within 2 s | Playwright: a real CPU run of the strip template from "New from template" streams progress at ≥ 2 Hz, live Hz frames, the log, finishes and opens its Results. Cancel shows "cancelled" within 2 s and keeps the data |
+| Field viewer, float32 over HTTP, canvas | Playwright: on the recorded photonic-crystal run, the hover value equals the stored array at that node (to 1e-4), and PNG and CSV export download |
+| pytest (whole repository) | 344 pass, 2 skipped (POSIX-only), as reported by the server session; tests/studio here: 274 pass |
+| vitest | 257 pass |
+| Playwright | 20 of 21 pass; P3 (open time) fails, see below |
+| ruff, mypy, ESLint, tsc | clean |
+
+**P3, open time, now over budget.** `etalon studio` to 50 rows measured 2.28–2.38 s over three runs at 35–50 % background CPU load, against the 2 s budget (U0: 1.65–1.68 s).
+- U1 adds about 0.25 s of start-up: the API contract's pydantic models (0.12 s), FastAPI building more routes, and uvicorn loading `websockets`.
+- The GPU probe now starts only once the server listens, so its CuPy import no longer competes with Studio's own start-up.
+- Later in the session the machine slowed about threefold for every process (`import numpy` 0.29 s → 1.04 s), and P3 read 5.9 s; that is not a Studio change.
+- The remaining large cost is `import etalon` itself (≈ 0.8 s here: NumPy and pydantic for `core`). U0 D1 said I would report this rather than make every name in `etalon/__init__.py` lazy, so this is a decision for you.
+
+Departures from the plan:
+- **The photonic-crystal template is air holes in silicon, not rods.** In 2D TE a rod lattice has no band gap; with holes, 99–100 % of the field stays in the line (server session).
+- **The first solver step takes 5–9 s.** The solver builds DFT phase tables for far more steps than a run needs. The fix is `f65c187` on `claude/gallant-wescoff-7b247c` (solver session), not merged here. Until it lands, Run shows "Preparing the solver…" for those seconds.
+- **Contract additions beyond §13** (server session):
+  - `Preview.grid` and the estimate are null for 3D scripts.
+  - A `no_simulation` script error.
+  - A row status reason `interrupted`.
+- **Response types are restored at one place.** openapi-fetch types responses as `Readable<T>`, which widens tuples to arrays, so `queries.ts` restores the generated component types where data comes in (`asSchema`). No type is written by hand.
+- **The Run screen keeps following its job** after the row's `job_id` clears. Otherwise it would drop the finished outcome; a vitest regression test covers this.
+- **Viewport details** (subagent):
+  - Overlapping 2D boxes are drawn slightly staggered, so the box the solver lets win shows on top.
+  - Boxes are clipped to the domain.
+  - Translucent boxes (the photonic crystal's air holes) cut themselves out of the slab.
+- **Colour scale and image share one range** (`resolveRange`), as the field-canvas subagent pointed out.
+- **Not done:** parameters (`et.param`, a core API), the shutoff threshold line on the energy chart, and S-parameters, modes and 3D (M1–M2).

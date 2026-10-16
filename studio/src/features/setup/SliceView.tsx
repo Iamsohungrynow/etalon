@@ -62,6 +62,7 @@ export function SliceView({ simulationId, sha, preview }: SliceViewProps) {
         extent={extent}
         colormap="viridis"
         scale="linear"
+        range={[header.min, header.max]}
         outlines={outlines}
         onHover={setHover}
         className="min-h-0 flex-1"

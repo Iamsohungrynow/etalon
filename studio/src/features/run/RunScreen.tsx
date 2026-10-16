@@ -30,10 +30,18 @@ function Run({ row }: { row: SimulationRow }) {
   const run = useRunSimulation();
   const cancel = useCancelJob();
   const spec = useSpec(row.id);
-  const [startedJobId, setStartedJobId] = useState<string | null>(null);
+  // The job this screen follows. It outlives the row's job_id, which turns null once the
+  // run ends, so the finished, cancelled or failed outcome stays on screen.
+  const [jobId, setJobId] = useState<string | null>(row.job_id ?? null);
+  const [rowJobId, setRowJobId] = useState(row.job_id ?? null);
+  if (row.job_id && row.job_id !== rowJobId) {
+    // A run started elsewhere (Setup, another tab): follow it. Adjusting state while
+    // rendering is React's pattern for reacting to a changed prop.
+    setRowJobId(row.job_id);
+    setJobId(row.job_id);
+  }
   const [attempt, setAttempt] = useState(0);
   const [confirming, setConfirming] = useState(false);
-  const jobId = startedJobId ?? row.job_id ?? null;
   const job = useJob(jobId, attempt);
   const latest = job.progress.at(-1);
   const done = job.done;
@@ -57,7 +65,7 @@ function Run({ row }: { row: SimulationRow }) {
   const start = () =>
     run.mutate(row.id, {
       onSuccess: (started) => {
-        setStartedJobId(started.job_id);
+        setJobId(started.job_id);
         setConfirming(false);
       },
     });

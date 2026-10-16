@@ -63,7 +63,7 @@ CuPy compiles etalon's kernels at run time and needs NVIDIA's CUDA headers and N
 
 ## Studio frontend — bundled into `etalon/studio/static` and shipped in the wheel
 
-Built by Vite from `studio/` (pnpm). 64 packages end up in the bundle.
+Built by Vite from `studio/` (pnpm). 76 packages end up in the bundle; the 3D viewport (three.js) and the charts (ECharts) load only with the screens that use them.
 
 | Package | Version | License |
 | --- | --- | --- |
@@ -74,7 +74,12 @@ Built by Vite from `studio/` (pnpm). 64 packages end up in the bundle.
 | i18next | 26.4.5 | MIT |
 | react-i18next | 17.0.17 | MIT |
 | openapi-fetch | 0.17.0 | MIT |
-| @radix-ui/react-select, -switch, -toggle-group, -slot | 2.4.1, 1.4.1, 1.2.1, 1.5.0 | MIT |
+| @radix-ui/react-select, -switch, -toggle-group, -slot, -tabs | 2.4.1, 1.4.1, 1.2.1, 1.5.0, 1.2.1 | MIT |
+| three | 0.186.1 | MIT (Setup's 3D viewport; OrbitControls from its examples) |
+| @react-three/fiber | 9.8.2 | MIT |
+| echarts | 6.1.0 | Apache-2.0 (tree-shaken: line charts only) |
+| zrender | 6.1.0 | BSD-3-Clause (ECharts' renderer) |
+| zustand | 5.0.15 | MIT (Setup's selection store) |
 | lucide-react | 1.57.0 | **ISC** (see below) |
 | @fontsource-variable/inter | 5.3.0 | **OFL-1.1** font files (see below) |
 | @fontsource-variable/jetbrains-mono | 5.3.0 | **OFL-1.1** font files (see below) |
@@ -90,7 +95,16 @@ Pulled in by the above, all MIT except one:
 - openapi-typescript-helpers
 - cookie, set-cookie-parser
 - csstype
+- its-fine, react-use-measure, suspend-react (@react-three/fiber)
+- buffer, base64-js (MIT) and **ieee754 (BSD-3-Clause)** (three.js tooling pulled in by @react-three/fiber)
 - **tslib: 0BSD** (see below)
+
+Colormap data, generated once from matplotlib 3.11.2 by `studio/scripts/gen_colormaps.py` into `studio/src/field/colormaps.ts` (256-entry RGB tables, shipped):
+
+| Colormap | Authors | License |
+| --- | --- | --- |
+| viridis | Stéfan van der Walt and Nathaniel Smith (with Eric Firing) | CC0-1.0 |
+| RdBu | Cynthia Brewer, Mark Harrower and The Pennsylvania State University (ColorBrewer) | Apache-2.0 |
 
 The fonts' OFL texts ship with the bundle as `static/licenses/inter-OFL.txt` and `static/licenses/jetbrains-mono-OFL.txt`, together with this file as `static/licenses/THIRD_PARTY.md`. Studio's Settings → About links to all three.
 
@@ -112,7 +126,7 @@ The fonts' OFL texts ship with the bundle as `static/licenses/inter-OFL.txt` and
 | eslint-plugin-react-hooks | 7.1.1 | MIT |
 | eslint-plugin-i18next | 6.1.5 | ISC |
 | globals | 17.13.0 | MIT |
-| @types/react, @types/react-dom, @types/node | 19.3.0, 19.3.0, 26.6.5 | MIT |
+| @types/react, @types/react-dom, @types/node, @types/three | 19.3.0, 19.3.0, 26.6.5, 0.186.0 | MIT |
 
 About 230 more packages come in transitively: MIT, ISC, Apache-2.0, BSD-2-Clause or BSD-3-Clause, except these:
 
@@ -153,3 +167,4 @@ Accepted for Studio on 2026-10-16 (`docs/plan-u0.md` §8, D3 and D4):
 5. **Inter and JetBrains Mono fonts (OFL-1.1)**: CLAUDE.md names both fonts. OFL lets software bundle the fonts provided the license travels with them, which it does (`static/licenses/`).
 6. **lucide-react (ISC)** and **tslib (0BSD)**: shipped. Both are permissive; spec §7–8 already allows ISC.
 7. **lightningcss (MPL-2.0), caniuse-lite (CC-BY-4.0), mdn-data and type-fest (CC0-1.0), lru-cache and minimatch (BlueOak-1.0.0), @csstools (MIT-0)**: build and test tools only, never shipped, like pathspec.
+8. **viridis (CC0-1.0)**: the colormap's numbers, shipped as data. Public-domain dedication; accepted with U1 (`docs/plan-u1.md`), like numpy's CC0 parts.

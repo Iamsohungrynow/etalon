@@ -41,6 +41,8 @@ export function KitchenSinkScreen() {
   const [selected, setSelected] = useState<string | null>("structure:0");
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const pattern = useMemo(() => cylindricalPattern(), []);
+  const magnitude = useMemo(() => pattern.map(Math.abs), [pattern]);
+  const stripOutline = useMemo(() => [{ x0: -4, x1: 4, y0: -0.25, y1: 0.25 }], []);
   const line = useMemo(() => lorentzian(), []);
   const nodes = useMemo(() => structureTree(TEST_PREVIEW, t), [t]);
   const rows = useMemo(
@@ -230,7 +232,7 @@ export function KitchenSinkScreen() {
             extent={[-4, 4, -3, 3]}
             colormap="RdBu"
             symmetric
-            outlines={[{ x0: -4, x1: 4, y0: -0.25, y1: 0.25 }]}
+            outlines={stripOutline}
             className="min-h-0 flex-1"
           />
           <div className="border-t border-rule-subtle px-3 py-1.5">
@@ -240,7 +242,7 @@ export function KitchenSinkScreen() {
         <div className="flex h-72 w-[28rem] flex-col border border-rule bg-bg">
           <FieldCanvas
             label={t("kitchen.fieldLabel")}
-            data={pattern.map(Math.abs)}
+            data={magnitude}
             shape={[160, 120]}
             extent={[-4, 4, -3, 3]}
             colormap="viridis"

@@ -38,6 +38,7 @@ export function LiveField({ job, outlines }: LiveFieldProps) {
           extent={header.extent as [number, number, number, number]}
           colormap="RdBu"
           symmetric
+          range={[-bound, bound]}
           outlines={outlines}
           className="min-h-0 flex-1"
         />

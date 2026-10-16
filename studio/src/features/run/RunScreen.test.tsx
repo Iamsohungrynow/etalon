@@ -103,4 +103,21 @@ describe("Run", () => {
     await userEvent.click(screen.getByRole("button", { name: "Reconnect" }));
     await waitFor(() => expect(FakeWebSocket.instances).toHaveLength(2));
   });
+
+  it("keeps the outcome on screen after the row's job_id clears", async () => {
+    const s = server(makeRow({ id: ID, path: "strip.py", status: "running", job_id: "job-1" }));
+    renderApp(`/sim/${ID}/run`, s);
+    await waitFor(() => expect(FakeWebSocket.instances).toHaveLength(1));
+    // The real server: once the job ends, the workspace row has no job_id any more.
+    s.state.workspace = {
+      folder: FOLDER,
+      simulations: [makeRow({ id: ID, path: "strip.py", status: "done", last_result_id: `${ID}~1` })],
+      truncated: false,
+    };
+    act(() => FakeWebSocket.last.receive({ type: "done", status: "done", result_id: `${ID}~1`, error: null, suggestion: null }));
+    expect(await screen.findByText("The run finished.")).toBeVisible();
+    await waitFor(() => expect(s.calls.filter((c) => c.path === "/api/workspace").length).toBeGreaterThan(1));
+    expect(screen.getByText("The run finished.")).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "This simulation is not running" })).toBeNull();
+  });
 });

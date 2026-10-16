@@ -12,6 +12,7 @@ import { Select } from "../../components/Select";
 import { Skeleton } from "../../components/Skeleton";
 import { Toggle } from "../../components/Toggle";
 import { Value } from "../../components/Value";
+import { resolveRange } from "../../field/render";
 import { saveBlob } from "./download";
 
 interface FieldsTabProps {
@@ -78,7 +79,8 @@ export function FieldsTab({ meta }: FieldsTabProps) {
     view = <LoadError error={field.error} onRetry={() => void field.refetch()} />;
   } else {
     const { header, data } = field.data;
-    const bound = Math.max(Math.abs(header.min), Math.abs(header.max)) || 1;
+    // One range for the image and its colour scale (log: smallest positive value).
+    const [lo, hi] = resolveRange(data, { scale, symmetric: signed });
     view = (
       <>
         <FieldCanvas
@@ -90,6 +92,7 @@ export function FieldsTab({ meta }: FieldsTabProps) {
           colormap={colormap}
           scale={scale}
           symmetric={signed}
+          range={[lo, hi]}
           outlines={outlines}
           onHover={setHover}
           className="min-h-0 flex-1"
@@ -97,8 +100,8 @@ export function FieldsTab({ meta }: FieldsTabProps) {
         <div className="flex items-center gap-4 border-t border-rule-subtle px-3 py-1.5 text-dense">
           <ColorScale
             colormap={colormap}
-            min={signed ? -bound : header.min}
-            max={signed ? bound : header.max}
+            min={lo}
+            max={hi}
             scale={scale}
             unit={quantity === "phase" ? "rad" : header.unit}
             label={t("results.fields.scale")}

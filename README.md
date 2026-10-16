@@ -18,7 +18,13 @@ Also checked: CPML reflection −91 dB at 12 layers; no late-time growth over 30
 
 Not yet: 3D, 2D TM, mode solver, S-parameters, subpixel smoothing, nonuniform grids, dispersive media, HDF5 output.
 
-**Studio U0 done (2026-10-16):** `etalon studio` opens the local web UI with the Workspace list and Settings, in English and 简体中文, dark or paper-light. Setup, Run and Results arrive with U1–U3 ([`docs/plan-u0.md`](docs/plan-u0.md), [`docs/ui-ux-spec.md`](docs/ui-ux-spec.md)).
+**Studio U0 + U1 (2026-10-16):** `etalon studio` opens the local web UI in English and 简体中文, dark or paper-light. On the M0 solver it runs end to end:
+- **Workspace**: every script with its last run, plus "New from template" (vacuum pulse, strip waveguide, sharp bend, photonic-crystal waveguide).
+- **Setup**: structure tree, a 3D view, the solver's own permittivity slice, the inspector, and the cost estimate with warnings.
+- **Run**: progress and the live field over a WebSocket, field energy, the log, cancel.
+- **Results**: field maps with hover values and PNG export, point spectra with CSV.
+
+S-parameters, modes and 3D arrive with solver M1–M2 ([`docs/plan-u0.md`](docs/plan-u0.md), [`docs/plan-u1.md`](docs/plan-u1.md), [`docs/ui-ux-spec.md`](docs/ui-ux-spec.md)).
 
 ## Example
 
@@ -54,7 +60,7 @@ The full script is [`examples/00_vacuum_pulse.py`](examples/00_vacuum_pulse.py).
 etalon studio path/to/your/scripts
 ```
 
-This opens `http://127.0.0.1:8787` in your browser and lists every `.py` simulation script in the folder. Studio listens on 127.0.0.1 only and makes no network requests; fonts and assets are bundled. `--port` picks another port, and `--no-browser` prints the link instead of opening it.
+This opens `http://127.0.0.1:8787` in your browser and lists every `.py` simulation script in the folder. Open one to see its Setup, run it, and read its results; runs happen in a separate process, on the GPU when there is one. Studio listens on 127.0.0.1 only and makes no network requests; fonts and assets are bundled. `--port` picks another port, and `--no-browser` prints the link instead of opening it.
 
 ## Install (development)
 

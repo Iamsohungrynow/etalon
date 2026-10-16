@@ -148,7 +148,9 @@ export function resolveRange(
  *
  * Pass `target` (e.g. from `ctx.createImageData`) to reuse its pixels; it must be
  * n_x × n_y. Cost per node: one packed-RGBA lookup and one 32-bit store, in
- * cache-friendly tiles for the transpose (a 2000 × 2000 array: tens of milliseconds).
+ * cache-friendly tiles for the transpose; log adds a table lookup (see paintLog). A
+ * 2000 × 2000 array takes ~25 ms linear and ~50 ms log, plus ~15 ms when the range
+ * has to be found from the data (pass the header's min/max as `range` to skip it).
  */
 export function renderToImageData(
   data: Float32Array,
@@ -197,6 +199,10 @@ export function renderToImageData(
 const TILE = 64;
 const POSITIVE_INFINITY_BITS = 0x7f800000;
 
+function lutSlot(t: number): number {
+  return t <= 0 ? 1 : t >= TOP ? COLORMAP_SIZE : (t + 1) | 0;
+}
+
 function paintLinear(
   data: Float32Array,
   nx: number,
@@ -216,6 +222,7 @@ function paintLinear(
         let src = i * ny + j0;
         let dst = (ny - 1 - j0) * nx + i;
         for (let j = j0; j < j1; j++, src++, dst -= nx) {
+          // lutSlot(t) written out: measured, the call costs this loop a third.
           const t = ((data[src] as number) - centre) * perUnit + HALF;
           pixels[dst] = lut[t <= 0 ? 1 : t >= TOP ? COLORMAP_SIZE : (t + 1) | 0] as number;
         }
@@ -225,10 +232,37 @@ function paintLinear(
 }
 
 /**
- * As paintLinear on log2 v, read from the float32 bits (IEEE 754: sign 1 bit, exponent
+ * The slot of log2 colouring for one float32 bit pattern (IEEE 754: sign 1 bit, exponent
  * 8, mantissa 23): v ≤ 0 and -Inf take the lowest colour, +Inf the highest, NaN (of
  * either sign) is transparent.
  */
+function logSlot(b: number, centre: number, perUnit: number): number {
+  let t: number;
+  if (b > 0 && b < POSITIVE_INFINITY_BITS) {
+    t = (log2Float32(b) - centre) * perUnit + HALF; // 0 < v < +Inf
+  } else if (b === POSITIVE_INFINITY_BITS) {
+    t = Infinity;
+  } else if ((b & 0x7fffffff) > POSITIVE_INFINITY_BITS) {
+    t = NaN; // exponent all ones, mantissa not 0: NaN, whatever its sign
+  } else {
+    t = -Infinity; // ±0, a negative value or -Inf: no logarithm
+  }
+  return lutSlot(t);
+}
+
+/*
+ * Most nodes of a log render skip the logarithm. The bit patterns sharing their top 17
+ * bits form a bucket of neighbouring values, 2^-8 ≈ 0.4 % wide. logSlot is monotonic in
+ * the pattern over the positive values and the lowest slot for every negative one, so
+ * when a bucket's first and last patterns get the same slot, every pattern in between
+ * does too and the node reads it from this table. Only buckets that straddle a bin edge
+ * (or mix +Inf and NaN) are marked -1 and computed per node. Same pixels as computing
+ * every node, about half the time on a large field; the table costs ~2 ms per render.
+ */
+const BUCKET_SHIFT = 15;
+const bucketSlots = new Int16Array(2 ** (32 - BUCKET_SHIFT));
+
+/** As paintLinear on log2 v, read from the float32 bits through bucketSlots. */
 function paintLog(
   bits: Uint32Array,
   nx: number,
@@ -240,6 +274,12 @@ function paintLog(
 ): void {
   const centre = (log2Low + log2High) / 2;
   const perUnit = COLORMAP_SIZE / (log2High - log2Low);
+  const bucketSize = 2 ** BUCKET_SHIFT;
+  for (let key = 0; key < bucketSlots.length; key++) {
+    const first = key * bucketSize;
+    const slot = logSlot(first, centre, perUnit);
+    bucketSlots[key] = slot === logSlot(first + bucketSize - 1, centre, perUnit) ? slot : -1;
+  }
   for (let i0 = 0; i0 < nx; i0 += TILE) {
     const i1 = Math.min(i0 + TILE, nx);
     for (let j0 = 0; j0 < ny; j0 += TILE) {
@@ -249,17 +289,8 @@ function paintLog(
         let dst = (ny - 1 - j0) * nx + i;
         for (let j = j0; j < j1; j++, src++, dst -= nx) {
           const b = bits[src] as number;
-          let t: number;
-          if (b > 0 && b < POSITIVE_INFINITY_BITS) {
-            t = (log2Float32(b) - centre) * perUnit + HALF; // 0 < v < +Inf
-          } else if (b === POSITIVE_INFINITY_BITS) {
-            t = Infinity;
-          } else if ((b & 0x7fffffff) > POSITIVE_INFINITY_BITS) {
-            t = NaN; // exponent all ones, mantissa not 0: NaN, whatever its sign
-          } else {
-            t = -Infinity; // ±0, a negative value or -Inf: no logarithm
-          }
-          pixels[dst] = lut[t <= 0 ? 1 : t >= TOP ? COLORMAP_SIZE : (t + 1) | 0] as number;
+          const slot = bucketSlots[b >>> BUCKET_SHIFT] as number;
+          pixels[dst] = lut[slot >= 0 ? slot : logSlot(b, centre, perUnit)] as number;
         }
       }
     }
