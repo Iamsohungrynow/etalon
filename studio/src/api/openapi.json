@@ -1,0 +1,3459 @@
+{
+  "components": {
+    "schemas": {
+      "AlreadyRunning": {
+        "description": "409 from ``POST /api/simulations/{id}/run``: one job at a time per simulation.",
+        "properties": {
+          "code": {
+            "const": "already_running",
+            "title": "Code",
+            "type": "string"
+          },
+          "job_id": {
+            "description": "The job that is running.",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "job_id"
+        ],
+        "title": "AlreadyRunning",
+        "type": "object"
+      },
+      "ApiError": {
+        "description": "Body of every error response the API sends itself (validation errors excepted).",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ApiError",
+        "type": "object"
+      },
+      "ArrayHeader": {
+        "description": "Any binary array header, told apart by ``kind``.",
+        "discriminator": {
+          "mapping": {
+            "field": "#/components/schemas/FieldHeader",
+            "permittivity": "#/components/schemas/PermittivityHeader",
+            "snapshot": "#/components/schemas/SnapshotHeader"
+          },
+          "propertyName": "kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PermittivityHeader"
+          },
+          {
+            "$ref": "#/components/schemas/FieldHeader"
+          },
+          {
+            "$ref": "#/components/schemas/SnapshotHeader"
+          }
+        ],
+        "title": "ArrayHeader"
+      },
+      "Background": {
+        "properties": {
+          "n": {
+            "title": "N",
+            "type": "number"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "n",
+          "name"
+        ],
+        "title": "Background",
+        "type": "object"
+      },
+      "Calibration": {
+        "description": "``POST /api/calibrate``: this machine's measured throughput, kept for ``Estimate``.",
+        "properties": {
+          "backend": {
+            "description": "``cpu`` or ``cuda:N``.",
+            "title": "Backend",
+            "type": "string"
+          },
+          "cells_per_s": {
+            "title": "Cells Per S",
+            "type": "number"
+          },
+          "device": {
+            "description": "CPU or GPU model.",
+            "title": "Device",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cells_per_s",
+          "backend",
+          "device"
+        ],
+        "title": "Calibration",
+        "type": "object"
+      },
+      "Cancelling": {
+        "description": "202 from ``DELETE /api/jobs/{job_id}``; the final status arrives on the WebSocket.",
+        "properties": {
+          "status": {
+            "const": "cancelling",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "Cancelling",
+        "type": "object"
+      },
+      "ComplexSeries": {
+        "properties": {
+          "im": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Im",
+            "type": "array"
+          },
+          "re": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Re",
+            "type": "array"
+          }
+        },
+        "required": [
+          "re",
+          "im"
+        ],
+        "title": "ComplexSeries",
+        "type": "object"
+      },
+      "CreateSimulation": {
+        "description": "Body of ``POST /api/simulations``.",
+        "properties": {
+          "name": {
+            "description": "File name without ``.py``: ``[A-Za-z0-9_-]{1,64}``; anything else is 422 ``bad_name``.",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Name",
+            "type": "string"
+          },
+          "template": {
+            "enum": [
+              "vacuum_pulse",
+              "strip_waveguide",
+              "sharp_bend",
+              "phc_waveguide"
+            ],
+            "title": "Template",
+            "type": "string"
+          }
+        },
+        "required": [
+          "template",
+          "name"
+        ],
+        "title": "CreateSimulation",
+        "type": "object"
+      },
+      "Device": {
+        "description": "A CUDA device as CuPy reports it.",
+        "properties": {
+          "compute_capability": {
+            "title": "Compute Capability",
+            "type": "string"
+          },
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "memory_bytes": {
+            "title": "Memory Bytes",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "name",
+          "memory_bytes",
+          "compute_capability"
+        ],
+        "title": "Device",
+        "type": "object"
+      },
+      "DoneMessage": {
+        "description": "Last message; the server closes the socket after it.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when the run left no monitor data (it failed before or while building the solver).",
+            "title": "Result Id"
+          },
+          "status": {
+            "enum": [
+              "done",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "suggestion": {
+            "anyOf": [
+              {
+                "enum": [
+                  "out_of_memory",
+                  "nan",
+                  "unsupported"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A recognised failure: out of memory, NaN fields, or a feature this build lacks.",
+            "title": "Suggestion"
+          },
+          "type": {
+            "const": "done",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "status",
+          "result_id",
+          "error",
+          "suggestion"
+        ],
+        "title": "DoneMessage",
+        "type": "object"
+      },
+      "Estimate": {
+        "description": "What a run will cost, before it starts.",
+        "properties": {
+          "basis": {
+            "description": "Where ``cells_per_s`` comes from: earlier runs on this machine, ``POST\n/api/calibrate``, or neither yet.",
+            "enum": [
+              "measured",
+              "calibration",
+              "unknown"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "cells": {
+            "description": "Cells, PML included.",
+            "title": "Cells",
+            "type": "integer"
+          },
+          "cells_per_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Cell updates per second the estimate assumes; null when ``basis`` is \"unknown\".",
+            "title": "Cells Per S"
+          },
+          "dt_s": {
+            "title": "Dt S",
+            "type": "number"
+          },
+          "memory_bytes": {
+            "description": "Fields, coefficients, CPML and monitor accumulators on the device.",
+            "title": "Memory Bytes",
+            "type": "integer"
+          },
+          "run_time_s": {
+            "description": "Simulated time, ``Simulation.run_time``.",
+            "title": "Run Time S",
+            "type": "number"
+          },
+          "seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated wall time; null when ``basis`` is \"unknown\".",
+            "title": "Seconds"
+          },
+          "steps": {
+            "title": "Steps",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cells",
+          "memory_bytes",
+          "steps",
+          "dt_s",
+          "run_time_s",
+          "seconds",
+          "cells_per_s",
+          "basis"
+        ],
+        "title": "Estimate",
+        "type": "object"
+      },
+      "FieldHeader": {
+        "description": "``GET /api/results/{id}/fields/{monitor}``: one quantity of one component at one λ.",
+        "properties": {
+          "component": {
+            "description": "Field component on whose nodes the data sits (Ex, Ey, Hz).",
+            "title": "Component",
+            "type": "string"
+          },
+          "extent": {
+            "description": "[x_first, x_last, y_first, y_last], µm, of the first and last nodes (uniform spacing).",
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Extent",
+            "type": "array"
+          },
+          "kind": {
+            "const": "field",
+            "default": "field",
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "description": "Largest finite value in the data (0 when there is none).",
+            "title": "Max",
+            "type": "number"
+          },
+          "min": {
+            "description": "Smallest finite value in the data (0 when there is none).",
+            "title": "Min",
+            "type": "number"
+          },
+          "quantity": {
+            "enum": [
+              "abs",
+              "real",
+              "imag",
+              "phase"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "shape": {
+            "description": "[n_x, n_y], the solver's own C order: axis 0 = x, axis 1 = y, y varying fastest.",
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Shape",
+            "type": "array"
+          },
+          "unit": {
+            "description": "Unit of the values, free text (e.g. \"1\", \"A/m\", \"V·s/m\", \"rad\").",
+            "title": "Unit",
+            "type": "string"
+          },
+          "wavelength_um": {
+            "title": "Wavelength Um",
+            "type": "number"
+          }
+        },
+        "required": [
+          "shape",
+          "extent",
+          "min",
+          "max",
+          "component",
+          "unit",
+          "quantity",
+          "wavelength_um"
+        ],
+        "title": "FieldHeader",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HistoryMessage": {
+        "description": "Second message on connect: everything so far.",
+        "properties": {
+          "log": {
+            "description": "The last 500 log lines.",
+            "items": {
+              "$ref": "#/components/schemas/LogLine"
+            },
+            "title": "Log",
+            "type": "array"
+          },
+          "progress": {
+            "description": "Every progress point so far.",
+            "items": {
+              "$ref": "#/components/schemas/Progress"
+            },
+            "title": "Progress",
+            "type": "array"
+          },
+          "type": {
+            "const": "history",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "progress",
+          "log"
+        ],
+        "title": "HistoryMessage",
+        "type": "object"
+      },
+      "JobError": {
+        "properties": {
+          "line": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Line in the script where it failed, if the traceback passes through the script.",
+            "title": "Line"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "traceback": {
+            "title": "Traceback",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "traceback",
+          "line"
+        ],
+        "title": "JobError",
+        "type": "object"
+      },
+      "JobMessage": {
+        "description": "A JSON text frame on ``WS /api/jobs/{job_id}``, told apart by ``type``.\n\nThe socket opens with subprotocols ``[\"etalon.v1\", \"token.<token>\"]`` and the\nserver accepts ``etalon.v1``. Binary frames are snapshots (§13.1, ``kind:\n\"snapshot\"``).",
+        "discriminator": {
+          "mapping": {
+            "done": "#/components/schemas/DoneMessage",
+            "history": "#/components/schemas/HistoryMessage",
+            "log": "#/components/schemas/LogLine",
+            "progress": "#/components/schemas/Progress",
+            "started": "#/components/schemas/StartedMessage"
+          },
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/StartedMessage"
+          },
+          {
+            "$ref": "#/components/schemas/HistoryMessage"
+          },
+          {
+            "$ref": "#/components/schemas/Progress"
+          },
+          {
+            "$ref": "#/components/schemas/LogLine"
+          },
+          {
+            "$ref": "#/components/schemas/DoneMessage"
+          }
+        ],
+        "title": "JobMessage"
+      },
+      "JobStarted": {
+        "description": "202 from ``POST /api/simulations/{id}/run``.",
+        "properties": {
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "result_id": {
+            "description": "Id the run's result will have; ``GET /api/results/{id}`` answers once the run has data.",
+            "title": "Result Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "result_id"
+        ],
+        "title": "JobStarted",
+        "type": "object"
+      },
+      "LogLine": {
+        "properties": {
+          "line": {
+            "title": "Line",
+            "type": "string"
+          },
+          "stream": {
+            "description": "What the script printed, or Studio's own runner lines (\"etalon\").",
+            "enum": [
+              "stdout",
+              "stderr",
+              "etalon"
+            ],
+            "title": "Stream",
+            "type": "string"
+          },
+          "type": {
+            "const": "log",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "stream",
+          "line"
+        ],
+        "title": "LogLine",
+        "type": "object"
+      },
+      "MemoryLargeParams": {
+        "properties": {
+          "bytes": {
+            "title": "Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "bytes"
+        ],
+        "title": "MemoryLargeParams",
+        "type": "object"
+      },
+      "MemoryLargeWarning": {
+        "description": "The run needs more than 4 GB.",
+        "properties": {
+          "code": {
+            "const": "memory_large",
+            "title": "Code",
+            "type": "string"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Preview id of the object the warning is about, if any.",
+            "title": "Object Id"
+          },
+          "params": {
+            "$ref": "#/components/schemas/MemoryLargeParams"
+          },
+          "severity": {
+            "description": "\"error\" disables Run; warnings never do.",
+            "enum": [
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "object_id",
+          "code",
+          "params"
+        ],
+        "title": "MemoryLargeWarning",
+        "type": "object"
+      },
+      "MeshCoarseParams": {
+        "properties": {
+          "cells_per_wavelength": {
+            "title": "Cells Per Wavelength",
+            "type": "number"
+          },
+          "medium": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name of the highest-index medium (null when it has none).",
+            "title": "Medium"
+          },
+          "minimum": {
+            "title": "Minimum",
+            "type": "number"
+          },
+          "wavelength_um": {
+            "description": "The shortest wavelength of interest (source band edge or monitor wavelength).",
+            "title": "Wavelength Um",
+            "type": "number"
+          }
+        },
+        "required": [
+          "cells_per_wavelength",
+          "minimum",
+          "medium",
+          "wavelength_um"
+        ],
+        "title": "MeshCoarseParams",
+        "type": "object"
+      },
+      "MeshCoarseWarning": {
+        "description": "Fewer than ``minimum`` cells per wavelength in the highest-index medium.",
+        "properties": {
+          "code": {
+            "const": "mesh_coarse",
+            "title": "Code",
+            "type": "string"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Preview id of the object the warning is about, if any.",
+            "title": "Object Id"
+          },
+          "params": {
+            "$ref": "#/components/schemas/MeshCoarseParams"
+          },
+          "severity": {
+            "description": "\"error\" disables Run; warnings never do.",
+            "enum": [
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "object_id",
+          "code",
+          "params"
+        ],
+        "title": "MeshCoarseWarning",
+        "type": "object"
+      },
+      "NearPmlParams": {
+        "properties": {
+          "cells": {
+            "description": "Whole cells between the object and the PML (0, 1 or 2).",
+            "title": "Cells",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cells"
+        ],
+        "title": "NearPmlParams",
+        "type": "object"
+      },
+      "NearPmlWarning": {
+        "description": "A source or monitor within 3 cells of the PML.",
+        "properties": {
+          "code": {
+            "const": "near_pml",
+            "title": "Code",
+            "type": "string"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Preview id of the object the warning is about, if any.",
+            "title": "Object Id"
+          },
+          "params": {
+            "$ref": "#/components/schemas/NearPmlParams"
+          },
+          "severity": {
+            "description": "\"error\" disables Run; warnings never do.",
+            "enum": [
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "object_id",
+          "code",
+          "params"
+        ],
+        "title": "NearPmlWarning",
+        "type": "object"
+      },
+      "NotImplementedBody": {
+        "description": "501 from an endpoint of ui-ux-spec §9 that a later milestone adds.",
+        "properties": {
+          "arrives_in": {
+            "description": "The milestone that adds it, e.g. \"M2\".",
+            "title": "Arrives In",
+            "type": "string"
+          },
+          "code": {
+            "const": "not_implemented",
+            "title": "Code",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The endpoint, e.g. ``GET /api/results/{id}/s-matrix``.",
+            "title": "Endpoint",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "endpoint",
+          "arrives_in"
+        ],
+        "title": "NotImplementedBody",
+        "type": "object"
+      },
+      "PermittivityHeader": {
+        "description": "``GET /api/simulations/{id}/permittivity``: the solver's own εr, PML included.",
+        "properties": {
+          "component": {
+            "description": "Field component on whose nodes the data sits (Ex, Ey, Hz).",
+            "title": "Component",
+            "type": "string"
+          },
+          "extent": {
+            "description": "[x_first, x_last, y_first, y_last], µm, of the first and last nodes (uniform spacing).",
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Extent",
+            "type": "array"
+          },
+          "kind": {
+            "const": "permittivity",
+            "default": "permittivity",
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "description": "Largest finite value in the data (0 when there is none).",
+            "title": "Max",
+            "type": "number"
+          },
+          "min": {
+            "description": "Smallest finite value in the data (0 when there is none).",
+            "title": "Min",
+            "type": "number"
+          },
+          "pml_cells": {
+            "description": "PML cells on each face; the region starts this many nodes in from each edge.",
+            "title": "Pml Cells",
+            "type": "integer"
+          },
+          "shape": {
+            "description": "[n_x, n_y], the solver's own C order: axis 0 = x, axis 1 = y, y varying fastest.",
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Shape",
+            "type": "array"
+          },
+          "unit": {
+            "description": "Unit of the values, free text (e.g. \"1\", \"A/m\", \"V·s/m\", \"rad\").",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "shape",
+          "extent",
+          "min",
+          "max",
+          "component",
+          "unit",
+          "pml_cells"
+        ],
+        "title": "PermittivityHeader",
+        "type": "object"
+      },
+      "PmlThinParams": {
+        "properties": {
+          "half_wavelength_um": {
+            "description": "Half the longest source wavelength in the background medium.",
+            "title": "Half Wavelength Um",
+            "type": "number"
+          },
+          "thickness_um": {
+            "title": "Thickness Um",
+            "type": "number"
+          }
+        },
+        "required": [
+          "thickness_um",
+          "half_wavelength_um"
+        ],
+        "title": "PmlThinParams",
+        "type": "object"
+      },
+      "PmlThinWarning": {
+        "description": "The PML is thinner than half a wavelength.",
+        "properties": {
+          "code": {
+            "const": "pml_thin",
+            "title": "Code",
+            "type": "string"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Preview id of the object the warning is about, if any.",
+            "title": "Object Id"
+          },
+          "params": {
+            "$ref": "#/components/schemas/PmlThinParams"
+          },
+          "severity": {
+            "description": "\"error\" disables Run; warnings never do.",
+            "enum": [
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "object_id",
+          "code",
+          "params"
+        ],
+        "title": "PmlThinWarning",
+        "type": "object"
+      },
+      "Preview": {
+        "description": "What the Setup screen draws: the simulation's objects, in µm.\n\nIds: ``medium:<i>``, ``structure:<i>``, ``source:<i>``, ``monitor:<name>``,\n``boundary``, ``grid``.",
+        "properties": {
+          "background": {
+            "$ref": "#/components/schemas/Background"
+          },
+          "grid": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreviewGrid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when this build of the solver cannot grid the simulation (3D, until M1)."
+          },
+          "is_2d": {
+            "title": "Is 2D",
+            "type": "boolean"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewMedium"
+            },
+            "title": "Media",
+            "type": "array"
+          },
+          "monitors": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewMonitor"
+            },
+            "title": "Monitors",
+            "type": "array"
+          },
+          "plane_z": {
+            "description": "The simulated plane of a 2D simulation (the region's centre z).",
+            "title": "Plane Z",
+            "type": "number"
+          },
+          "pml": {
+            "$ref": "#/components/schemas/PreviewPml"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "structures": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewStructure"
+            },
+            "title": "Structures",
+            "type": "array"
+          }
+        },
+        "required": [
+          "is_2d",
+          "plane_z",
+          "region",
+          "pml",
+          "background",
+          "media",
+          "structures",
+          "sources",
+          "monitors",
+          "grid"
+        ],
+        "title": "Preview",
+        "type": "object"
+      },
+      "PreviewGrid": {
+        "description": "The Yee grid the solver builds.",
+        "properties": {
+          "courant": {
+            "title": "Courant",
+            "type": "number"
+          },
+          "dt_s": {
+            "title": "Dt S",
+            "type": "number"
+          },
+          "dx": {
+            "description": "Cell size along x, µm.",
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "description": "Cell size along y, µm.",
+            "title": "Dy",
+            "type": "number"
+          },
+          "nx": {
+            "description": "Cells along x, PML included.",
+            "title": "Nx",
+            "type": "integer"
+          },
+          "ny": {
+            "description": "Cells along y, PML included.",
+            "title": "Ny",
+            "type": "integer"
+          },
+          "region_cells": {
+            "description": "[rx, ry]: cells inside the simulation region, PML excluded.",
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Region Cells",
+            "type": "array"
+          },
+          "steps": {
+            "title": "Steps",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dx",
+          "dy",
+          "nx",
+          "ny",
+          "region_cells",
+          "dt_s",
+          "courant",
+          "steps"
+        ],
+        "title": "PreviewGrid",
+        "type": "object"
+      },
+      "PreviewMedium": {
+        "description": "A medium used by at least one structure, in order of first use.",
+        "properties": {
+          "id": {
+            "description": "``medium:<i>``.",
+            "title": "Id",
+            "type": "string"
+          },
+          "n": {
+            "title": "N",
+            "type": "number"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "n"
+        ],
+        "title": "PreviewMedium",
+        "type": "object"
+      },
+      "PreviewMonitor": {
+        "properties": {
+          "center": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Center",
+            "type": "array"
+          },
+          "components": {
+            "description": "The components it records (all the simulation computes when the script names none).",
+            "items": {
+              "enum": [
+                "Ex",
+                "Ey",
+                "Ez",
+                "Hx",
+                "Hy",
+                "Hz"
+              ],
+              "type": "string"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "geometry": {
+            "description": "How many axes have size > 0: 0 point, 1 line, 2 plane, 3 box.",
+            "enum": [
+              "point",
+              "line",
+              "plane",
+              "box"
+            ],
+            "title": "Geometry",
+            "type": "string"
+          },
+          "id": {
+            "description": "``monitor:<name>``.",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "DFTMonitor",
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "size": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Size",
+            "type": "array"
+          },
+          "wavelengths_um": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Wavelengths Um",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "geometry",
+          "center",
+          "size",
+          "wavelengths_um",
+          "components"
+        ],
+        "title": "PreviewMonitor",
+        "type": "object"
+      },
+      "PreviewPml": {
+        "properties": {
+          "layers": {
+            "description": "PML cells on each face.",
+            "title": "Layers",
+            "type": "integer"
+          },
+          "thickness": {
+            "description": "[tx, ty, tz], µm, of the PML on each face of each axis (0 along a flat axis).",
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Thickness",
+            "type": "array"
+          }
+        },
+        "required": [
+          "layers",
+          "thickness"
+        ],
+        "title": "PreviewPml",
+        "type": "object"
+      },
+      "PreviewSource": {
+        "properties": {
+          "bandwidth_um": {
+            "description": "Full width of the pulse's wavelength band.",
+            "title": "Bandwidth Um",
+            "type": "number"
+          },
+          "center": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Center",
+            "type": "array"
+          },
+          "component": {
+            "enum": [
+              "Ex",
+              "Ey",
+              "Ez",
+              "Hx",
+              "Hy",
+              "Hz"
+            ],
+            "title": "Component",
+            "type": "string"
+          },
+          "id": {
+            "description": "``source:<i>``, i = index in ``Simulation.sources``.",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "PointSource",
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "wavelength_um": {
+            "description": "Centre wavelength of the pulse.",
+            "title": "Wavelength Um",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "center",
+          "component",
+          "wavelength_um",
+          "bandwidth_um"
+        ],
+        "title": "PreviewSource",
+        "type": "object"
+      },
+      "PreviewStructure": {
+        "properties": {
+          "center": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Center",
+            "type": "array"
+          },
+          "id": {
+            "description": "``structure:<i>``, i = index in ``Simulation.structures``.",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "Box",
+            "title": "Kind",
+            "type": "string"
+          },
+          "medium_id": {
+            "description": "Id of its entry in ``media``.",
+            "title": "Medium Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "size": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Size",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "center",
+          "size",
+          "medium_id"
+        ],
+        "title": "PreviewStructure",
+        "type": "object"
+      },
+      "Progress": {
+        "description": "At most 4 per second while the solver steps.",
+        "properties": {
+          "cells_per_s": {
+            "title": "Cells Per S",
+            "type": "number"
+          },
+          "elapsed_s": {
+            "description": "Wall time since stepping began.",
+            "title": "Elapsed S",
+            "type": "number"
+          },
+          "energy": {
+            "description": "Discrete field energy W = ½ΔxΔy Σ(ε0 εr E² + μ0 H²), absolute, J/m in 2D.",
+            "title": "Energy",
+            "type": "number"
+          },
+          "eta_s": {
+            "title": "Eta S",
+            "type": "number"
+          },
+          "step": {
+            "title": "Step",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "type": {
+            "const": "progress",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "step",
+          "total",
+          "elapsed_s",
+          "eta_s",
+          "cells_per_s",
+          "energy"
+        ],
+        "title": "Progress",
+        "type": "object"
+      },
+      "Region": {
+        "properties": {
+          "center": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Center",
+            "type": "array"
+          },
+          "size": {
+            "description": "size_z = 0 for a 2D simulation; the PML is outside this box.",
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Size",
+            "type": "array"
+          }
+        },
+        "required": [
+          "center",
+          "size"
+        ],
+        "title": "Region",
+        "type": "object"
+      },
+      "ResultGrid": {
+        "properties": {
+          "dx": {
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "title": "Dy",
+            "type": "number"
+          },
+          "nx": {
+            "title": "Nx",
+            "type": "integer"
+          },
+          "ny": {
+            "title": "Ny",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "nx",
+          "ny",
+          "dx",
+          "dy"
+        ],
+        "title": "ResultGrid",
+        "type": "object"
+      },
+      "ResultMeta": {
+        "description": "``GET /api/results/{id}``; the id is ``<simulation id>~<UTC stamp>``.",
+        "properties": {
+          "backend": {
+            "description": "``cpu`` or ``cuda:N``.",
+            "title": "Backend",
+            "type": "string"
+          },
+          "cells_per_s": {
+            "title": "Cells Per S",
+            "type": "number"
+          },
+          "device": {
+            "title": "Device",
+            "type": "string"
+          },
+          "dt_s": {
+            "title": "Dt S",
+            "type": "number"
+          },
+          "etalon_version": {
+            "title": "Etalon Version",
+            "type": "string"
+          },
+          "finished_at": {
+            "format": "date-time",
+            "title": "Finished At",
+            "type": "string"
+          },
+          "grid": {
+            "$ref": "#/components/schemas/ResultGrid"
+          },
+          "monitors": {
+            "items": {
+              "$ref": "#/components/schemas/ResultMonitor"
+            },
+            "title": "Monitors",
+            "type": "array"
+          },
+          "precision": {
+            "enum": [
+              "single",
+              "double"
+            ],
+            "title": "Precision",
+            "type": "string"
+          },
+          "preview": {
+            "$ref": "#/components/schemas/Preview",
+            "description": "The Preview at run time, for outline overlays."
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string"
+          },
+          "script_sha256": {
+            "title": "Script Sha256",
+            "type": "string"
+          },
+          "simulation_id": {
+            "title": "Simulation Id",
+            "type": "string"
+          },
+          "stale": {
+            "description": "The script changed after this run.",
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "description": "\"failed\" here means the script failed after ``run()`` returned, so the data exists.",
+            "enum": [
+              "done",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "steps": {
+            "description": "Time steps actually taken (fewer than planned when cancelled).",
+            "title": "Steps",
+            "type": "integer"
+          },
+          "title": {
+            "description": "The script's title now (its docstring's first line, as in the workspace row).",
+            "title": "Title",
+            "type": "string"
+          },
+          "wall_time_s": {
+            "title": "Wall Time S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "result_id",
+          "simulation_id",
+          "title",
+          "status",
+          "started_at",
+          "finished_at",
+          "etalon_version",
+          "backend",
+          "device",
+          "precision",
+          "grid",
+          "steps",
+          "dt_s",
+          "wall_time_s",
+          "cells_per_s",
+          "script_sha256",
+          "stale",
+          "preview",
+          "monitors"
+        ],
+        "title": "ResultMeta",
+        "type": "object"
+      },
+      "ResultMonitor": {
+        "properties": {
+          "components": {
+            "items": {
+              "enum": [
+                "Ex",
+                "Ey",
+                "Ez",
+                "Hx",
+                "Hy",
+                "Hz"
+              ],
+              "type": "string"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "extent": {
+            "anyOf": [
+              {
+                "maxItems": 4,
+                "minItems": 4,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Extent of the first listed component's nodes, µm; null for a point monitor.",
+            "title": "Extent"
+          },
+          "geometry": {
+            "enum": [
+              "point",
+              "line",
+              "plane",
+              "box"
+            ],
+            "title": "Geometry",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "shape": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "[n_x, n_y] of the first listed component's nodes (each component's own shape is in\nits field header); null for a point monitor.",
+            "title": "Shape"
+          },
+          "wavelengths_um": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Wavelengths Um",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "geometry",
+          "components",
+          "wavelengths_um",
+          "shape",
+          "extent"
+        ],
+        "title": "ResultMonitor",
+        "type": "object"
+      },
+      "ScriptError": {
+        "description": "422 from the spec, permittivity and similar routes: the script did not give a Simulation.\n\n``script_error``: it raised (``traceback``, and ``line`` in the script when the\ntraceback passes through it); ``script_timeout``: it ran 60 s without reaching\n``run()``; ``no_simulation``: it finished without calling ``run()`` and\ndefines no module-level Simulation.",
+        "properties": {
+          "code": {
+            "enum": [
+              "script_error",
+              "script_timeout",
+              "no_simulation"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "line": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Line in the script where it failed, if the traceback passes through the script.",
+            "title": "Line"
+          },
+          "message": {
+            "description": "The exception's own message (Python's words, not Studio's).",
+            "title": "Message",
+            "type": "string"
+          },
+          "stdout_tail": {
+            "title": "Stdout Tail",
+            "type": "string"
+          },
+          "traceback": {
+            "title": "Traceback",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "traceback",
+          "line",
+          "stdout_tail"
+        ],
+        "title": "ScriptError",
+        "type": "object"
+      },
+      "SimulationRow": {
+        "description": "One simulation script and the state of its last run.",
+        "properties": {
+          "backend": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "``cuda:0``, ``cpu``, ...",
+            "title": "Backend"
+          },
+          "cells": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cells"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "GPU or CPU model the run used.",
+            "title": "Device"
+          },
+          "eta_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eta S"
+          },
+          "id": {
+            "description": "12 hex characters of sha256(relative POSIX path): stable while the file is not moved.",
+            "title": "Id",
+            "type": "string"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The job running this script in this Studio server, if any (``WS /api/jobs/{job_id}``).",
+            "title": "Job Id"
+          },
+          "last_result_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "``<id>~<UTC stamp>`` of the newest run that left monitor data.",
+            "title": "Last Result Id"
+          },
+          "last_run": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the last run finished (or started, while it runs).",
+            "title": "Last Run"
+          },
+          "modified": {
+            "description": "Last modification time of the script.",
+            "format": "date-time",
+            "title": "Modified",
+            "type": "string"
+          },
+          "name": {
+            "description": "File name, e.g. ``ring_r10_g200.py``.",
+            "title": "Name",
+            "type": "string"
+          },
+          "path": {
+            "description": "Path relative to the workspace folder, with ``/`` separators.",
+            "title": "Path",
+            "type": "string"
+          },
+          "stale": {
+            "default": false,
+            "description": "The script changed after its last finished run.",
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "running",
+              "done",
+              "failed",
+              "cancelled",
+              "unknown"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "status_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unreadable",
+                  "invalid_json",
+                  "invalid_fields",
+                  "interrupted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the status is \"unknown\"; \"interrupted\": the sidecar says running, but its run\nstopped sending heartbeats (Studio or the machine stopped during the run).",
+            "title": "Status Reason"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "title": {
+            "description": "The script's title: its docstring's first line up to the first \":\" (see\n``script_title``), e.g. \"Strip waveguide\".",
+            "title": "Title",
+            "type": "string"
+          },
+          "total_steps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Steps"
+          },
+          "wall_time_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wall Time S"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "title",
+          "path",
+          "status",
+          "modified"
+        ],
+        "title": "SimulationRow",
+        "type": "object"
+      },
+      "SimulationSpec": {
+        "description": "``GET /api/simulations/{id}/spec``: what the script builds, captured at ``run()``.",
+        "properties": {
+          "estimate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Estimate"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when the solver cannot grid the simulation (see ``preview.grid``)."
+          },
+          "preview": {
+            "$ref": "#/components/schemas/Preview"
+          },
+          "script_sha256": {
+            "title": "Script Sha256",
+            "type": "string"
+          },
+          "spec": {
+            "additionalProperties": true,
+            "description": "``Simulation.model_dump(mode=\"json\")``, free-form.",
+            "title": "Spec",
+            "type": "object"
+          },
+          "stdout_tail": {
+            "description": "The last lines the script printed (stdout and stderr) while it was captured.",
+            "title": "Stdout Tail",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "script_sha256",
+          "spec",
+          "preview",
+          "estimate",
+          "warnings",
+          "stdout_tail"
+        ],
+        "title": "SimulationSpec",
+        "type": "object"
+      },
+      "SnapshotHeader": {
+        "description": "A live Hz snapshot (WebSocket binary frame), downsampled to at most 256 × 256.\n\n``extent`` describes the downsampled nodes.",
+        "properties": {
+          "component": {
+            "description": "Field component on whose nodes the data sits (Ex, Ey, Hz).",
+            "title": "Component",
+            "type": "string"
+          },
+          "extent": {
+            "description": "[x_first, x_last, y_first, y_last], µm, of the first and last nodes (uniform spacing).",
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Extent",
+            "type": "array"
+          },
+          "kind": {
+            "const": "snapshot",
+            "default": "snapshot",
+            "title": "Kind",
+            "type": "string"
+          },
+          "max": {
+            "description": "Largest finite value in the data (0 when there is none).",
+            "title": "Max",
+            "type": "number"
+          },
+          "min": {
+            "description": "Smallest finite value in the data (0 when there is none).",
+            "title": "Min",
+            "type": "number"
+          },
+          "shape": {
+            "description": "[n_x, n_y], the solver's own C order: axis 0 = x, axis 1 = y, y varying fastest.",
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Shape",
+            "type": "array"
+          },
+          "step": {
+            "description": "Time step the snapshot was taken at.",
+            "title": "Step",
+            "type": "integer"
+          },
+          "unit": {
+            "description": "Unit of the values, free text (e.g. \"1\", \"A/m\", \"V·s/m\", \"rad\").",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "shape",
+          "extent",
+          "min",
+          "max",
+          "component",
+          "unit",
+          "step"
+        ],
+        "title": "SnapshotHeader",
+        "type": "object"
+      },
+      "Spectra": {
+        "description": "``GET /api/results/{id}/spectra/{monitor}``: a point monitor's complex spectrum.",
+        "properties": {
+          "components": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ComplexSeries"
+            },
+            "description": "Keyed by component (Ex, Ey, Hz); time convention exp(−iωt).",
+            "title": "Components",
+            "type": "object"
+          },
+          "monitor": {
+            "title": "Monitor",
+            "type": "string"
+          },
+          "wavelengths_um": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Wavelengths Um",
+            "type": "array"
+          }
+        },
+        "required": [
+          "monitor",
+          "wavelengths_um",
+          "components"
+        ],
+        "title": "Spectra",
+        "type": "object"
+      },
+      "StartedMessage": {
+        "description": "First message on ``WS /api/jobs/{job_id}``, once the solver is built.\n\nAbsent when the script fails before it reaches ``run()``: then ``history``\nand ``done`` follow directly.",
+        "properties": {
+          "backend": {
+            "description": "``cpu`` or ``cuda:N``.",
+            "title": "Backend",
+            "type": "string"
+          },
+          "device": {
+            "title": "Device",
+            "type": "string"
+          },
+          "dt_s": {
+            "title": "Dt S",
+            "type": "number"
+          },
+          "grid": {
+            "description": "[nx, ny], PML included.",
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Grid",
+            "type": "array"
+          },
+          "snapshots": {
+            "description": "Whether binary snapshot frames will follow.",
+            "title": "Snapshots",
+            "type": "boolean"
+          },
+          "total": {
+            "description": "Time steps the run will take.",
+            "title": "Total",
+            "type": "integer"
+          },
+          "type": {
+            "const": "started",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "total",
+          "grid",
+          "dt_s",
+          "backend",
+          "device",
+          "snapshots"
+        ],
+        "title": "StartedMessage",
+        "type": "object"
+      },
+      "StudioSettings": {
+        "additionalProperties": false,
+        "description": "What the Settings screen edits (ui-ux-spec §5.7).",
+        "properties": {
+          "backend": {
+            "default": "auto",
+            "description": "Backend for runs: \"auto\" (a CUDA device if there is one, else the CPU), \"cpu\" or \"cuda:N\".",
+            "pattern": "^(auto|cpu|cuda:\\d+)$",
+            "title": "Backend",
+            "type": "string"
+          },
+          "language": {
+            "default": "system",
+            "description": "UI language; \"system\" follows the browser.",
+            "enum": [
+              "system",
+              "en",
+              "zh-CN"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "live_snapshots": {
+            "default": false,
+            "description": "Show a live low-resolution field while a simulation runs.",
+            "title": "Live Snapshots",
+            "type": "boolean"
+          },
+          "theme": {
+            "default": "dark",
+            "description": "Colour theme; \"system\" follows the OS.",
+            "enum": [
+              "dark",
+              "light",
+              "system"
+            ],
+            "title": "Theme",
+            "type": "string"
+          },
+          "units": {
+            "default": "um",
+            "description": "Length unit for display.",
+            "enum": [
+              "um",
+              "nm"
+            ],
+            "title": "Units",
+            "type": "string"
+          },
+          "workspace": {
+            "description": "Absolute path of the folder whose scripts Studio lists.",
+            "title": "Workspace",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace"
+        ],
+        "title": "StudioSettings",
+        "type": "object"
+      },
+      "SystemInfo": {
+        "description": "What this machine and this install are.",
+        "properties": {
+          "cupy_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The error message when ``cupy_status`` is \"error\".",
+            "title": "Cupy Detail"
+          },
+          "cupy_status": {
+            "description": "\"missing\": CuPy is not installed (``etalon[gpu]``); \"error\": CuPy or the driver failed.",
+            "enum": [
+              "ok",
+              "missing",
+              "error"
+            ],
+            "title": "Cupy Status",
+            "type": "string"
+          },
+          "devices": {
+            "description": "Empty when there is no usable CUDA device; runs then use the CPU backend.",
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            },
+            "title": "Devices",
+            "type": "array"
+          },
+          "etalon_version": {
+            "title": "Etalon Version",
+            "type": "string"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          },
+          "python_version": {
+            "title": "Python Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "etalon_version",
+          "python_version",
+          "platform",
+          "cupy_status",
+          "cupy_detail",
+          "devices"
+        ],
+        "title": "SystemInfo",
+        "type": "object"
+      },
+      "Template": {
+        "description": "A template ``POST /api/simulations`` can copy; title and description are i18n keys.",
+        "properties": {
+          "file": {
+            "description": "File name of the template script, e.g. ``phc_waveguide.py``.",
+            "title": "File",
+            "type": "string"
+          },
+          "id": {
+            "enum": [
+              "vacuum_pulse",
+              "strip_waveguide",
+              "sharp_bend",
+              "phc_waveguide"
+            ],
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "file"
+        ],
+        "title": "Template",
+        "type": "object"
+      },
+      "UnsupportedParams": {
+        "properties": {
+          "feature": {
+            "description": "\"3d\": size_z > 0; \"tm\": a 2D TM component (Ez, Hx, Hy) in a source or monitor.",
+            "enum": [
+              "3d",
+              "tm"
+            ],
+            "title": "Feature",
+            "type": "string"
+          },
+          "milestone": {
+            "description": "Solver milestone that adds it, e.g. \"M1\".",
+            "title": "Milestone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "feature",
+          "milestone"
+        ],
+        "title": "UnsupportedParams",
+        "type": "object"
+      },
+      "UnsupportedWarning": {
+        "description": "Something this build of the solver cannot run; always an error.",
+        "properties": {
+          "code": {
+            "const": "unsupported",
+            "title": "Code",
+            "type": "string"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Preview id of the object the warning is about, if any.",
+            "title": "Object Id"
+          },
+          "params": {
+            "$ref": "#/components/schemas/UnsupportedParams"
+          },
+          "severity": {
+            "description": "\"error\" disables Run; warnings never do.",
+            "enum": [
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "object_id",
+          "code",
+          "params"
+        ],
+        "title": "UnsupportedWarning",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Warning": {
+        "description": "A Setup warning: a code, its numbers, and the object it is about (§13.2).",
+        "discriminator": {
+          "mapping": {
+            "memory_large": "#/components/schemas/MemoryLargeWarning",
+            "mesh_coarse": "#/components/schemas/MeshCoarseWarning",
+            "near_pml": "#/components/schemas/NearPmlWarning",
+            "pml_thin": "#/components/schemas/PmlThinWarning",
+            "unsupported": "#/components/schemas/UnsupportedWarning"
+          },
+          "propertyName": "code"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeshCoarseWarning"
+          },
+          {
+            "$ref": "#/components/schemas/PmlThinWarning"
+          },
+          {
+            "$ref": "#/components/schemas/NearPmlWarning"
+          },
+          {
+            "$ref": "#/components/schemas/MemoryLargeWarning"
+          },
+          {
+            "$ref": "#/components/schemas/UnsupportedWarning"
+          }
+        ],
+        "title": "Warning"
+      },
+      "Workspace": {
+        "description": "``GET /api/workspace``.",
+        "properties": {
+          "folder": {
+            "description": "Absolute path of the workspace folder, in the platform's own notation.",
+            "title": "Folder",
+            "type": "string"
+          },
+          "simulations": {
+            "description": "Sorted by path, case-insensitively.",
+            "items": {
+              "$ref": "#/components/schemas/SimulationRow"
+            },
+            "title": "Simulations",
+            "type": "array"
+          },
+          "truncated": {
+            "description": "True when the scan stopped at MAX_SCRIPTS scripts.",
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "folder",
+          "simulations",
+          "truncated"
+        ],
+        "title": "Workspace",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "etalon Studio",
+    "version": "0.0.1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/calibrate": {
+      "post": {
+        "operationId": "calibrate",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Calibration"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "the measurement failed (code calibration_failed)"
+          }
+        },
+        "summary": "Calibrate"
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "delete": {
+        "operationId": "cancelJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cancelling"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no job with this id"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "the job has already finished (code not_running)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Job"
+      }
+    },
+    "/api/modes/solve": {
+      "post": {
+        "operationId": "solveModes",
+        "responses": {
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotImplementedBody"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Solve Modes"
+      }
+    },
+    "/api/results/{id}": {
+      "get": {
+        "operationId": "getResult",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultMeta"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no result with this id, or the run left no data (code no_result)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "the run is still running (code running)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Result"
+      }
+    },
+    "/api/results/{id}/fields/{monitor}": {
+      "get": {
+        "operationId": "getField",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "monitor",
+            "required": true,
+            "schema": {
+              "title": "Monitor",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Component"
+            }
+          },
+          {
+            "in": "query",
+            "name": "quantity",
+            "required": false,
+            "schema": {
+              "default": "abs",
+              "enum": [
+                "abs",
+                "real",
+                "imag",
+                "phase"
+              ],
+              "title": "Quantity",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "wavelength_index",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Wavelength Index",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "A binary float32 array with a JSON header (plan-u1 §13.1)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no such result, monitor, component or wavelength index"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "a point monitor has no field slice (code point_monitor)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Field"
+      }
+    },
+    "/api/results/{id}/modes/{monitor}": {
+      "get": {
+        "operationId": "getModes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "monitor",
+            "required": true,
+            "schema": {
+              "title": "Monitor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotImplementedBody"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Modes"
+      }
+    },
+    "/api/results/{id}/s-matrix": {
+      "get": {
+        "operationId": "getSMatrix",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotImplementedBody"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get S Matrix"
+      }
+    },
+    "/api/results/{id}/spectra/{monitor}": {
+      "get": {
+        "operationId": "getSpectra",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "monitor",
+            "required": true,
+            "schema": {
+              "title": "Monitor",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spectra"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no such result or monitor"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "only point monitors have spectra (code not_point_monitor)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Spectra"
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "operationId": "getSettings",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudioSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings"
+      },
+      "put": {
+        "operationId": "putSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudioSettings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudioSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Settings"
+      }
+    },
+    "/api/simulations": {
+      "post": {
+        "operationId": "createSimulation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSimulation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationRow"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "a script of that name exists (code exists)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "the name is not [A-Za-z0-9_-]{1,64} (code bad_name)"
+          }
+        },
+        "summary": "Create Simulation"
+      }
+    },
+    "/api/simulations/{id}/open": {
+      "post": {
+        "operationId": "openInEditor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no simulation with this id"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "the OS could not open an editor (code open_failed)"
+          }
+        },
+        "summary": "Open In Editor"
+      }
+    },
+    "/api/simulations/{id}/params": {
+      "put": {
+        "operationId": "putParams",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotImplementedBody"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Put Params"
+      }
+    },
+    "/api/simulations/{id}/permittivity": {
+      "get": {
+        "operationId": "getPermittivity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component",
+            "required": false,
+            "schema": {
+              "default": "Ex",
+              "enum": [
+                "Ex",
+                "Ey"
+              ],
+              "title": "Component",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "A binary float32 array with a JSON header (plan-u1 §13.1)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no simulation with this id"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "the solver cannot grid this simulation yet (code unsupported)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptError"
+                }
+              }
+            },
+            "description": "the script failed, timed out or defines no Simulation"
+          }
+        },
+        "summary": "Get Permittivity"
+      }
+    },
+    "/api/simulations/{id}/run": {
+      "post": {
+        "operationId": "runSimulation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStarted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no simulation with this id"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlreadyRunning"
+                }
+              }
+            },
+            "description": "a job is already running this simulation"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Simulation"
+      }
+    },
+    "/api/simulations/{id}/spec": {
+      "get": {
+        "operationId": "getSpec",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationSpec"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "no simulation with this id"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptError"
+                }
+              }
+            },
+            "description": "the script failed, timed out or defines no Simulation"
+          }
+        },
+        "summary": "Get Spec"
+      }
+    },
+    "/api/system": {
+      "get": {
+        "operationId": "getSystem",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get System"
+      }
+    },
+    "/api/templates": {
+      "get": {
+        "operationId": "listTemplates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Template"
+                  },
+                  "title": "Response Listtemplates",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Templates"
+      }
+    },
+    "/api/validation/latest": {
+      "get": {
+        "operationId": "getValidationLatest",
+        "responses": {
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotImplementedBody"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Validation Latest"
+      }
+    },
+    "/api/validation/run": {
+      "post": {
+        "operationId": "runValidation",
+        "responses": {
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotImplementedBody"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Run Validation"
+      }
+    },
+    "/api/workspace": {
+      "get": {
+        "operationId": "getWorkspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "workspace folder not found"
+          }
+        },
+        "summary": "Get Workspace"
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/*
+ * Tailwind sees only the tokens: the default palette, radii, shadows and type scale
+ * are cleared, so a class like `bg-blue-500` or `rounded` simply does not exist.
+ */
+@theme {
+  --color-*: initial;
+  --color-bg: var(--et-bg);
+  --color-surface: var(--et-surface);
+  --color-raised: var(--et-raised);
+  --color-hover: var(--et-hover);
+  --color-rule: var(--et-rule);
+  --color-rule-subtle: var(--et-rule-subtle);
+  --color-control: var(--et-control);
+  --color-text: var(--et-text);
+  --color-secondary: var(--et-secondary);
+  --color-muted: var(--et-muted);
+  --color-accent: var(--et-accent);
+  --color-accent-ink: var(--et-accent-ink);
+  --color-on-accent: var(--et-on-accent);
+  --color-ok: var(--et-ok);
+  --color-warn: var(--et-warn);
+  --color-error: var(--et-error);
+
+  --font-*: initial;
+  --font-sans:
+    "Inter Variable", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  --font-mono:
+    "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, "Microsoft YaHei",
+    monospace;
+
+  --text-*: initial;
+  --text-micro: 10px;
+  --text-micro--line-height: 1.4;
+  --text-label: 11px;
+  --text-label--line-height: 1.4;
+  --text-dense: 12px;
+  --text-dense--line-height: 1.45;
+  --text-body: 13px;
+  --text-body--line-height: 1.5;
+  --text-h3: 15px;
+  --text-h3--line-height: 1.35;
+  --text-h2: 18px;
+  --text-h2--line-height: 1.3;
+  --text-h1: 22px;
+  --text-h1--line-height: 1.25;
+
+  --radius-*: initial;
+  --shadow-*: initial;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background: var(--et-bg);
+    color: var(--et-text);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--et-accent-ink);
+    outline-offset: 1px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0ms !important;
+      animation-duration: 0ms !important;
+    }
+  }
+}
+
+/* Uppercase mono panel labels and table headers, from the visual reference. */
+@utility micro-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--et-muted);
+}
+
+/* A link whose click area covers its positioned ancestor (a table row). */
+@utility stretched-link {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+}
+
+@utility spectrum-stripe {
+  background-image: var(--et-spectrum);
+}
+
+@utility motion {
+  transition-duration: var(--et-motion);
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}

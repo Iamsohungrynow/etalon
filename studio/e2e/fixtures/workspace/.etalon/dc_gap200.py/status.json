@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "started_at": "2026-10-15T09:00:00Z",
+  "finished_at": "2026-10-15T09:00:05Z",
+  "backend": "cuda:0"
+}

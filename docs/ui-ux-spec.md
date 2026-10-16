@@ -186,18 +186,28 @@ Backend (auto / cuda:N / cpu) with detected devices and memory; workspace folder
 
 **Tone**: instrument, not SaaS. Think oscilloscope UI redrawn by a careful typographer.
 
-| Token | Dark (default) | Light |
+Dark is the default. Light is the "paper" palette of the visual reference (`docs/design/studio-reference.html`); System follows the OS. Decided 2026-10-16 in `docs/plan-u0.md` §2 and §8 (D12); every text colour reaches WCAG AA (4.5:1) on bg, surface and raised, and every control outline 3:1.
+
+| Token | Dark (default) | Light (paper) |
 | --- | --- | --- |
-| bg / surface / raised | #0E1013 / #15181D / #1C2027 | #FAFAF8 / #FFFFFF / #F1F1EE |
-| border | #2A2F38 | #D9D9D4 |
-| text / secondary / muted | #ECEEF2 / #A6ADBA / #6B7380 | #15181D / #4B5260 / #8A909B |
-| accent (one) | #E8B34A (etalon amber — a cavity resonance) | #B8862B |
-| ok / warn / error | #4CC38A / #E8B34A / #E5484D | same hues, darker |
+| bg / surface / raised | #0E1013 / #15181D / #1C2027 | #F2F0E4 / #FFFFFF / #E8E6D9 |
+| hover | #1C2027 | #E4E2D6 |
+| rule (panel and section rules) / rule-subtle (table rows) | #3A414C / #2A2F38 | #000000 / #C9C7BA |
+| control (input and button outlines) | #6B7380 | #000000 |
+| text / secondary / muted | #ECEEF2 / #A6ADBA / #858D9A | #000000 / #444444 / #666666 |
+| accent (one) | #E8B34A (etalon amber — a cavity resonance) | #B8862B, as a fill only |
+| accent-ink (accent-coloured text, focus ring) / on-accent | #E8B34A / #0E1013 | #7A5A12 / #000000 |
+| ok / warn / error | #4CC38A / #E8B34A / #EC5D62 | #166B3C / #7E5C14 / #B3261E |
+| spectrum | `#ff0000 → #ff7f00 → #ffff00 → #00ff00 → #0000ff → #4b0082 → #8f00ff`, a static 2 px stripe under the header only; never behind text or data | same |
 | field colormaps | viridis (magnitude), RdBu (signed), both from matplotlib definitions | same |
 | categorical (spectra) | Okabe–Ito 8-colour palette | same |
 
-- Type: **Inter** for UI (13 px body, 12 px dense tables, 15/18/22 px headings), **JetBrains Mono** for all numerics and the log. Both bundled, no runtime font fetch; CJK fallback to system fonts (`PingFang SC`, `Microsoft YaHei`, `Noto Sans CJK SC`).
-- Spacing scale 4 px; radii 4 px (controls) / 6 px (panels); 1 px borders, no shadows except the command palette.
+Accent and warn share one hex; status is always a glyph plus a word, so colour is never the only signal.
+
+- Type: **Inter** for UI (13 px body, 12 px dense tables, 15/18/22 px headings at weight 600), **JetBrains Mono** for all numerics and the log. Panel labels and table headers are uppercase JetBrains Mono micro-labels (10–11 px, 0.08em tracking, muted). Both fonts bundled (OFL-1.1, licence texts shipped alongside), no runtime font fetch; CJK fallback to system fonts (`PingFang SC`, `Microsoft YaHei`, `Noto Sans CJK SC`).
+- Spacing scale 4 px; square corners (radius 0) on controls and panels; 1 px rules, no shadows except the command palette.
+- Chrome: a 40 px header with navigation, the spectrum stripe, and a static 24 px status strip at the bottom with real values only (backend and device, workspace, simulation count, etalon version, offline). Nothing in the chrome animates.
+- Cursor: crosshair only over canvases and the viewport; default cursors everywhere else.
 - Icons: Lucide (ISC licence), 16 px.
 - Density: one density only (compact). No "comfortable" mode in MVP.
 - Motion: 120 ms ease-out on panels; none on charts except crosshair.
@@ -224,7 +234,7 @@ studio/                      pnpm workspace, TypeScript strict
 ```
 
 - Stack: React 19 · TypeScript · Vite · Tailwind v4 · Radix UI primitives · react-three-fiber + drei · Apache ECharts · zustand · TanStack Query · react-router · i18next · vitest · Playwright. All MIT/Apache/ISC licensed; recorded in `THIRD_PARTY.md` like the Python side.
-- Build output (`studio/dist`) is copied into `etalon/studio/static/` at wheel build time and served by FastAPI; the Python package has no Node dependency at runtime.
+- Vite builds straight into `etalon/studio/static/` (gitignored), which FastAPI serves and the wheel includes; a hatch build hook refuses to build a wheel without it. The Python package has no Node dependency at runtime.
 - Binary data path: field arrays go over `GET /api/results/{id}/fields/...` as `application/octet-stream` (header JSON with shape, dtype, extent, then raw float32); never JSON arrays.
 - No global CSS beyond tokens; no CSS-in-JS runtime.
 
@@ -246,8 +256,16 @@ studio/                      pnpm workspace, TypeScript strict
 | `POST /api/modes/solve` | cross-section → modes (used by the Mode Solver page) |
 | `GET /api/validation/latest` · `POST /api/validation/run` | benchmark report |
 | `GET/PUT /api/settings` | settings |
+| `GET /api/system` | etalon and Python versions, platform, CuPy status, detected CUDA devices (added in U0) |
+| `GET /api/templates` | the templates `POST /api/simulations` can copy (added in U1) |
+| `GET /api/simulations/{id}/permittivity` | binary float32 εr on the solver's nodes, for the Setup slice view (added in U1) |
+| `POST /api/simulations/{id}/open` | open the script in the OS default editor (added in U1) |
+| `POST /api/calibrate` | measure this machine's cells/s for the time estimate (added in U1) |
+| `GET /api/results/{id}/spectra/{monitor}` | a point monitor's complex spectrum (added in U1) |
 
-Server binds to `127.0.0.1` only. CORS off. A random token in the URL on first launch (`?token=`) guards against other local processes.
+Exact request and response shapes, the binary array layout and the WebSocket messages: `docs/plan-u1.md` §13. Endpoints not implemented yet answer 501 with the endpoint's name and the milestone that adds it.
+
+Server binds to `127.0.0.1` only. CORS off. A random token, created on first launch and kept in the user's config directory, arrives once in the URL (`?token=`); the SPA keeps it in `localStorage` and sends it as `X-Etalon-Token` on every API request, which guards against other local processes. The server also rejects any `Host` other than `127.0.0.1:<port>` / `localhost:<port>` (DNS rebinding), serves `index.html` with a `default-src 'self'` Content-Security-Policy, and disables FastAPI's `/docs`, `/redoc` and native OpenTelemetry.
 
 ## 10. Milestones (interleaved with solver milestones in `mvp-spec.md`)
 
@@ -268,4 +286,4 @@ Geometry editing / CAD · script editor (we open the user's editor) · multi-use
 - [ ] Parameter declaration API: `et.param("radius", 10.0, unit="um")` vs reading module-level constants with a decorator? (recommend explicit `et.param`)
 - [ ] Should Setup execute the user script in-process (fast) or subprocess (safe)? (recommend subprocess, cached by file hash)
 - [ ] Time estimate calibration: a one-time 10-second benchmark on first launch, or learn from each run? (both — first launch seeds, runs refine)
-- [ ] Do we ship a light theme in MVP or dark only? (dark + system; light can lag)
+- [x] Do we ship a light theme in MVP or dark only? Dark default + paper light + system, from U0 (`docs/plan-u0.md` §2).

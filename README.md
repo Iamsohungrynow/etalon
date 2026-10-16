@@ -16,7 +16,15 @@ M0 acceptance, measured with `bench/validate_m0.py` (report: [`bench/results/m0_
 
 Also checked: CPML reflection −91 dB at 12 layers; no late-time growth over 30 000 steps; absolute field vs the analytic 2D Green's function within 0.4 % at 26 cells/λ, converging at second order.
 
-Not yet: 3D, 2D TM, mode solver, S-parameters, subpixel smoothing, nonuniform grids, dispersive media, HDF5 output, Studio.
+Not yet: 3D, 2D TM, mode solver, S-parameters, subpixel smoothing, nonuniform grids, dispersive media, HDF5 output.
+
+**Studio U0 + U1 (2026-10-16):** `etalon studio` opens the local web UI in English and 简体中文, dark or paper-light. On the M0 solver it runs end to end:
+- **Workspace**: every script with its last run, plus "New from template" (vacuum pulse, strip waveguide, sharp bend, photonic-crystal waveguide).
+- **Setup**: structure tree, a 3D view, the solver's own permittivity slice, the inspector, and the cost estimate with warnings.
+- **Run**: progress and the live field over a WebSocket, field energy, the log, cancel.
+- **Results**: field maps with hover values and PNG export, point spectra with CSV.
+
+S-parameters, modes and 3D arrive with solver M1–M2 ([`docs/plan-u0.md`](docs/plan-u0.md), [`docs/plan-u1.md`](docs/plan-u1.md), [`docs/ui-ux-spec.md`](docs/ui-ux-spec.md)).
 
 ## Example
 
@@ -46,6 +54,14 @@ hz = result["probe"]["Hz"]  # complex xarray.DataArray over wavelength
 
 The full script is [`examples/00_vacuum_pulse.py`](examples/00_vacuum_pulse.py). Units: lengths in µm, time in s, frequency in Hz; time convention exp(−iωt).
 
+## Studio
+
+```bash
+etalon studio path/to/your/scripts
+```
+
+This opens `http://127.0.0.1:8787` in your browser and lists every `.py` simulation script in the folder. Open one to see its Setup, run it, and read its results; runs happen in a separate process, on the GPU when there is one. Studio listens on 127.0.0.1 only and makes no network requests; fonts and assets are bundled. `--port` picks another port, and `--no-browser` prints the link instead of opening it.
+
 ## Install (development)
 
 ```bash
@@ -60,6 +76,20 @@ uv pip install "cupy-cuda12x[ctk]"
 
 Without a GPU, everything runs on the NumPy backend and gives the same results.
 
+Studio's frontend needs Node 20+ and pnpm, only to build it:
+
+```bash
+pnpm --dir studio install
+pnpm --dir studio build
+```
+
+`build` writes the bundle to `etalon/studio/static/`, which `etalon studio` serves and the wheel ships. For frontend work, run `etalon studio --no-browser` and `pnpm --dir studio dev`, then open `http://127.0.0.1:5173/?token=<the token it printed>`. After changing an API model, regenerate the frontend types:
+
+```bash
+uv run python -m etalon.studio.openapi
+pnpm --dir studio gen:api
+```
+
 ## Tests
 
 ```bash
@@ -69,6 +99,9 @@ uv run pytest
 - `tests/unit`: fast checks on CPU.
 - `tests/validation`: physics against analytic results, CPU, about 40 s.
 - `tests/gpu`: CUDA vs NumPy equality and throughput; skipped without CuPy.
+- `tests/studio`: the Studio server and command.
+
+Studio's frontend has its own checks: `pnpm --dir studio check` (types, lint, vitest), and `pnpm --dir studio e2e` (Playwright against the built SPA; run `pnpm --dir studio build` and, once, `pnpm --dir studio exec playwright install chromium` first).
 
 The full suite takes about a minute.
 
