@@ -298,3 +298,88 @@ Departures from the plan:
 - **Colour scale and image share one range** (`resolveRange`), as the field-canvas subagent pointed out.
 - **The 3D view was blank on first load** until the window resized: it framed its camera before the canvas had a size. Found by looking, since the test only checked that the canvas existed. Fixed (`viewport/SizeWatcher.tsx`), and the Setup test now checks that the viewport actually draws.
 - **Not done:** parameters (`et.param`, a core API), the shutoff threshold line on the energy chart, and S-parameters, modes and 3D (M1–M2).
+
+### 14.1 P3 open time: findings, proposal and outcome (2026-10-16, side session)
+
+Measured on the Windows dev machine (Ryzen 5 5600), with the CPU load checked before each series. "Moderate load" below is 5 busy processes on 12 threads (30–40 % CPU). Each option was prototyped in a scratch copy of the package and timed against the others in alternation; nothing is committed.
+
+**Where the time goes.** P3 at baseline (a874fda) runs 1.84–2.02 s idle and 2.11–2.23 s under moderate load. Almost all of it is the server: spawn → GET / answers in ≈1.6 s idle. The browser part is ≈0.2 s (0.3 s inside P3 with its route guards): JS is loaded by 26 ms and `/api/workspace` is requested at ≈110 ms. In-process, idle:
+
+| Step | Time |
+| --- | --- |
+| Process start (venv launcher + interpreter) | 0.06 s |
+| `import etalon` (`etalon/__init__.py`): NumPy 0.24 s, pydantic 0.3 s, `core` models ≈0.2 s | 0.69 s |
+| Studio + FastAPI + uvicorn on top. FastAPI 0.30 s, uvicorn 0.17 s, contract models 0.12 s; `routes`, `jobs` → `runner` also import NumPy and `etalon.core` | 0.61 s |
+| `create_app`: 75 ms is FastAPI importing `pydantic.v1` to reject v1 models | 0.09 s |
+| uvicorn until listening (loads its h11 and WebSocket protocol modules) | 0.10 s |
+
+FastAPI + uvicorn alone take 0.93 s in a fresh process here. Nothing Studio does can go below that floor.
+
+**Options** (median of 9 interleaved runs, idle; P3 = three runs each):
+
+| Variant | Listening | `/api/workspace` answered | First U1 request answered | P3 idle | P3 moderate load |
+| --- | --- | --- | --- | --- | --- |
+| Baseline | 1.56 s | 1.64 s | 1.65 s | 1.84–2.02 s | 2.11–2.23 s |
+| (a) all names in `etalon/__init__.py` lazy | 1.61 s | 1.67 s | 1.69 s | — | — |
+| (b) quick app first, U1 routes added after listening | 1.53 s | 1.63 s | 1.69 s | — | — |
+| (a) + (b), full app built at once after listening | 1.26 s | 1.45 s | 1.68 s | — | — |
+| **(a) + (b), full app built after the first `/api/workspace`** | 1.24 s | 1.33 s | 1.66 s | 1.52–1.70 s (and one 2.42 s during a load spike) | **1.71–1.76 s** |
+| … + (c) skip FastAPI's `pydantic.v1` import | 1.19 s | 1.27 s | 1.68 s | 1.56–1.77 s | 1.63–1.64 s |
+
+- **(a) alone saves nothing for Studio.** pydantic is needed by FastAPI anyway. NumPy and `etalon.core` still load through Studio's U1 modules: `routes.py`, `binary.py`, `results.py`, `preview.py`, and `jobs.py` via `runner.py`.
+- **(b) alone saves 0.07 s.** `import etalon.studio.*` runs `etalon/__init__.py` first, so NumPy and `core` still load before listening.
+- **Together they save ≈0.3 s.** Start-up then imports only FastAPI, uvicorn, pydantic and Studio's U0 modules.
+- **The full app must not be built while the Workspace loads.** Its imports hold the GIL and slow `/api/workspace` by ≈0.1 s. Built after the first Workspace response, it costs the first screen nothing. A U1 request still answers at the same time as today, because it waits for the build.
+
+**Ruled out:**
+- **The P3 poll is not the problem.** In Python, a refused connection to 127.0.0.1 takes 2 s on Windows: the SYN is retried every 0.5 s. Node's `fetch`, which P3 uses, fails at once (libuv), so P3 measures the server correctly.
+- **Moving the GPU probe later** makes no difference to the browser part.
+- **The SPA is not the bottleneck.** Its heavy screens are already split off.
+- **Serving the first page without FastAPI** would mean a second, hand-written copy of the Workspace endpoints. That is not worth 0.1–0.2 s.
+
+**Proposal: (a) + (b), with the build after the first Workspace response; (c) held in reserve.**
+1. **(a) `etalon/__init__.py`, a shared solver file, so it needs your OK.** Every public name loads on first use (PEP 562), extending D1's lazy `analysis`/`SimulationResult` to all names. `import etalon` becomes ≈0.03 s, and the first `et.Simulation` pays the same 0.5 s as before. `TYPE_CHECKING` imports keep mypy and IDE completion. `__dir__`, `__all__` and `from etalon import *` keep working. The public API is unchanged. One cost: a broken NumPy install shows its error at the first `et.<name>`, not at `import etalon`. `tests/unit/test_package_import.py` gains two tests: `import etalon` loads no NumPy and no `etalon.core`, and every name in `__all__` resolves. The solver branch (`f65c187`) does not touch this file.
+2. **(b) inside `etalon/studio/`.** `create_app(state)` stays the full app, for tests and `openapi.py`. `create_app(state, full=False)` registers only U0's routes and the SPA. `launch.py` serves both through a small ASGI wrapper:
+   - The wrapper answers `/`, the assets, `/api/workspace`, `/api/settings` and `/api/system` from the quick app.
+   - It builds the full app in a thread after the first `/api/workspace` response, or as soon as any other `/api` or WebSocket request arrives. That request waits for the build.
+   - If the build fails, waiting requests get a 500 with an error code, never a hang.
+   - `StudioState` creates `JobManager` and `SpecCache` on first use, so the quick app needs neither.
+   - Studio has no lifespan handlers (`JobManager` uses `atexit`), so serving lifespan from the quick app changes nothing.
+3. **Tests.**
+   - `tests/studio/test_cli.py` S14 gets a second guard: after `import etalon.cli, etalon.studio.launch` and building the quick app, `sys.modules` holds no `numpy` and no `etalon.core`, `etalon.studio.routes`, `contract` or `runner`.
+   - New tests for the wrapper: a U1 request before the build waits and succeeds; the first Workspace response starts the build; a failing build answers 500.
+   - Then P3 three times, idle and under the 5-process load.
+4. **(c) only if (a) + (b) is not enough.** Setting `sys.modules["pydantic.v1"] = None` in `launch.py` makes FastAPI's v1 check take its `ImportError` path and saves ≈0.08 s. It relies on a FastAPI internal and affects the whole server process, so I would not add it unless P3 still fails.
+
+**Outcome: (b) is done (`50ef7e6`), and (a) after your OK (next commit).**
+- **What changed.** `etalon studio` listens with the quick app and builds the full app after the first Workspace response, as proposed in point 2. Nothing outside `etalon/studio/` and `tests/studio/` changed.
+- **P3 with (b) alone** is better than the prototypes predicted. Building all of U1's routes and response models was costing more at start-up than the per-step numbers above suggest.
+
+| P3 (three or four runs each) | Low load (3–20 %) | Moderate load (5 busy processes) |
+| --- | --- | --- |
+| Baseline (a874fda) | 1.84–2.02 s | 2.11–2.23 s |
+| (b), committed | 1.70–1.92 s (one 2.24 s, the first run after the pytest suite) | 1.88–1.93 s |
+| (a) + (b), prototype | 1.52–1.70 s | 1.71–1.76 s |
+
+- **Checks.**
+  - pytest: 362 pass, 2 skipped.
+  - Playwright: 21 of 21 pass.
+  - vitest: 257 pass.
+  - ruff and mypy: clean.
+  - Note: the GPU job test needs `cupy-cuda12x[ctk]` in the venv (CUDA headers and NVRTC). A fresh `uv sync --extra gpu` does not install them.
+- **What's left.** P3 now passes under moderate load by 0.07–0.12 s. (a) would widen that margin to ≈0.25 s. It is a 60-line change to `etalon/__init__.py` plus two tests in `tests/unit/test_package_import.py`, ready to apply when you say so.
+
+**(a) applied (approved 2026-10-16).**
+- **What changed.** `etalon/__init__.py` loads every public name on first use. `tests/unit/test_package_import.py` checks two things: `import etalon` loads no NumPy and no `etalon.*` module, and every name in `__all__` resolves, including through `from etalon import *`. The Studio guard in `tests/studio/test_cli.py` now also asserts that start-up loads no NumPy and no `etalon.core`.
+- **Checks.**
+  - pytest: 364 pass, 2 skipped.
+  - Playwright: 21 of 21 pass.
+  - ruff and mypy (whole package): clean.
+
+| P3 with (a) + (b) | Result |
+| --- | --- |
+| Idle (10 %) | 1.59, 1.64, 1.79 s |
+| 51 % load | 1.87, 1.97, 1.99 s |
+| ≈60–67 % load, alternating with (b) alone | (a) + (b): 1.86, 1.86, 1.89, 2.04, 2.07, 2.29 s; (b) alone: 2.15, 2.24, 2.26, 2.34, 3.22, 3.23 s |
+
+In the alternating runs, (a) answers about 0.3 s sooner on the server side. Above about 55 % background load, P3 can still exceed 2 s. What remains is FastAPI, pydantic and uvicorn (≈0.93 s idle), plus the browser.

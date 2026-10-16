@@ -14,6 +14,7 @@ from etalon import __version__
 from etalon.studio.security import load_or_create_token
 from etalon.studio.server import STATIC_DIR, StudioState, create_app
 from etalon.studio.settings import SettingsStore, config_dir
+from etalon.studio.staged import StagedApp
 from etalon.studio.system import GpuProbe
 
 HOST = "127.0.0.1"
@@ -89,9 +90,9 @@ def prepare(folder: Path, port: int) -> tuple[uvicorn.Server, socket.socket, str
         port=port,
         config_dir=directory,
     )
-    config = uvicorn.Config(
-        create_app(state), host=HOST, port=port, log_level="warning", access_log=False
-    )
+    # The quick app answers the Workspace; the full one is built once that has its rows.
+    app = StagedApp(create_app(state, full=False), build_full=lambda: create_app(state))
+    config = uvicorn.Config(app, host=HOST, port=port, log_level="warning", access_log=False)
     url = f"http://{HOST}:{port}/?token={token}"
     if not (STATIC_DIR / "index.html").is_file():
         say("note: the Studio web interface is not built; run `pnpm --dir studio build`.")

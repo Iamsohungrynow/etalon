@@ -1,4 +1,8 @@
-"""`import etalon` stays light: SciPy and xarray load only when analysis or results are used."""
+"""`import etalon` stays light: every public name loads on first use (plan-u1 §14.1).
+
+SciPy and xarray load only when analysis or results are used; NumPy and the models
+only when a name such as `et.Simulation` is.
+"""
 
 import json
 import subprocess
@@ -54,3 +58,30 @@ def test_unknown_attribute_is_an_attribute_error():
         assert "no_such_name" in str(error)
     else:
         raise AssertionError("expected AttributeError")
+
+
+def test_import_etalon_loads_no_numpy_or_core():
+    """plan-u1 §14.1: every public name loads on first use, so `etalon studio` starts fast."""
+    probe = (
+        "import json, sys\nimport etalon\n"
+        "print(json.dumps(sorted(m for m in sys.modules"
+        " if m.split('.')[0] == 'numpy' or m.startswith('etalon.'))))"
+    )
+    out = subprocess.run(
+        [sys.executable, "-c", probe], capture_output=True, text=True, check=True, timeout=120
+    )
+    assert json.loads(out.stdout.strip().splitlines()[-1]) == []
+
+
+def test_every_public_name_resolves():
+    import etalon as et
+
+    for name in et.__all__:
+        assert getattr(et, name) is not None, name
+    namespace: dict[str, object] = {}
+    exec("from etalon import *", namespace)
+    assert set(et.__all__) <= set(namespace)
+    assert set(et.__all__) <= set(dir(et))
+    from etalon.core.simulation import Simulation
+
+    assert et.Simulation is Simulation
