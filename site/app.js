@@ -1,6 +1,6 @@
 /* etalon landing page. Everything drawn here comes from site/data.json, which
    site/build_data.py writes from real etalon runs: fields are the solver's DFT
-   at one wavelength, animated as Re[F·exp(−iωt)]; the run log is what the run
+   at one wavelength, animated as Re[F·exp(−iωt)] on white; the run log is what the run
    recorded; the validation curve is the M0 measurement. Nothing is random. */
 "use strict";
 
@@ -227,7 +227,7 @@ function render(e) {
   startLog(sim.log);
 }
 
-/* ---------- Field: Re[F·exp(−iωt)] on the black void ---------- */
+/* ---------- Field: Re[F·exp(−iωt)] on white ---------- */
 function startField(sim) {
   const [ny, nx] = sim.shape;
   const re = decode(sim.re);
@@ -242,9 +242,10 @@ function startField(sim) {
 }
 
 function colour(v) {
-  // diverging on black: positive warm (spectrum orange), negative cool (spectrum blue)
+  // diverging with a white midpoint: positive red, negative blue (RdBu ends)
   const g = Math.pow(Math.min(1, Math.abs(v)), 0.55);
-  return v >= 0 ? [255 * g, 127 * g, 20 * g] : [40 * g, 120 * g, 255 * g];
+  const [r, gr, b] = v >= 0 ? [178, 24, 43] : [33, 102, 172];
+  return [255 + (r - 255) * g, 255 + (gr - 255) * g, 255 + (b - 255) * g];
 }
 
 function drawField(phase) {
@@ -275,7 +276,7 @@ function drawField(phase) {
     canvas.height = Math.round(size);
   }
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   const scale = Math.min(canvas.width / f.nx, canvas.height / f.ny);
   const w = f.nx * scale;
@@ -289,7 +290,7 @@ function drawField(phase) {
   const [x0, x1, y0, y1] = f.sim.extent_um;
   const px = (x) => ox + ((x - x0) / (x1 - x0)) * w;
   const py = (y) => oy + h - ((y - y0) / (y1 - y0)) * h;
-  ctx.strokeStyle = "rgba(255,255,255,0.55)";
+  ctx.strokeStyle = "rgba(0,0,0,0.55)";
   ctx.lineWidth = Math.max(1, (window.devicePixelRatio || 1));
   ctx.save();
   ctx.beginPath();
@@ -301,7 +302,7 @@ function drawField(phase) {
   ctx.restore();
 
   // reticle, as in the reference
-  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.strokeStyle = "rgba(0,0,0,0.12)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(canvas.width / 2 + 0.5, 0);
@@ -318,20 +319,20 @@ function loop(now) {
 
 function clearCanvas(canvas) {
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 /* ---------- Figure ---------- */
 function axes(ctx, W, H) {
-  ctx.strokeStyle = "rgba(255,255,255,0.45)";
+  ctx.strokeStyle = "rgba(0,0,0,0.45)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(30.5, 10);
   ctx.lineTo(30.5, H - 24.5);
   ctx.lineTo(W - 10, H - 24.5);
   ctx.stroke();
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = "#000";
   ctx.font = "10px 'JetBrains Mono', ui-monospace, monospace";
 }
 
@@ -342,7 +343,7 @@ function drawCut(cut) {
   const ctx = c.getContext("2d");
   clearCanvas(c);
   axes(ctx, W, H);
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle = "#000";
   ctx.lineWidth = 2;
   ctx.beginPath();
   cut.forEach((v, i) => {
@@ -374,7 +375,7 @@ function drawDispersion() {
   const vMax = 1.0005;
   const px = (n) => 31 + ((Math.log(n) - Math.log(nMin)) / (Math.log(nMax) - Math.log(nMin))) * (W - 45);
   const py = (v) => H - 25 - ((v - vMin) / (vMax - vMin)) * (H - 40);
-  const colours = { 0: "#ff7f00", 45: "#5fa8ff" };
+  const colours = { 0: "#eb6834", 45: "#2a78d6" };
   for (const [angle, d] of Object.entries(curves)) {
     ctx.strokeStyle = colours[angle];
     ctx.lineWidth = 2;
@@ -388,14 +389,14 @@ function drawDispersion() {
       ctx.fill();
     });
   }
-  ctx.strokeStyle = "rgba(255,255,255,0.35)";
+  ctx.strokeStyle = "rgba(0,0,0,0.35)";
   ctx.setLineDash([3, 3]);
   ctx.beginPath();
   ctx.moveTo(31, py(1));
   ctx.lineTo(W - 10, py(1));
   ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = "#000";
   ctx.textAlign = "left";
   ctx.fillText("v/c = 1", 36, py(1) - 4);
   ctx.fillText("0°", px(nMin) + 4, py(curves["0"].theory[0]) - 6);

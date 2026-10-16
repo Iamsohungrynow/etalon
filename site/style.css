@@ -1,7 +1,7 @@
 /* etalon landing page. Layout and visual language follow docs/design/studio-reference.html:
    one fixed full-height frame, four ticker bands in the outer grid tracks, and
    archive (left) / stage (centre) / inspector (right) inside. Paper, ink, one
-   spectrum stripe, a black void for the field. Fonts are bundled (no runtime fetch). */
+   spectrum stripe. No dark surfaces: fields sit on white. Fonts are bundled (no runtime fetch). */
 @font-face {
   font-family: "Inter";
   src: url("fonts/inter.woff2") format("woff2");
@@ -23,9 +23,9 @@
   --panel: #ffffff;
   --well: #e8e6d9;
   --hover: #e4e2d6;
-  --void: #000000;
-  --void-fg: #ffffff;
-  --void-mute: #8a8a8a;
+  --void: #ffffff;
+  --void-fg: #000000;
+  --void-mute: #666666;
   --spectrum: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff);
   --border: 1px solid var(--fg);
   --sans: "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
@@ -215,7 +215,7 @@ main > * { min-height: 0; min-width: 0; }
 .figure { margin-top: 20px; }
 .figure canvas { display: block; width: 100%; max-width: 100%; aspect-ratio: 20 / 13; border: var(--border); background: var(--void); }
 .figure-caption { margin-top: 5px; font-family: var(--mono); font-size: 9px; }
-.panel-live { margin-top: auto; border-bottom: 0; background: var(--void); color: var(--void-fg); }
+.panel-live { margin-top: auto; border-bottom: 0; background: var(--panel); color: var(--fg); }
 .panel-live .panel-label { color: var(--void-mute); }
 #live-data {
   height: 100px; overflow: hidden;
