@@ -12,7 +12,10 @@ interface SimulationHeaderProps {
   actions?: ReactNode;
 }
 
-/** Script name, path and status, the Setup · Run · Results switch, and the screen's actions. */
+/**
+ * The script's title with its path beside it, its status, the Setup · Run · Results
+ * switch, and the screen's actions.
+ */
 export function SimulationHeader({ row, actions }: SimulationHeaderProps) {
   const { t } = useTranslation();
   const link = ({ isActive }: { isActive: boolean }) =>
@@ -23,8 +26,8 @@ export function SimulationHeader({ row, actions }: SimulationHeaderProps) {
   return (
     <div className="flex h-11 shrink-0 items-stretch gap-6 border-b border-rule px-4">
       <div className="flex min-w-0 items-baseline gap-3 self-center">
-        <h1 className="shrink-0 text-h3 font-semibold">
-          <Value>{row.name}</Value>
+        <h1 className="max-w-[28rem] shrink-0 truncate text-h3 font-semibold" title={row.title}>
+          <Value mono={false}>{row.title}</Value>
         </h1>
         <Value className="truncate text-dense text-muted" title={row.path}>
           {row.path}

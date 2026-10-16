@@ -11,12 +11,12 @@ const now = new Date();
 const minutesAgo = (m: number) => new Date(now.getTime() - m * 60_000).toISOString();
 
 const ROWS: SimulationRow[] = [
-  makeRow({ path: "bend_euler.py", status: "cancelled", last_run: minutesAgo(3 * 24 * 60), backend: "cpu", wall_time_s: 3840 }),
-  makeRow({ path: "dc_gap200.py", status: "failed", backend: "cuda:0" }),
+  makeRow({ path: "bend_euler.py", title: "Euler bend", status: "cancelled", last_run: minutesAgo(3 * 24 * 60), backend: "cpu", wall_time_s: 3840 }),
+  makeRow({ path: "dc_gap200.py", title: "Directional coupler", status: "failed", backend: "cuda:0" }),
   makeRow({ path: "mmi_1x2.py" }),
-  makeRow({ path: "rings/ring_r10_g200.py", status: "done", last_run: minutesAgo(1), backend: "cuda:0", cells: 42_300_000, wall_time_s: 192, stale: true }),
-  makeRow({ path: "rings/ring_r10_g180.py", status: "running", step: 11_000, total_steps: 26_400, eta_s: 130, backend: "cuda:0", cells: 42_300_000 }),
-  makeRow({ path: "broken.py", status: "unknown", status_reason: "invalid_json" }),
+  makeRow({ path: "rings/ring_r10_g200.py", title: "Add-drop ring, gap 200 nm", status: "done", last_run: minutesAgo(1), backend: "cuda:0", cells: 42_300_000, wall_time_s: 192, stale: true }),
+  makeRow({ path: "rings/ring_r10_g180.py", title: "Add-drop ring, gap 180 nm", status: "running", step: 11_000, total_steps: 26_400, eta_s: 130, backend: "cuda:0", cells: 42_300_000 }),
+  makeRow({ path: "broken.py", title: "Broken status", status: "unknown", status_reason: "invalid_json" }),
 ];
 
 function serverWith(simulations: SimulationRow[], extra = {}) {
@@ -44,24 +44,29 @@ describe("V7: Workspace", () => {
     renderApp("/", serverWith(ROWS));
     const table = await screen.findByRole("table", { name: "Simulations in this workspace" });
     expect(screen.getByTestId("workspace-count")).toHaveTextContent("6 simulations");
-    const row = (name: string) => screen.getByRole("link", { name }).closest("[role=row]") as HTMLElement;
-    const done = row("rings/ring_r10_g200.py");
+    const row = (title: string) => screen.getByRole("link", { name: title }).closest("[role=row]") as HTMLElement;
+    const done = row("Add-drop ring, gap 200 nm");
+    // The title leads; the script's path stays visible under it, in mono.
+    const path = within(done).getByText("rings/ring_r10_g200.py");
+    expect(path).toHaveClass("font-mono");
+    expect(path).toHaveAttribute("translate", "no");
+    expect(within(row("Mmi 1x2")).getByText("mmi_1x2.py")).toBeInTheDocument(); // no docstring
     expect(within(done).getByText("done")).toBeInTheDocument();
     expect(within(done).getByText("stale")).toBeInTheDocument();
     expect(within(done).getByText("42.3 M")).toBeInTheDocument();
     expect(within(done).getByText("3m12")).toBeInTheDocument();
     expect(within(done).getByText(/today$/)).toBeInTheDocument();
-    const running = row("rings/ring_r10_g180.py");
+    const running = row("Add-drop ring, gap 180 nm");
     expect(within(running).getByText("11 k / 26.4 k")).toBeInTheDocument();
     expect(within(running).getByText("~2m")).toBeInTheDocument();
-    expect(within(row("bend_euler.py")).getByText("1h04m")).toBeInTheDocument();
-    expect(within(row("broken.py")).getByText("unknown").parentElement).toHaveAttribute(
+    expect(within(row("Euler bend")).getByText("1h04m")).toBeInTheDocument();
+    expect(within(row("Broken status")).getByText("unknown").parentElement).toHaveAttribute(
       "title",
       "The run status file is not valid JSON.",
     );
     expect(within(table).getAllByRole("link")).toHaveLength(6);
     for (const r of ROWS) {
-      expect(screen.getByRole("link", { name: r.path })).toHaveAttribute("href", rowTarget(r));
+      expect(screen.getByRole("link", { name: r.title })).toHaveAttribute("href", rowTarget(r));
     }
   });
 
@@ -79,20 +84,24 @@ describe("V7: Workspace", () => {
     renderApp("/", serverWith(ROWS));
     const filter = await screen.findByRole("textbox", { name: "Filter by name or folder" });
     await userEvent.type(filter, "rings/");
-    expect(screen.getAllByRole("link", { name: /^rings\// })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: /^Add-drop ring/ })).toHaveLength(2);
     expect(screen.getByTestId("workspace-count")).toHaveTextContent("2 of 6");
+    await userEvent.clear(filter);
+    await userEvent.type(filter, "coupler"); // titles match too
+    expect(screen.getAllByRole("link")).toContainEqual(screen.getByRole("link", { name: "Directional coupler" }));
+    expect(screen.getByTestId("workspace-count")).toHaveTextContent("1 of 6");
     await userEvent.clear(filter);
     await userEvent.type(filter, "nothing-like-this");
     expect(screen.getByText("No scripts match “nothing-like-this”.")).toBeVisible();
     await userEvent.click(screen.getByRole("button", { name: "Clear filter" }));
-    expect(screen.getAllByRole("link", { name: /\.py$/ })).toHaveLength(6);
+    expect(within(screen.getByRole("table")).getAllByRole("link")).toHaveLength(6);
   });
 
   it("shows the no-GPU banner without blocking the list", async () => {
     renderApp("/", serverWith(ROWS, { system: NO_GPU }));
     expect(await screen.findByText("No CUDA device found; runs use the CPU backend.")).toBeVisible();
     expect(screen.getByRole("link", { name: "Backend settings" })).toHaveAttribute("href", "/settings");
-    expect(screen.getAllByRole("link", { name: /\.py$/ })).toHaveLength(6);
+    expect(within(screen.getByRole("table")).getAllByRole("link")).toHaveLength(6);
   });
 
   it("warns when the scan was truncated", async () => {
@@ -134,6 +143,7 @@ describe("V7: Workspace", () => {
     expect(await screen.findByTestId("workspace-count")).toHaveTextContent("6 个仿真");
     expect(screen.getByRole("columnheader", { name: "上次运行" })).toBeInTheDocument();
     expect(screen.getAllByText("运行中").length).toBeGreaterThan(0);
-    expect(screen.getByRole("link", { name: "rings/ring_r10_g200.py" })).toHaveAttribute("translate", "no");
+    expect(screen.getByRole("link", { name: "Add-drop ring, gap 200 nm" })).toHaveAttribute("translate", "no");
+    expect(screen.getByText("rings/ring_r10_g200.py")).toHaveAttribute("translate", "no");
   });
 });

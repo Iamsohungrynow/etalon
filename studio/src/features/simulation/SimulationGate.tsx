@@ -18,7 +18,7 @@ interface SimulationGateProps {
 export function SimulationGate({ children }: SimulationGateProps) {
   const { t } = useTranslation();
   const { id, row, workspace } = useSimulationRow();
-  useDocumentTitle(row?.name ?? t("simulation.loading"));
+  useDocumentTitle(row?.title ?? t("simulation.loading"));
   const back = (
     <Button asChild icon={<ArrowLeft size={14} aria-hidden />}>
       <Link to="/">{t("simulation.back")}</Link>

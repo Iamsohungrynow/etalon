@@ -21,9 +21,12 @@ export const FOLDER = "C:\\Users\\me\\designs";
 
 export function makeRow(overrides: Partial<SimulationRow> & Pick<SimulationRow, "path">): SimulationRow {
   const name = overrides.path.split("/").pop() ?? overrides.path;
+  // The server's fallback title for a script without a docstring: "strip.py" → "Strip".
+  const words = name.replace(/\.py$/, "").replaceAll("_", " ");
   return {
     id: overrides.id ?? name.replace(/\W/g, "").slice(0, 12).padEnd(12, "0"),
     name,
+    title: words.slice(0, 1).toUpperCase() + words.slice(1),
     status: "draft",
     status_reason: null,
     last_run: null,

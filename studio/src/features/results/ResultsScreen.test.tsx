@@ -17,6 +17,7 @@ const RESULT = `${ID}~20261016T093841Z`;
 const META: ResultMeta = {
   result_id: RESULT,
   simulation_id: ID,
+  title: "Photonic-crystal waveguide",
   status: "done",
   started_at: "2026-10-16T09:38:41Z",
   finished_at: "2026-10-16T09:39:06Z",

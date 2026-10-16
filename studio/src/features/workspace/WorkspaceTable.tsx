@@ -27,20 +27,23 @@ export function WorkspaceTable({ rows, now }: WorkspaceTableProps) {
         id: "name",
         header: t("workspace.columns.name"),
         width: "minmax(12rem, 3fr)",
-        cell: (row) => {
-          const folder = row.path.slice(0, row.path.length - row.name.length);
-          return (
+        cell: (row) => (
+          // The script's title leads; its path stays visible under it, because the
+          // script, not Studio, is the source of truth.
+          <span className="block min-w-0 leading-tight">
             <Link
               to={rowTarget(row)}
               translate="no"
               title={row.path}
-              className="stretched-link block truncate font-mono text-text focus-visible:outline-none"
+              className="stretched-link block truncate text-text focus-visible:outline-none"
             >
-              {folder ? <span className="text-muted">{folder}</span> : null}
-              {row.name}
+              {row.title}
             </Link>
-          );
-        },
+            <span translate="no" className="block truncate font-mono text-dense text-muted">
+              {row.path}
+            </span>
+          </span>
+        ),
       },
       {
         id: "status",
@@ -106,6 +109,12 @@ export function WorkspaceTable({ rows, now }: WorkspaceTableProps) {
     ];
   }, [t, locale, now]);
   return (
-    <Table label={t("workspace.tableLabel")} columns={columns} rows={rows} rowKey={(row) => row.id} />
+    <Table
+      label={t("workspace.tableLabel")}
+      columns={columns}
+      rows={rows}
+      rowKey={(row) => row.id}
+      rowHeight={44}
+    />
   );
 }

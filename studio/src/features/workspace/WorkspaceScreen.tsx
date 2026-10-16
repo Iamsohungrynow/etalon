@@ -38,7 +38,10 @@ export function WorkspaceScreen({ now }: WorkspaceScreenProps) {
   const rows = workspace.data?.simulations;
   const needle = filter.trim().toLowerCase();
   const shown = useMemo(
-    () => (rows && needle ? rows.filter((row) => row.path.toLowerCase().includes(needle)) : rows),
+    () => (rows && needle ? rows.filter(
+            (row) =>
+              row.title.toLowerCase().includes(needle) || row.path.toLowerCase().includes(needle),
+          ) : rows),
     [rows, needle],
   );
   const noGpu = system.data !== undefined && system.data.devices.length === 0;
