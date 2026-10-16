@@ -4,7 +4,7 @@
    recorded; the validation curve is the M0 measurement. Nothing is random. */
 "use strict";
 
-const STUDIO_DEMO_URL = "https://etalon-demo.netlify.app/";
+const STUDIO_DEMO_URL = "studio/";
 
 const TEXT = {
   en: {

@@ -1,0 +1,2 @@
+# Studio demo lives under /studio/ (built with ETALON_BASE=/studio/); its routes load its index.html.
+/studio/*    /studio/index.html    200
