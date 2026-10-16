@@ -14,7 +14,8 @@ import pytest
 from bench.schema import MEEP_CODE_FILES
 
 REPO = Path(__file__).resolve().parents[2]
-SKIP = {".venv", ".git", "node_modules", "studio", "__pycache__"}
+# Local editor worktrees: other checkouts of this repository, not code of this one.
+SKIP = {".venv", ".git", ".claude", "node_modules", "studio", "__pycache__"}
 
 # What bench/meep/env.yaml provides, besides the standard library.
 MEEP_ENV = {"meep", "mpi4py", "numpy", "yaml", "pydantic", "bench"}
