@@ -129,3 +129,28 @@ def test_write_report_keeps_other_sections(cfg, root, tmp_path):
     assert devices["point2d"]["passed"] is True and devices["bend"]["passed"] is False
     assert devices["straight"]["status"].startswith("needs M1")
     assert devices["point2d"]["timing_s"]["meep"]["wall"] == 10.0
+
+
+def test_tables_keep_their_columns(cfg, root):
+    """|S21| in names and labels must not split cells: every table row has the header's cells."""
+    import re
+
+    text = render_markdown(cfg, {"2d": build_rows(cfg, "2d", root)}, "x")
+    blocks, current = [], []
+    for line in text.splitlines():
+        if line.startswith("|"):
+            current.append(line)
+        elif current:
+            blocks.append(current)
+            current = []
+    assert blocks
+    for block in blocks:
+        widths = {len(re.split(r"(?<!\\)\|", line)) for line in block}
+        assert len(widths) == 1, block
+
+
+def test_meep_only_rows_flag_unconverged_references(cfg, tmp_path):
+    write(tmp_path, meep(cfg, "ring", final_decay=6.6e-4))
+    write(tmp_path, unsupported(cfg, "ring"))
+    rows = {row.device: row for row in build_rows(cfg, "2d", tmp_path)}
+    assert any("Meep meep-mpi not converged" in note for note in rows["ring"].notes)

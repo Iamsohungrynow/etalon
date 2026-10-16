@@ -141,7 +141,7 @@ def test_core_index_is_the_slab_te0_index(cfg):
 
 def test_band_wavelengths(cfg):
     wl = cfg.devices.ring.band.wavelengths()
-    assert wl[0] == 1.54 and wl[-1] == 1.56 and wl.size == 401
+    assert wl[0] == 1.535 and wl[-1] == 1.565 and wl.size == 601
     assert np.allclose(np.diff(wl), 5e-5)
 
 

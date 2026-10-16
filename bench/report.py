@@ -87,6 +87,7 @@ def build_rows(cfg: BenchConfig, tier_name: str, root: Path = BENCH) -> list[Row
         rows.append(row)
         if row.meep is not None:
             row.notes.extend(meep_sanity(device, row.meep))
+        converged = _decay_notes(row)
         if row.meep is None:
             row.status = "no Meep result"
             continue
@@ -117,16 +118,24 @@ def build_rows(cfg: BenchConfig, tier_name: str, root: Path = BENCH) -> list[Row
             )
             cu, npy = _spectra(ok["cuda"]), _spectra(ok["numpy"])
             row.cuda_vs_numpy = max(float(np.max(np.abs(cu[k] - npy[k]))) for k in cu)
-        for solver, result in (("Meep", row.meep), ("etalon", row.etalon)):
-            for run in result.runs:
-                if run.final_decay is not None and run.final_decay > metrics.DECAY_LIMIT:
-                    row.status = "not converged"
-                    row.notes.append(
-                        f"{solver} {run.backend}: fields at the output ports decayed only to "
-                        f"{run.final_decay:.1e} of peak (limit {metrics.DECAY_LIMIT:.0e}); "
-                        "increase run_time_fs"
-                    )
+        if not converged:
+            row.status = "not converged"
     return rows
+
+
+def _decay_notes(row: Row) -> bool:
+    """Note every run whose output-port fields did not decay; False if any did not."""
+    converged = True
+    for solver, result in (("Meep", row.meep), ("etalon", row.etalon)):
+        for run in result.runs if result is not None else []:
+            if run.final_decay is not None and run.final_decay > metrics.DECAY_LIMIT:
+                converged = False
+                row.notes.append(
+                    f"{solver} {run.backend} not converged: fields at the output ports decayed "
+                    f"only to {run.final_decay:.1e} of peak (limit {metrics.DECAY_LIMIT:.0e}); "
+                    "increase run_time_fs"
+                )
+    return converged
 
 
 def meep_sanity(device: str, result: DeviceResult) -> list[str]:
@@ -170,6 +179,11 @@ def _port_spacing(result: DeviceResult) -> float:
 
 
 # ---------------------------------------------------------------- formatting
+
+
+def cell(text: str) -> str:
+    """Escape the pipes in |S21| and friends so they do not split a markdown table cell."""
+    return text.replace("|", r"\|")
 
 
 def fmt_time(seconds: float | None, estimated: bool = False) -> str:
@@ -254,7 +268,7 @@ def render_markdown(cfg: BenchConfig, tables: dict[str, list[Row]], sha: str) ->
             meep_time = _timing(row.meep.runs[0]) if row.meep else "—"
             if row.comparison is None:
                 lines.append(
-                    f"| {row.device} | {row.status} | — | — | — | — | {_timing(gpu_run)} | "
+                    f"| {row.device} | {cell(row.status)} | — | — | — | — | {_timing(gpu_run)} | "
                     f"{_timing(cpu_run)} | {meep_time} | {row.resolution} |"
                 )
                 continue
@@ -264,11 +278,11 @@ def render_markdown(cfg: BenchConfig, tables: dict[str, list[Row]], sha: str) ->
             )
             verdict = {True: "✓", False: "✗", None: "—"}[row.passed]
             if row.status != "compared":
-                verdict = f"— ({row.status})"
+                verdict = f"— ({cell(row.status)})"
             gate = fmt_value(worst.gate) if worst else "—"
             value = fmt_value(worst.value) if worst else "—"
             lines.append(
-                f"| {row.device} | {COMPARED[row.device]} | {gate} | {value} | {verdict} | "
+                f"| {row.device} | {cell(COMPARED[row.device])} | {gate} | {value} | {verdict} | "
                 f"{fmt_value(row.comparison.max_abs_s)} | {_timing(gpu_run)} | "
                 f"{_timing(cpu_run)} | {meep_time} | {row.resolution} |"
             )
@@ -286,7 +300,7 @@ def _details(row: Row) -> list[str]:
             unit = f" {m.unit}" if m.unit else ""
             verdict = {True: "✓", False: "✗", None: ""}[m.passed]
             gate = fmt_value(m.gate) if m.gate else ""
-            out.append(f"| {m.name} | {fmt_value(m.value)}{unit} | {gate} | {verdict} |")
+            out.append(f"| {cell(m.name)} | {fmt_value(m.value)}{unit} | {gate} | {verdict} |")
         out.append("")
         out.append(f"Compared against etalon's {row.compared_backend} run.")
         if row.numpy_comparison is not None:
@@ -353,14 +367,14 @@ def _meep_summary(row: Row) -> list[str]:
     out = [f"Meep reference at λ = {wl[mid]:.4f} µm: " + ", ".join(parts) + "."]
     if row.device == "ring":
         res = metrics.find_resonances(wl, metrics.power(s["S31"]), metrics.power(s["S21"]))
-        out.append(
-            "Meep resonances: "
-            + "; ".join(
+        if res:
+            found = "; ".join(
                 f"λ {r.wavelength:.5f} µm, Q {r.q:.0f}, ER {r.extinction_db:.1f} dB" for r in res
             )
-            + (f"; FSR {np.mean(metrics.fsr(res)) * 1e3:.2f} nm" if len(res) > 1 else "")
-            + "."
-        )
+            fsr = f"; FSR {np.mean(metrics.fsr(res)) * 1e3:.2f} nm" if len(res) > 1 else ""
+            out.append(f"Meep resonances: {found}{fsr}.")
+        else:
+            out.append("Meep resonances: fewer than two complete resonances in the band.")
     out.append("")
     return out
 

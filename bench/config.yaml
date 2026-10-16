@@ -98,5 +98,9 @@ devices:
     straight_x: 4.0                # coupling straights (top and bottom)
     straight_y: 0.6                # side straights
     region: {center: [0.0, 0.0], size: [28.0, 24.6]}
-    band: {min: 1.54, max: 1.56, points: 401}
-    run_time_fs: 10000
+    # Pilot P2 (2D, 10 ps): Harminv Q ≈ 2300–2600 and FSR ≈ 10.6 nm, resonances at 1.5396,
+    # 1.5501 and 1.5607 µm; the fields had decayed only to 6.6e-4. 24 ps brings that to ≈ 2e-6.
+    # The band is wider than mvp-spec's 1.54–1.56 so it holds at least two whole resonances
+    # (FSR needs two) in both tiers; 0.05 nm steps give ≈ 13 samples per FWHM.
+    band: {min: 1.535, max: 1.565, points: 601}
+    run_time_fs: 24000
