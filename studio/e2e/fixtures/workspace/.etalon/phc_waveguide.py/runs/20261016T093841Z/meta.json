@@ -1,0 +1,1568 @@
+{
+  "result_id": "e0d3dbead5ac~20261016T093841Z",
+  "simulation_id": "e0d3dbead5ac",
+  "status": "done",
+  "started_at": "2026-10-16T09:38:41.816926+00:00",
+  "script_sha256": "e584ff48090fdc90444d49be96b116114dff570a5e1cc50de71e86311d4359a5",
+  "has_result": true,
+  "etalon_version": "0.0.1",
+  "backend": "cpu",
+  "device": "AMD Ryzen 5 5600 6-Core Processor",
+  "precision": "single",
+  "grid": {
+    "nx": 276,
+    "ny": 171,
+    "dx": 0.02,
+    "dy": 0.02
+  },
+  "dt_s": 4.6701355867643743e-17,
+  "spec": {
+    "center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      5.04,
+      2.94,
+      0.0
+    ],
+    "medium": {
+      "type": "Medium",
+      "n": 3.476,
+      "name": "Si"
+    },
+    "structures": [
+      {
+        "type": "Box",
+        "center": [
+          -2.31,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 0,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.89,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 1,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.47,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 2,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.05,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 3,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.63,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 4,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.21,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 5,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.21,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 6,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.63,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 7,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.05,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 8,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.47,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 9,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.89,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 10,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          2.31,
+          -1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 11,-3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -2.31,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 0,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.89,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 1,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.47,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 2,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.05,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 3,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.63,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 4,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.21,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 5,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.21,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 6,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.63,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 7,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.05,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 8,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.47,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 9,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.89,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 10,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          2.31,
+          -0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 11,-2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -2.31,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 0,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.89,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 1,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.47,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 2,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.05,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 3,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.63,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 4,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.21,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 5,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.21,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 6,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.63,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 7,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.05,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 8,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.47,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 9,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.89,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 10,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          2.31,
+          -0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 11,-1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -2.31,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 0,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.89,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 1,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.47,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 2,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.05,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 3,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.63,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 4,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.21,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 5,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.21,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 6,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.63,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 7,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.05,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 8,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.47,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 9,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.89,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 10,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          2.31,
+          0.42,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 11,1"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -2.31,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 0,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.89,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 1,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.47,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 2,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.05,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 3,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.63,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 4,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.21,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 5,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.21,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 6,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.63,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 7,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.05,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 8,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.47,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 9,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.89,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 10,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          2.31,
+          0.84,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 11,2"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -2.31,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 0,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.89,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 1,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.47,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 2,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -1.05,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 3,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.63,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 4,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          -0.21,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 5,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.21,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 6,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          0.63,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 7,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.05,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 8,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.47,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 9,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          1.89,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 10,3"
+      },
+      {
+        "type": "Box",
+        "center": [
+          2.31,
+          1.26,
+          0.0
+        ],
+        "size": [
+          0.34,
+          0.34,
+          0.0
+        ],
+        "medium": {
+          "type": "Medium",
+          "n": 1.0,
+          "name": "air"
+        },
+        "name": "hole 11,3"
+      }
+    ],
+    "grid": {
+      "type": "UniformGrid",
+      "dl": 0.02
+    },
+    "boundary": {
+      "type": "PML",
+      "layers": 12,
+      "grading_order": 3.0,
+      "sigma_scale": 1.0,
+      "kappa_max": 1.0
+    },
+    "sources": [
+      {
+        "type": "PointSource",
+        "center": [
+          -2.12,
+          0.0,
+          0.0
+        ],
+        "component": "Hz",
+        "pulse": {
+          "type": "GaussianPulse",
+          "wavelength": 1.55,
+          "bandwidth": 0.2,
+          "amplitude": 1.0
+        },
+        "name": "dipole"
+      }
+    ],
+    "monitors": [
+      {
+        "type": "DFTMonitor",
+        "name": "field",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "size": [
+          4.6,
+          2.0,
+          0.0
+        ],
+        "wavelengths": [
+          1.5,
+          1.55,
+          1.6
+        ],
+        "components": null
+      },
+      {
+        "type": "DFTMonitor",
+        "name": "in",
+        "center": [
+          -1.4,
+          0.0,
+          0.0
+        ],
+        "size": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "wavelengths": [
+          1.5,
+          1.55,
+          1.6
+        ],
+        "components": [
+          "Hz"
+        ]
+      },
+      {
+        "type": "DFTMonitor",
+        "name": "out",
+        "center": [
+          2.0,
+          0.0,
+          0.0
+        ],
+        "size": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "wavelengths": [
+          1.5,
+          1.55,
+          1.6
+        ],
+        "components": [
+          "Hz"
+        ]
+      }
+    ],
+    "run_time": 2.5e-13,
+    "courant": 0.99,
+    "precision": "single",
+    "backend": "numpy"
+  },
+  "steps": 5354,
+  "wall_time_s": 15.128288799896836,
+  "cells_per_s": 16702971.98462546,
+  "monitors": [
+    {
+      "name": "field",
+      "index": 0,
+      "geometry": "plane",
+      "components": [
+        "Ex",
+        "Ey",
+        "Hz"
+      ],
+      "wavelengths_um": [
+        1.5,
+        1.55,
+        1.6
+      ],
+      "shape": [
+        230,
+        100
+      ],
+      "extent": [
+        -2.2899999999999996,
+        2.29,
+        -0.99,
+        0.9900000000000002
+      ]
+    },
+    {
+      "name": "in",
+      "index": 1,
+      "geometry": "point",
+      "components": [
+        "Hz"
+      ],
+      "wavelengths_um": [
+        1.5,
+        1.55,
+        1.6
+      ],
+      "shape": null,
+      "extent": null
+    },
+    {
+      "name": "out",
+      "index": 2,
+      "geometry": "point",
+      "components": [
+        "Hz"
+      ],
+      "wavelengths_um": [
+        1.5,
+        1.55,
+        1.6
+      ],
+      "shape": null,
+      "extent": null
+    }
+  ],
+  "finished_at": "2026-10-16T09:39:06.225581+00:00",
+  "error": null,
+  "suggestion": null
+}

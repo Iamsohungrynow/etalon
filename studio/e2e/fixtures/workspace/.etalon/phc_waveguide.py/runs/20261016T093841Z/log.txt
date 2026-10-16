@@ -1,0 +1,12 @@
+09:38:44 stdout etalon 0.0.1 | 2D TE (Ex, Ey, Hz) | backend auto, single precision
+09:38:44 stdout grid    276 x 171 cells = 252 x 147 region + 12-cell CPML per face; dx = 0.02 um, dy = 0.02 um
+09:38:44 stdout time    dt = 4.6701e-17 s (courant 0.99); 5354 steps for 250 fs
+09:38:44 stdout memory  1.7 MB fields + 1.67 MB monitors
+09:38:49 etalon etalon 0.0.1 | 2D TE (Ex, Ey, Hz) | backend numpy, single precision
+09:38:49 etalon grid    276 x 171 cells = 252 x 147 region + 12-cell CPML per face; dx = 0.02 um, dy = 0.02 um
+09:38:49 etalon time    dt = 4.6701e-17 s (courant 0.99); 5354 steps for 250 fs
+09:38:49 etalon memory  1.7 MB fields + 1.67 MB monitors
+09:38:49 etalon backend cpu AMD Ryzen 5 5600 6-Core Processor; snapshots off
+09:39:06 stdout |Hz out| / |Hz in| at 1.50 um: 0.949
+09:39:06 stdout |Hz out| / |Hz in| at 1.55 um: 0.980
+09:39:06 stdout |Hz out| / |Hz in| at 1.60 um: 0.957

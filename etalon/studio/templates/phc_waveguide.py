@@ -48,11 +48,8 @@ sim = et.Simulation(
         )
     ],
     monitors=[
-        et.DFTMonitor(
-            name="field",
-            size=(periods * a - 0.12, (2 * rows + 1) * a - 0.12, 0.0),
-            wavelengths=wavelengths,
-        ),
+        # The line and two rows of holes on either side: enough to see the confinement.
+        et.DFTMonitor(name="field", size=(4.6, 2.0, 0.0), wavelengths=wavelengths),
         et.DFTMonitor(
             name="in", center=(-1.4, 0.0, 0.0), wavelengths=wavelengths, components=["Hz"]
         ),

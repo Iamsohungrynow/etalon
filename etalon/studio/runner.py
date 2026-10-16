@@ -201,7 +201,8 @@ def write_json_atomically(path: Path, data: dict[str, Any]) -> None:
     """Write through a temporary file; retry the rename while a reader holds the file (Windows)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{threading.get_ident()}.tmp")
-    tmp.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    text = json.dumps(data, indent=2, allow_nan=False) + "\n"
+    tmp.write_text(text, encoding="utf-8", newline="\n")
     for attempt in range(50):
         try:
             os.replace(tmp, path)
