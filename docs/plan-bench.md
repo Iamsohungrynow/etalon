@@ -333,7 +333,7 @@ Say "OK" to take every recommendation.
 
 ## 14. Outcome (2026-10-16)
 
-Built as planned: every file in §4, tests B1–B9 (88 tests in `tests/bench/`; the whole suite is 154 tests and passes), ruff and mypy clean on `etalon/` and `bench/`.
+Built as planned: every file in §4, tests B1–B9 (90 tests in `tests/bench/`; the whole suite is 156 tests and passes), ruff and mypy clean on `etalon/` and `bench/`. First full report: `bench/results/9dcad66.md`.
 
 **Meep environment.** WSL2 Ubuntu 24.04 with micromamba. Exact package pins are in `bench/meep/env.lock.txt`:
 - pymeep 1.35.0 (`mpi_mpich` build), MPB 1.12.0, MPICH 4.3.2
@@ -348,10 +348,30 @@ Built as planned: every file in §4, tests B1–B9 (88 tests in `tests/bench/`; 
 | | Result |
 | --- | --- |
 | P1 PML 0.5 / 1.0 / 2.0 µm | straight and bend: \|ΔS11\| ≤ 1.2e-5, \|ΔS21\| ≤ 5e-8. The 3D tier keeps 0.5 µm. |
-| P2 run times | final decay with the config run times: straight 6.5e-16, bend 1.2e-16, dc 5.3e-12, mmi 5.5e-9 (all ≪ 1e-5). Run times frozen as configured. The ring's decay is in its reference result. |
+| P2 run times | straight 6.5e-16, bend 1.2e-16, dc 1.2e-13, mmi 5.5e-9 at their configured run times (all ≪ 1e-5), so those are frozen. The ring did not converge at 10 ps (6.6e-4; Q ≈ 2400 in 2D, more than the ≈ 900 estimated in §12). Its 10.6 nm FSR also left one whole resonance in 1.54–1.56 µm. It now runs 24 ps over 1.535–1.565 µm (601 points) and decays to 1.1e-6. |
 | P3 MPB phase | Deterministic: n_eff is identical at both straight-guide ports to 1e-15, and \|S21\| = 1 ± 2e-5. arg S21 − 2π n_eff L/λ = 0.43–0.46 rad, because MPB solves at 2× resolution while the FDTD propagates with Yee dispersion at Δ = 20 nm (Δn_eff ≈ 1e-2 in 2D). The complex S21 gate therefore tests whether etalon reproduces Meep's discretisation (both are Yee at the same Δ and Δt), not the true phase. |
-| P4 self-convergence | see below |
-| P5 3D throughput | see below |
+| P4 self-convergence | not run yet: the res-100 runs (≈ 2 h) were deferred so the 2D references could run on an idle machine |
+| P5 3D throughput | straight, 3D, 2.76e7 cells, 1199 steps: 5.5e7 cell-updates/s on 6 ranks (approximate; a test run overlapped), plus ≈ 3 min setup (eps averaging, 3D MPB). This is 3× slower than §2 assumed. Meep 3D references therefore take ≈ 4 h (straight), ≈ 6 h (bend) and ≈ 35 h (DC, which also needs about 22 GB, more than WSL's default 15 GB). |
+
+In 2D, Meep reaches 7e8 cell-updates/s on the small cells (straight, bend) and 1.6–2e8 on the large ones (DC, MMI, ring). Setup is dominated by subpixel averaging of the polygons: 160 s for the DC's two 416-vertex S-bend polygons.
+
+**Meep 2D references** (committed in `bench/meep/out/2d/`; values at 1.55 µm, wall time on 6 ranks):
+
+| Device | Meep result | Wall |
+| --- | --- | --- |
+| point2d | \|T21\| = 0.448 (≈ √(r1/r2), the 2D Green's function) | 2.6 s |
+| straight | \|S21\|² = 1.0000, \|S11\| ≤ 1.5e-3 | 8.2 s |
+| bend | \|S21\|² = 0.9936 | 45 s |
+| dc | through 0.292, cross 0.707 (2D effective index; Liu & Poon's 3D is 41–48 % cross) | 6.4 min |
+| mmi | 0.449 / 0.449, symmetric to 1e-4; 10 % excess loss at 1.55 µm, up to 20 % at the band edges (the formula length is not the 2D optimum, and the comparison does not need it to be) | 6.4 min |
+| ring | λ_res 1.53958 / 1.55009 / 1.56074 µm, Q 2587 / 2426 / 2266, FSR 10.58 nm, extinction 25–31 dB. Meep's Harminv agrees with the shared Airy fit to 0.35–0.56 % in Q and 1.5 pm in λ. | 2.6 h |
+
+**etalon timings on point2d** (1.5e5 cells, 8994 steps):
+- CUDA: 4.4 s wall, 3.2e8 cell-updates/s. On a grid this small the per-step overhead dominates; at 2000² cells M0 measured 2.9e9.
+- NumPy: 14.6 s.
+- Meep: 2.6 s on 6 ranks.
+
+This is an M4 (performance) observation, not a bench issue.
 
 Departures from the plan:
 - **Out files are `bench/<solver>/out/<tier>/<device>.json`.** A tier directory was added so the 2D and 3D results of a device can coexist.
