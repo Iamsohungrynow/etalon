@@ -257,6 +257,13 @@ studio/                      pnpm workspace, TypeScript strict
 | `GET /api/validation/latest` · `POST /api/validation/run` | benchmark report |
 | `GET/PUT /api/settings` | settings |
 | `GET /api/system` | etalon and Python versions, platform, CuPy status, detected CUDA devices (added in U0) |
+| `GET /api/templates` | the templates `POST /api/simulations` can copy (added in U1) |
+| `GET /api/simulations/{id}/permittivity` | binary float32 εr on the solver's nodes, for the Setup slice view (added in U1) |
+| `POST /api/simulations/{id}/open` | open the script in the OS default editor (added in U1) |
+| `POST /api/calibrate` | measure this machine's cells/s for the time estimate (added in U1) |
+| `GET /api/results/{id}/spectra/{monitor}` | a point monitor's complex spectrum (added in U1) |
+
+Exact request and response shapes, the binary array layout and the WebSocket messages: `docs/plan-u1.md` §13. Endpoints not implemented yet answer 501 with the endpoint's name and the milestone that adds it.
 
 Server binds to `127.0.0.1` only. CORS off. A random token, created on first launch and kept in the user's config directory, arrives once in the URL (`?token=`); the SPA keeps it in `localStorage` and sends it as `X-Etalon-Token` on every API request, which guards against other local processes. The server also rejects any `Host` other than `127.0.0.1:<port>` / `localhost:<port>` (DNS rebinding), serves `index.html` with a `default-src 'self'` Content-Security-Policy, and disables FastAPI's `/docs`, `/redoc` and native OpenTelemetry.
 

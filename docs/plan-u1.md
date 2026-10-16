@@ -1,6 +1,6 @@
 # U1 plan — the M0 demo: Setup, Run and the field viewer
 
-Status: draft for review · 2026-10-16 · builds on U0 (PR Iamsohungrynow/etalon#1)
+Status: approved 2026-10-16 (all §10 recommendations accepted) · builds on U0 (PR Iamsohungrynow/etalon#1)
 
 ## 1. Scope (answered 2026-10-16)
 
@@ -166,3 +166,98 @@ Not taken: **@react-three/drei** (MIT). It pulls MediaPipe, the Rapier physics e
 - **Script side effects**: spec mode executes the user's script up to `run()`. A script that writes files or plots before `run()` does so on every Setup refresh (the sha cache limits this). This is the same trust model as running the script.
 - **GPU in the server process**: none. Every solver run is in a child process, so a CUDA crash only kills the job.
 - **Bundle size**: three, r3f and ECharts add roughly 900 KB minified. The routes split code, so Workspace still opens in under 2 s; P3 keeps guarding that.
+
+## 13. API contract (the boundary between the server session and the frontend)
+
+Both sides build to exactly this. The server's pydantic models define the OpenAPI schema, and the frontend's types are generated from it. Any change goes into this section first.
+
+### 13.1 Binary arrays (permittivity slice, monitor fields, live snapshots)
+
+One layout everywhere: `[uint32 little-endian N][N bytes UTF-8 JSON header][zero padding to a multiple of 4][float32 little-endian data]`. The data starts at `4 + N` rounded up to a multiple of 4, so the client views it as a `Float32Array` without copying. HTTP responses use `Content-Type: application/octet-stream`; WebSocket snapshots are binary frames.
+
+The header contains:
+- `kind`: `"permittivity"`, `"field"` or `"snapshot"`
+- `shape: [n_x, n_y]`: the solver's own C order, with axis 0 = x and axis 1 = y, y varying fastest
+- `extent: [x_first, x_last, y_first, y_last]`: µm, of the first and last nodes along each axis (uniform spacing)
+- `min`, `max`: finite data range
+- `component`, and `unit` (free text)
+
+Per kind:
+- **permittivity**: `pml_cells`.
+- **field**: `quantity` (`abs | real | imag | phase`) and `wavelength_um`.
+- **snapshot**: `step`. Downsampled to at most 256 × 256; its `extent` describes the downsampled nodes.
+
+### 13.2 Simulations and templates
+
+- `GET /api/templates` → `[{id, file}]`, with id in `vacuum_pulse | strip_waveguide | sharp_bend | phc_waveguide`. Titles and descriptions are i18n keys in the frontend, `templates.<id>.title/description`.
+- `POST /api/simulations {template, name}` creates a script; `name` is a file name without `.py`, `[A-Za-z0-9_-]{1,64}`.
+  - 201 → `SimulationRow`
+  - 409 `{code: "exists"}`
+  - 422 `{code: "bad_name"}`
+- `SimulationRow` (U0) gains two fields: `job_id: str | null` (a running job) and `last_result_id: str | null`.
+- `GET /api/simulations/{id}/spec` → `SimulationSpec`:
+  - `script_sha256`
+  - `spec`: free-form JSON, `Simulation.model_dump(mode="json")`
+  - `preview`
+  - `estimate`
+  - `warnings`
+  - `stdout_tail`
+- `Preview`:
+  - `is_2d`, `plane_z`
+  - `region {center, size}`
+  - `pml {layers, thickness: [tx, ty, tz]}` (µm)
+  - `background {n, name}`
+  - `media: [{id, name, n}]`
+  - `structures: [{id, name, kind: "Box", center, size, medium_id}]`
+  - `sources: [{id, name, kind: "PointSource", center, component, wavelength_um, bandwidth_um}]`
+  - `monitors: [{id, name, kind: "DFTMonitor", geometry: "point" | "line" | "plane" | "box", center, size, wavelengths_um, components}]`
+  - `grid {dx, dy, nx, ny, region_cells: [rx, ry], dt_s, courant, steps}`
+  - Ids: `medium:<i>`, `structure:<i>`, `source:<i>`, `monitor:<name>`, `boundary`, `grid`.
+- `Estimate`: `{cells, memory_bytes, steps, dt_s, run_time_s, seconds, cells_per_s, basis: "measured" | "calibration" | "unknown"}`. `seconds` and `cells_per_s` are null when the basis is unknown.
+- `Warning`: `{code, severity: "warning" | "error", object_id | null, params}`. Codes and their params:
+  - `mesh_coarse {cells_per_wavelength, minimum, medium, wavelength_um}`
+  - `pml_thin {thickness_um, half_wavelength_um}`
+  - `near_pml {cells}`
+  - `memory_large {bytes}`
+  - `unsupported {feature, milestone}`, which is an error (e.g. 3D → M1)
+
+  The frontend translates codes; the server never sends prose.
+- Script failure: 422 `ScriptError {code: "script_error", message, traceback, line | null, stdout_tail}`. A timeout uses `code: "script_timeout"`.
+- `GET /api/simulations/{id}/permittivity?component=Ex|Ey` (default Ex) → binary `kind: "permittivity"`: the solver's own εr array on those nodes, PML included.
+- `POST /api/simulations/{id}/open` → 204, opens the script in the OS default editor.
+- `POST /api/calibrate` → `{cells_per_s, backend, device}`: about 10 s of `etalon.validation.throughput`, stored in the config dir and then used by `Estimate`.
+
+### 13.3 Jobs
+
+- `POST /api/simulations/{id}/run` → 202 `{job_id, result_id}`; 409 `{code: "already_running", job_id}`.
+- `DELETE /api/jobs/{job_id}` → 202 `{status: "cancelling"}`. The final status arrives on the WebSocket.
+- `WS /api/jobs/{job_id}`: the browser cannot set headers on a WebSocket, so it opens with subprotocols `["etalon.v1", "token.<token>"]`; the server accepts with `etalon.v1`. On connect the server replays `started`, then one `history`, then sends live messages. JSON text frames:
+  - `{type: "started", total, grid: [nx, ny], dt_s, backend, device, snapshots: bool}`
+  - `{type: "history", progress: [Progress...], log: [LogLine...]}` (every progress point so far and the last 500 log lines)
+  - `Progress {type: "progress", step, total, elapsed_s, eta_s, cells_per_s, energy}`, at ≤ 4 Hz; `energy` is absolute (J/m in 2D) and the client normalises it to the peak
+  - `LogLine {type: "log", stream: "stdout" | "stderr" | "etalon", line}`
+  - `{type: "done", status: "done" | "failed" | "cancelled", result_id | null, error: {message, traceback, line} | null, suggestion: "out_of_memory" | "nan" | "unsupported" | null}`
+
+  Binary frames are `snapshot`s (Hz, ≤ 10 fps), only when snapshots are on: the Settings toggle, which on the GPU defaults to on for the demo.
+- The runner keeps `status.json` (U0 format) current while running, with step, total and ETA, so the Workspace shows live progress.
+
+### 13.4 Results (`result_id = <sim id>~<UTC stamp>`)
+
+- `GET /api/results/{id}` → `ResultMeta`:
+  - `result_id`, `simulation_id`, `status`, `started_at`, `finished_at`
+  - `etalon_version`, `backend`, `device`, `precision`
+  - `grid {nx, ny, dx, dy}`, `steps`, `dt_s`, `wall_time_s`, `cells_per_s`
+  - `script_sha256`, `stale`
+  - `preview`: the Preview at run time, used for outline overlays
+  - `monitors: [{name, geometry, components, wavelengths_um, shape | null, extent | null}]`
+- `GET /api/results/{id}/fields/{monitor}?component=&quantity=abs|real|imag|phase&wavelength_index=` → binary `kind: "field"`, for plane and line monitors.
+- `GET /api/results/{id}/spectra/{monitor}` → `{monitor, wavelengths_um, components: {<C>: {re: [...], im: [...]}}}`, for point monitors.
+
+### 13.5 Still 501
+
+These return `{code: "not_implemented", endpoint, arrives_in}`:
+- `PUT /api/simulations/{id}/params`: U1 + an `et.param` core API
+- `GET /api/results/{id}/s-matrix`: M2
+- `GET /api/results/{id}/modes/{monitor}`: M1
+- `POST /api/modes/solve`: M1
+- `GET /api/validation/latest`, `POST /api/validation/run`: U4
