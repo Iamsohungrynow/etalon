@@ -19,3 +19,6 @@ etalon/studio/static/
 Thumbs.db
 .vscode/
 .idea/
+
+# Bench: etalon results are regenerated per commit; Meep references in bench/meep/out are committed
+bench/etalon/out/

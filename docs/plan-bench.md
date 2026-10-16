@@ -1,6 +1,6 @@
 # Bench plan: etalon vs Meep on the five reference devices
 
-Status: draft for review · 2026-10-16 · the M2 harness of `mvp-spec.md` §4–§5, built ahead of M1
+Status: approved 2026-10-16 (all §12 recommendations accepted) · the M2 harness of `mvp-spec.md` §4–§5, built ahead of M1
 
 ## 1. What this delivers
 

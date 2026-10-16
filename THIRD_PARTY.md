@@ -62,6 +62,41 @@ CuPy compiles etalon's kernels at run time and needs NVIDIA's CUDA headers and N
 | hatchling | MIT | build backend |
 | uv | MIT OR Apache-2.0 | environment manager |
 
+## Benchmark harness — `bench` dependency group (not an etalon dependency)
+
+Installed by `uv sync` for development; never required by `import etalon`.
+
+| Package | Version | License | Used for |
+| --- | --- | --- | --- |
+| pyyaml | 6.0.3 | MIT (classifier; checked on PyPI and in installed metadata, 2026-10-16) | reading `bench/config.yaml` |
+
+## External benchmark — Meep (not a dependency, never imported by etalon)
+
+The bench compares etalon against [Meep](https://meep.readthedocs.io/), which is **GPL-2.0-or-later**. Meep is an external reference program, not a dependency.
+- It lives only in its own conda environment, `bench/meep/env.yaml`, with every package pinned in `bench/meep/env.lock.txt`. On Windows that environment is inside WSL2.
+- It runs only as a subprocess started by `bench/run_meep_comparison.py`.
+- Only the scripts in `bench/meep/` import it. Nothing in etalon or in the rest of `bench/` does, and `tests/bench/test_import_guard.py` enforces that.
+- etalon distributes none of it.
+- Meep's output, the S-parameter JSON in `bench/meep/out/`, is data produced by the program and is not covered by its license.
+
+The Meep environment, as installed on 2026-10-16. Licenses are from the conda package metadata:
+
+| Package | Version | License |
+| --- | --- | --- |
+| pymeep (Meep) | 1.35.0 (mpi_mpich build) | GPL-2.0-or-later |
+| mpb | 1.12.0 | GPL-2.0-or-later |
+| harminv | 1.4.3 | GPL-2.0-or-later |
+| libctl | 4.7.1 | GPL-2.0-or-later |
+| libgdsii | 0.21 | GPL-2.0-or-later |
+| fftw | 3.3.10 | GPL-2.0-or-later |
+| gsl | 2.8 | GPL-3.0-or-later |
+| mpich | 4.3.2 | MPICH license (permissive) |
+| mpi4py, numpy, scipy, h5py, hdf5, libopenblas | see `env.lock.txt` | BSD-3-Clause |
+| pyyaml, pydantic | 6.0.3, 2.14.1 | MIT |
+| python | 3.12.15 | PSF (Python-2.0) |
+
+Tools that set the environment up: micromamba (BSD-3-Clause) inside the WSL2 Ubuntu 24.04 distribution.
+
 ## Outside the MIT / BSD / Apache / PSF list — needs a decision
 
 1. **pillow (MIT-CMU)**: a permissive, OSI-approved "historical permission notice" license with no copyleft. It is a hard runtime dependency of matplotlib. Options: accept MIT-CMU as permissive, or move matplotlib to an optional `etalon[plot]` extra.
