@@ -1628,6 +1628,11 @@
             "title": "Steps",
             "type": "integer"
           },
+          "title": {
+            "description": "The script's title now (its docstring's first line, as in the workspace row).",
+            "title": "Title",
+            "type": "string"
+          },
           "wall_time_s": {
             "title": "Wall Time S",
             "type": "number"
@@ -1636,6 +1641,7 @@
         "required": [
           "result_id",
           "simulation_id",
+          "title",
           "status",
           "started_at",
           "finished_at",
@@ -1958,6 +1964,11 @@
             ],
             "title": "Step"
           },
+          "title": {
+            "description": "The script's title: its docstring's first line up to the first \":\" (see\n``script_title``), e.g. \"Strip waveguide\".",
+            "title": "Title",
+            "type": "string"
+          },
           "total_steps": {
             "anyOf": [
               {
@@ -1984,6 +1995,7 @@
         "required": [
           "id",
           "name",
+          "title",
           "path",
           "status",
           "modified"

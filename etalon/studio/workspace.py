@@ -6,6 +6,7 @@ job runner writes from U2; no sidecar means a draft. The scan never fails
 because of one bad file: an unreadable sidecar gives the status "unknown".
 """
 
+import ast
 import hashlib
 import json
 import os
@@ -60,6 +61,9 @@ class SimulationRow(BaseModel):
     """12 hex characters of sha256(relative POSIX path): stable while the file is not moved."""
     name: str
     """File name, e.g. ``ring_r10_g200.py``."""
+    title: str
+    """The script's title: its docstring's first line up to the first ":" (see
+    ``script_title``), e.g. "Strip waveguide"."""
     path: str
     """Path relative to the workspace folder, with ``/`` separators."""
     status: Status
@@ -162,6 +166,54 @@ def _read_sidecar(script: Path) -> SidecarStatus | StatusReason | None:
         return "invalid_fields"
 
 
+_titles: dict[tuple[str, int, int], str] = {}
+"""``script_title`` answers by (path, mtime in ns, size): the scan re-reads only changed files."""
+
+
+def title_from_docstring(docstring: str | None, stem: str) -> str:
+    """The title for a module docstring, or for the file stem when there is none.
+
+    The docstring's first line up to its first ":" ("Strip waveguide: a silicon strip
+    ..." gives "Strip waveguide"), else the whole first line. Without a docstring:
+    the stem with underscores as spaces and its first letter capitalised
+    ("ring_r10_g200" gives "Ring r10 g200").
+    """
+    lines = (docstring or "").strip().splitlines()
+    first = lines[0].strip() if lines else ""
+    head = first.split(":", 1)[0].strip()
+    if head:
+        return head
+    if first:
+        return first
+    words = stem.replace("_", " ").strip() or stem
+    return words[:1].upper() + words[1:]
+
+
+def script_title(script: Path) -> str:
+    """The title of ``script``, from its module docstring (``title_from_docstring``).
+
+    The file is parsed with ``ast`` and never executed. A file that cannot be read or
+    parsed (a syntax error, a null byte, a bad encoding) gets the title from its stem.
+    """
+    try:
+        stat = script.stat()
+    except OSError:
+        return title_from_docstring(None, script.stem)
+    key = (str(script), stat.st_mtime_ns, stat.st_size)
+    cached = _titles.get(key)
+    if cached is not None:
+        return cached
+    try:
+        docstring = ast.get_docstring(ast.parse(script.read_bytes(), filename=str(script)))
+    except (OSError, SyntaxError, ValueError, RecursionError):
+        docstring = None
+    title = title_from_docstring(docstring, script.stem)
+    if len(_titles) > 2 * MAX_SCRIPTS:
+        _titles.clear()
+    _titles[key] = title
+    return title
+
+
 def _sha256(path: Path) -> str | None:
     try:
         return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -177,6 +229,7 @@ def row_for(script: Path, folder: Path, jobs: Mapping[str, str] | None = None) -
     base = {
         "id": sim_id,
         "name": script.name,
+        "title": script_title(script),
         "path": relative,
         "job_id": None if jobs is None else jobs.get(sim_id),
     }

@@ -1190,6 +1190,11 @@ export interface components {
              * @description Time steps actually taken (fewer than planned when cancelled).
              */
             steps: number;
+            /**
+             * Title
+             * @description The script's title now (its docstring's first line, as in the workspace row).
+             */
+            title: string;
             /** Wall Time S */
             wall_time_s: number;
         };
@@ -1330,6 +1335,12 @@ export interface components {
             status_reason?: ("unreadable" | "invalid_json" | "invalid_fields" | "interrupted") | null;
             /** Step */
             step?: number | null;
+            /**
+             * Title
+             * @description The script's title: its docstring's first line up to the first ":" (see
+             *     ``script_title``), e.g. "Strip waveguide".
+             */
+            title: string;
             /** Total Steps */
             total_steps?: number | null;
             /** Wall Time S */

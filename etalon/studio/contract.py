@@ -498,6 +498,8 @@ class ResultMeta(Model):
 
     result_id: str
     simulation_id: str
+    title: str
+    """The script's title now (its docstring's first line, as in the workspace row)."""
     status: RunStatus
     """"failed" here means the script failed after ``run()`` returned, so the data exists."""
     started_at: AwareDatetime

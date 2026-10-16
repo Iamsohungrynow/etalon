@@ -29,7 +29,7 @@ from etalon.studio.contract import (
 )
 from etalon.studio.errors import StudioError
 from etalon.studio.preview import build_preview, solver_grid
-from etalon.studio.workspace import sidecar_dir
+from etalon.studio.workspace import script_title, sidecar_dir
 
 RESULT_ID = re.compile(r"^(?P<sim>[0-9a-f]{12})~(?P<stamp>[0-9]{8}T[0-9]{6}Z(-[0-9]+)?)$")
 DFT_UNITS = {"E": "V·s/m", "H": "A·s/m"}
@@ -66,6 +66,7 @@ def result_meta(script: Path, meta: dict[str, Any]) -> ResultMeta:
     return ResultMeta(
         result_id=meta["result_id"],
         simulation_id=meta["simulation_id"],
+        title=script_title(script),
         status=meta["status"],
         started_at=meta["started_at"],
         finished_at=meta["finished_at"],
