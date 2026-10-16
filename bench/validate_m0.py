@@ -1,6 +1,6 @@
 """M0 validation report: vacuum dispersion, CPML reflection, source normalisation, throughput.
 
-Writes bench/results/m0_vacuum.png and bench/results/<git-sha>.json.
+Writes bench/results/m0_vacuum.png and the "m0" section of bench/results/<git-sha>.json.
 
     python bench/validate_m0.py            # CUDA when available, NumPy otherwise
     python bench/validate_m0.py --numpy    # force the CPU reference backend
@@ -8,10 +8,13 @@ Writes bench/results/m0_vacuum.png and bench/results/<git-sha>.json.
 
 import datetime
 import json
-import subprocess
 import sys
 from dataclasses import asdict
 from pathlib import Path
+from typing import Any
+
+if __package__ in (None, ""):  # run as a file: python bench/validate_m0.py
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import matplotlib
 import matplotlib.ticker
@@ -21,13 +24,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import etalon as et
+from bench.record import RESULTS, git_sha, update_record
 from etalon.analysis import numerical_phase_velocity
 from etalon.fdtd.backends import get_backend
 from etalon.grid.yee import YeeGrid2D, courant_time_step
 from etalon.validation import m0
 from etalon.validation.throughput import measure_throughput
-
-RESULTS = Path(__file__).parent / "results"
 
 # Reference data-viz palette, light mode (validated: CVD ΔE 24.7, normal-vision ΔE 33.6)
 SURFACE, INK, INK_2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3de"
@@ -35,24 +37,7 @@ SERIES = {0.0: "#2a78d6", 45.0: "#eb6834"}
 PROBES = {"side": "#2a78d6", "corner": "#eb6834"}
 
 
-def git_sha() -> str:
-    def git(*args: str) -> str:
-        return subprocess.run(
-            ["git", *args], capture_output=True, text=True, check=True, cwd=RESULTS.parent.parent
-        ).stdout.strip()
-
-    try:
-        sha = git("rev-parse", "--short", "HEAD")
-        # untracked files and this script's own outputs in bench/results do not make it dirty
-        dirty = git(
-            "status", "--porcelain", "--untracked-files=no", "--", ".", ":(exclude)bench/results"
-        )
-        return sha + ("-dirty" if dirty else "")
-    except (OSError, subprocess.CalledProcessError):
-        return "nogit"
-
-
-def style(ax, title: str) -> None:
+def style(ax: Any, title: str) -> None:
     ax.set_facecolor(SURFACE)
     ax.set_title(title, loc="left", fontsize=10, color=INK, fontweight="bold")
     ax.grid(True, color=GRID, linewidth=0.6)
@@ -65,7 +50,7 @@ def style(ax, title: str) -> None:
     ax.yaxis.label.set_color(INK_2)
 
 
-def plain_log_x(ax) -> None:
+def plain_log_x(ax: Any) -> None:
     """Log x axis with plain tick labels (8, 10, 20, ...) instead of 2×10¹."""
     ax.set_xscale("log")
     ax.set_xticks([8, 10, 15, 20, 30, 40, 60, 80])
@@ -73,7 +58,7 @@ def plain_log_x(ax) -> None:
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
 
-def field_snapshot(backend: str):
+def field_snapshot(backend: str) -> Any:
     sim = et.Simulation(
         size=(8.0, 8.0, 0.0),
         grid=et.UniformGrid(dl=0.05),
@@ -254,21 +239,20 @@ def main() -> None:
                 "dl_um": c.dl,
                 "angle_deg": c.angle,
                 "cells_per_wavelength": [
-                    float(c.cells_per_wavelength.min()),
-                    float(c.cells_per_wavelength.max()),
+                    float(np.min(c.cells_per_wavelength)),
+                    float(np.max(c.cells_per_wavelength)),
                 ],
-                "max_abs_residual_vs_yee": float(np.abs(c.v_measured / c.v_theory - 1).max()),
-                "min_v_over_c": float(c.v_measured.min()),
+                "max_abs_residual_vs_yee": float(np.max(np.abs(c.v_measured / c.v_theory - 1))),
+                "min_v_over_c": float(np.min(c.v_measured)),
             }
             for c in dispersion
         ],
         "cpml_reflection": dict(zip(reflection.probes, map(float, reflection.error), strict=True)),
-        "late_time_final_energy_rel": float(late.energy[-1] / late.energy.max()),
+        "late_time_final_energy_rel": float(late.energy[-1] / np.max(late.energy)),
         "green_function_max_rel_error": green_error,
         "throughput": asdict(throughput),
     }
-    out = RESULTS / f"{sha}.json"
-    out.write_text(json.dumps(record, indent=2))
+    out = update_record(sha, "m0", record)
     print(json.dumps(record, indent=2))
     print(f"wrote {png} and {out}")
 

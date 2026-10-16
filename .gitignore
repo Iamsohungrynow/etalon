@@ -27,3 +27,6 @@ studio/dist-demo/
 # Landing page: copied in from bench/results/ at deploy time
 site/m0_vacuum.png
 site/media/
+
+# Bench: etalon results are regenerated per commit; Meep references in bench/meep/out are committed
+bench/etalon/out/

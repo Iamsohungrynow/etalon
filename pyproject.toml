@@ -33,6 +33,11 @@ dev = [
     "mypy>=1.10",
     "httpx2>=2.13",
 ]
+# bench/ (Meep comparison harness): reads bench/config.yaml. Not an etalon runtime dependency.
+bench = ["pyyaml>=6.0"]
+
+[tool.uv]
+default-groups = ["dev", "bench"]
 
 [tool.hatch.version]
 path = "etalon/__init__.py"
@@ -81,5 +86,5 @@ strict = true
 
 [[tool.mypy.overrides]]
 # No type stubs ship with these.
-module = ["scipy.*", "cupy", "cupy.*"]
+module = ["scipy.*", "cupy", "cupy.*", "yaml", "meep", "meep.*"]
 ignore_missing_imports = true

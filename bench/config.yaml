@@ -1,0 +1,109 @@
+# Frozen numbers for the etalon-vs-Meep benchmark (docs/plan-bench.md §5).
+#
+# Both sides read this file: bench/meep/run_device.py (in the Meep environment) and
+# bench/etalon/run_device.py (in etalon's). Every number either side uses comes from here or
+# is derived from it in bench/config.py, so the comparison is one-to-one.
+#
+# Units: lengths in µm, wavelengths in µm (vacuum), times in fs.
+# Grid rule (checked on load): region centres sit on grid nodes and every extent is an even
+# number of cells, so both codes put the same Yee nodes in the same places.
+# Changing a number changes the config hash of the devices it touches; their cached Meep
+# results are then stale and are re-run.
+schema: 1
+
+materials:
+  si: 3.476   # fixed index, mvp-spec §2; dispersive media arrive in M3
+  sio2: 1.444
+
+strip:
+  width: 0.5
+  thickness: 0.22
+
+ports:
+  width: 2.5          # in-plane extent of every mode plane, centred on its strip
+  height: 2.2         # z extent of every mode plane (3D tier)
+  lead: 1.0           # port plane distance from the end of the device's features
+  source_offset: 0.5  # the mode source sits this far upstream of port 1
+
+# Largest distance between a polygon edge and the true curve it approximates (arcs, S-bends).
+# Both codes get the same polygons, so this is part of the geometry, not a solver setting.
+curve_tolerance: 1.0e-4
+
+tiers:
+  2d:
+    dims: 2
+    # TE0 effective index of a 0.22 µm Si slab in SiO2 at 1.55 µm (exact root of the symmetric
+    # slab equation; tests/bench/test_config.py recomputes it). The 2D tier models each strip as
+    # a z-invariant core of this index in SiO2 (effective-index method).
+    core_index: 2.84778
+    resolution: 50       # px/µm: Meep resolution 50, etalon UniformGrid(dl=0.02)
+    pml: 1.0             # Meep cell = region + 2·pml; etalon PML(layers=50) outside the region
+    courant_meep: 0.5    # Meep S; etalon courant = S·√2 = 0.7071
+    devices: [point2d, straight, bend, dc, mmi, ring]
+  3d:
+    dims: 3
+    resolution: 50
+    pml: 0.5             # set to 1.0 if pilot P1 shows 0.5 µm moves S by more than 1e-3
+    courant_meep: 0.5    # etalon courant = S·√3 = 0.8660
+    z_span: 2.4          # region z ∈ [−1.2, 1.2]: 1.09 µm of oxide beyond the core
+    # MVP: the 3D check is the straight guide alone (Meep ≈ 4 h, run once when M1 has 3D).
+    # bend, dc, mmi and ring in 3D come after the MVP: Meep 6–35 h each on this machine, and
+    # mmi and ring need ≥ 16 GB GPU and ≥ 64 GB RAM (plan §2, §14).
+    devices: [straight]
+
+etalon:
+  precision: single
+  cpu_full_run_max_minutes: 30   # longer NumPy runs are skipped with their estimate
+
+meep:
+  processes: 6   # MPI ranks: one per physical core of the dev machine
+
+# run_time_fs: fixed simulated time, frozen after pilot P2 (fields at every output port decay
+# to ≤ 1e-5 of their peak energy). band: vacuum wavelengths, uniform, inclusive.
+devices:
+  point2d:   # device 0: the convention check both codes can run in M0 (plan §3)
+    medium: sio2
+    region: {center: [0.0, 0.0], size: [8.0, 4.0]}
+    source: [-2.99, 0.01]          # on an Hz node: odd multiples of Δ/2
+    probes: [[-1.99, 0.01], [2.01, 0.01]]
+    band: {min: 1.50, max: 1.60, points: 51}
+    run_time_fs: 300
+  straight:
+    length: 10.0                   # port 1 to port 2
+    region: {center: [0.0, 0.0], size: [12.0, 4.0]}
+    band: {min: 1.50, max: 1.60, points: 51}
+    run_time_fs: 1000
+  bend:
+    radius: 5.0                    # centreline, circular 90°
+    region: {center: [2.2, 2.8], size: [8.4, 8.4]}
+    band: {min: 1.50, max: 1.60, points: 51}
+    run_time_fs: 1000
+  dc:                              # Liu & Poon 2025 §3.1 coupler, cosine S-bends
+    gap: 0.236
+    coupling_length: 20.0
+    sbend_length: 10.0
+    pitch: 4.0                     # arm spacing at the ports, centre to centre
+    region: {center: [0.0, 0.0], size: [44.0, 6.6]}
+    band: {min: 1.50, max: 1.60, points: 51}
+    run_time_fs: 1600
+  mmi:                             # 1×2, centre-fed; length = 3Lπ/8 with the slab index
+    width: 6.0
+    length: 33.6
+    taper_width: 1.5
+    taper_length: 5.0
+    output_offset: 1.5             # output centres at y = ±1.5 = ±width/4
+    region: {center: [0.0, 0.0], size: [47.6, 8.0]}
+    band: {min: 1.50, max: 1.60, points: 51}
+    run_time_fs: 2000
+  ring:                            # add-drop racetrack with Liu & Poon's coupler length
+    radius: 10.0                   # centreline radius of the four circular quarter arcs
+    gap: 0.2
+    straight_x: 4.0                # coupling straights (top and bottom)
+    straight_y: 0.6                # side straights
+    region: {center: [0.0, 0.0], size: [28.0, 24.6]}
+    # Pilot P2 (2D, 10 ps): Harminv Q ≈ 2300–2600 and FSR ≈ 10.6 nm, resonances at 1.5396,
+    # 1.5501 and 1.5607 µm; the fields had decayed only to 6.6e-4. 24 ps brings that to ≈ 2e-6.
+    # The band is wider than mvp-spec's 1.54–1.56 so it holds at least two whole resonances
+    # (FSR needs two) in both tiers; 0.05 nm steps give ≈ 13 samples per FWHM.
+    band: {min: 1.535, max: 1.565, points: 601}
+    run_time_fs: 24000

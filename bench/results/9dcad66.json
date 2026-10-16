@@ -1,0 +1,111 @@
+{
+  "git_sha": "9dcad66",
+  "meep_comparison": {
+    "generated": "2026-10-16T13:52:16+00:00",
+    "tiers": {
+      "2d": {
+        "point2d": {
+          "status": "compared",
+          "resolution": 50,
+          "passed": true,
+          "timing_s": {
+            "etalon_cuda": {
+              "wall": 4.3876805999316275,
+              "extrapolated": false
+            },
+            "etalon_numpy": {
+              "wall": 14.641965499613434,
+              "extrapolated": false
+            },
+            "meep": {
+              "wall": 2.6261795489999713,
+              "extrapolated": false
+            }
+          },
+          "notes": [],
+          "max_abs_s": 2.1309724818618925e-06,
+          "metrics": [
+            {
+              "name": "max |\u0394T21| (complex)",
+              "value": 2.1411519548171267e-06,
+              "gate": 0.001,
+              "unit": "",
+              "passed": true
+            }
+          ],
+          "cuda_vs_numpy": 4.270736184580026e-07
+        },
+        "straight": {
+          "status": "needs M1: ModeSource, ModePortMonitor, PolySlab (not in etalon 0.0.1 yet)",
+          "resolution": 50,
+          "passed": null,
+          "timing_s": {
+            "etalon_cuda": null,
+            "etalon_numpy": null,
+            "meep": {
+              "wall": 8.172690732999854,
+              "extrapolated": false
+            }
+          },
+          "notes": []
+        },
+        "bend": {
+          "status": "needs M1: ModeSource, ModePortMonitor, PolySlab (not in etalon 0.0.1 yet)",
+          "resolution": 50,
+          "passed": null,
+          "timing_s": {
+            "etalon_cuda": null,
+            "etalon_numpy": null,
+            "meep": {
+              "wall": 45.32206211399989,
+              "extrapolated": false
+            }
+          },
+          "notes": []
+        },
+        "dc": {
+          "status": "needs M1: ModeSource, ModePortMonitor, PolySlab (not in etalon 0.0.1 yet)",
+          "resolution": 50,
+          "passed": null,
+          "timing_s": {
+            "etalon_cuda": null,
+            "etalon_numpy": null,
+            "meep": {
+              "wall": 384.4756020730001,
+              "extrapolated": false
+            }
+          },
+          "notes": []
+        },
+        "mmi": {
+          "status": "needs M1: ModeSource, ModePortMonitor, PolySlab (not in etalon 0.0.1 yet)",
+          "resolution": 50,
+          "passed": null,
+          "timing_s": {
+            "etalon_cuda": null,
+            "etalon_numpy": null,
+            "meep": {
+              "wall": 384.840868793,
+              "extrapolated": false
+            }
+          },
+          "notes": []
+        },
+        "ring": {
+          "status": "needs M1: ModeSource, ModePortMonitor, PolySlab (not in etalon 0.0.1 yet)",
+          "resolution": 50,
+          "passed": null,
+          "timing_s": {
+            "etalon_cuda": null,
+            "etalon_numpy": null,
+            "meep": {
+              "wall": 9329.470908779,
+              "extrapolated": false
+            }
+          },
+          "notes": []
+        }
+      }
+    }
+  }
+}

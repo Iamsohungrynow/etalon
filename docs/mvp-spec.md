@@ -88,12 +88,14 @@ Gate after M2: if accuracy < 1 % cannot be reached on any device, stop and diagn
 | Device | Geometry (µm) | Band | Quantity compared |
 | --- | --- | --- | --- |
 | Straight waveguide | 0.5 × 0.22 strip, 10 long, SiO2 clad | 1.50–1.60 | |S21|, phase |
-| 90° bend | radius 5, same strip | 1.50–1.60 | |S21| |
-| Directional coupler | gap 0.2, length 10 | 1.50–1.60 | |S31|², |S41|² (coupling ratio) |
-| 1×2 MMI | width 6, length ≈ 42 (tune) | 1.50–1.60 | |S21|², |S31|², imbalance |
-| Ring resonator (add–drop) | radius 10, gap 0.2 | 1.54–1.56 | resonance λ, FSR, Q, extinction |
+| 90° bend | radius 5 circular, same strip | 1.50–1.60 | |S21| |
+| Directional coupler | gap 0.236, length 20, cosine S-bends 10 long to a 4 pitch (Liu & Poon §3.1) | 1.50–1.60 | |S31|², |S41|² (coupling ratio) |
+| 1×2 MMI | width 6, length 33.6 (3Lπ/8, slab index), tapers 0.5 → 1.5 over 5, outputs at ±1.5 | 1.50–1.60 | |S21|², |S31|², imbalance |
+| Ring resonator (add–drop) | racetrack: radius 10, gap 0.2, 4 coupling straights, 0.6 side straights (Liu & Poon's coupler) | 1.54–1.56 | resonance λ, FSR, Q, extinction |
 
-Meep settings are frozen in `bench/meep/config.yaml` (resolution, PML, run time, courant) and mirrored one-to-one in etalon.
+Liu & Poon cover only the directional coupler and, as an all-pass racetrack, the ring; the other devices use our own geometry. **MVP gate (2026-10-16): the 2D tier (all five devices, effective index) plus the 3D straight waveguide.** The other devices in 3D follow after the MVP: on this machine Meep needs 6–35 h each, and the MMI and ring need a ≥ 16 GB GPU and ≥ 64 GB RAM. Exact numbers, tiers (2D effective index and 3D) and gates: `bench/config.yaml` and `docs/plan-bench.md`.
+
+Shared settings (resolution, PML, run time, Courant, band, geometry) are frozen in `bench/config.yaml`, which both the Meep scripts and the etalon side read, so the comparison is one-to-one. Plan: `docs/plan-bench.md`.
 
 ## 6. Validation ladder (run before every benchmark)
 
