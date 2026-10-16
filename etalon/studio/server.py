@@ -1,7 +1,9 @@
 """Studio's FastAPI app: the endpoints of ui-ux-spec §9, and the SPA.
 
 U0's routes (workspace, settings, system) are here; U1's (templates, spec,
-jobs, results; contract in docs/plan-u1.md §13) are in ``routes.py``.
+jobs, results; contract in docs/plan-u1.md §13) are in ``routes.py``. U1's
+modules import NumPy and the solver's models, so ``create_app(state, full=False)``
+leaves them out: ``etalon studio`` serves that quick app first (``staged.py``).
 
 Nothing here talks to the network beyond answering 127.0.0.1 (see
 ``security.py``). FastAPI's Swagger/ReDoc pages are off because they load from a
@@ -9,9 +11,10 @@ CDN, and its native OpenTelemetry is off so no environment variable can turn on
 an exporter.
 """
 
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -20,16 +23,16 @@ from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 
 from etalon import __version__
-from etalon.studio.capture import SpecCache
-from etalon.studio.contract import EXTRA_SCHEMA_MODELS
 from etalon.studio.errors import ApiError, ModelError, StudioError
-from etalon.studio.jobs import Job, JobManager
-from etalon.studio.routes import register_routes
 from etalon.studio.security import HTML_SECURITY_HEADERS, GuardMiddleware
 from etalon.studio.settings import SettingsStore, StudioSettings
 from etalon.studio.system import GpuProbe, SystemInfo, system_info
 from etalon.studio.throughput import ThroughputStore
 from etalon.studio.workspace import Workspace, scan
+
+if TYPE_CHECKING:
+    from etalon.studio.capture import SpecCache
+    from etalon.studio.jobs import Job, JobManager
 
 STATIC_DIR = Path(__file__).with_name("static")
 INDEX_HTML_TAG = '<html lang="en" data-theme="dark">'
@@ -74,16 +77,39 @@ class StudioState:
     static_dir: Path = field(default=STATIC_DIR)
     config_dir: Path | None = None
     """Where measured throughput is kept for estimates; None keeps it in memory."""
-    specs: SpecCache = field(init=False)
     throughput: ThroughputStore = field(init=False)
-    jobs: JobManager = field(init=False)
+    _specs: "SpecCache | None" = field(init=False, default=None)
+    _jobs: "JobManager | None" = field(init=False, default=None)
+    _lock: threading.Lock = field(init=False, default_factory=threading.Lock)
 
     def __post_init__(self) -> None:
-        self.specs = SpecCache()
         self.throughput = ThroughputStore(self.config_dir)
-        self.jobs = JobManager(on_finished=self._record_throughput)
 
-    def _record_throughput(self, job: Job) -> None:
+    # The spec cache and the job manager are made on first use: their modules import
+    # the contract and the runner (NumPy), which the quick app does without.
+    @property
+    def specs(self) -> "SpecCache":
+        with self._lock:
+            if self._specs is None:
+                from etalon.studio.capture import SpecCache
+
+                self._specs = SpecCache()
+            return self._specs
+
+    @property
+    def jobs(self) -> "JobManager":
+        with self._lock:
+            if self._jobs is None:
+                from etalon.studio.jobs import JobManager
+
+                self._jobs = JobManager(on_finished=self._record_throughput)
+            return self._jobs
+
+    def running_jobs(self) -> dict[str, str]:
+        """Simulation id → job id of every running job; none before the job manager exists."""
+        return self._jobs.running() if self._jobs is not None else {}
+
+    def _record_throughput(self, job: "Job") -> None:
         """A run that stepped for a second or more tells the estimate this machine's speed."""
         if job.done is None or job.done["status"] == "failed" or not job.progress:
             return
@@ -121,7 +147,8 @@ def _checked_workspace(value: str) -> Path:
     return folder.resolve()
 
 
-def create_app(state: StudioState) -> FastAPI:
+def create_app(state: StudioState, full: bool = True) -> FastAPI:
+    """Studio's app. ``full=False`` is the quick app: U0's routes and the SPA, no U1 routes."""
     app = FastAPI(
         title="etalon Studio",
         version=__version__,
@@ -149,7 +176,7 @@ def create_app(state: StudioState) -> FastAPI:
     def get_workspace() -> Workspace:
         folder = Path(state.settings.get().workspace)
         try:
-            return scan(folder, jobs=state.jobs.running())
+            return scan(folder, jobs=state.running_jobs())
         except FileNotFoundError:
             raise StudioError(
                 404, "workspace_missing", f"workspace folder not found: {folder}"
@@ -168,7 +195,10 @@ def create_app(state: StudioState) -> FastAPI:
     def get_system() -> SystemInfo:
         return system_info(state.probe)
 
-    register_routes(app, state)
+    if full:
+        from etalon.studio.routes import register_routes
+
+        register_routes(app, state)
 
     @app.get("/{path:path}", include_in_schema=False)
     def spa(path: str, request: Request) -> Response:
@@ -193,7 +223,10 @@ def create_app(state: StudioState) -> FastAPI:
         html = index.read_text(encoding="utf-8").replace(INDEX_HTML_TAG, root_tag, 1)
         return HTMLResponse(html, headers={**HTML_SECURITY_HEADERS, "Cache-Control": "no-cache"})
 
-    _add_extra_schemas(app, EXTRA_SCHEMA_MODELS)
+    if full:
+        from etalon.studio.contract import EXTRA_SCHEMA_MODELS
+
+        _add_extra_schemas(app, EXTRA_SCHEMA_MODELS)
     return app
 
 

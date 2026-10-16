@@ -157,3 +157,29 @@ def test_studio_server_imports_no_heavy_packages():
         [sys.executable, "-c", probe], capture_output=True, text=True, check=True, timeout=120
     )
     assert json.loads(out.stdout.strip().splitlines()[-1]) == []
+
+
+def test_studio_starts_without_the_u1_modules(tmp_path):
+    """plan-u1 §14.1: until the Workspace has its rows, the server needs none of U1's modules
+    (they import NumPy and the solver's models). launch.prepare builds the quick app."""
+    u1 = ("routes", "contract", "capture", "jobs", "runner", "preview", "results", "binary")
+    probe = (
+        "import json, sys\nfrom pathlib import Path\nfrom etalon.studio import launch\n"
+        "launch.GpuProbe = lambda: None\n"
+        f"prepared = launch.prepare(Path({str(tmp_path)!r}), 0)\n"
+        "assert not isinstance(prepared, int)\nprepared[1].close()\n"
+        "print(json.dumps(sorted(m for m in sys.modules if m.startswith('etalon.studio.'))))"
+    )
+    env = {**os.environ, "ETALON_CONFIG_DIR": str(tmp_path / "config")}
+    out = subprocess.run(
+        [sys.executable, "-c", probe],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=120,
+        cwd=ROOT,
+        env=env,
+    )
+    loaded = set(json.loads(out.stdout.strip().splitlines()[-1]))
+    assert "etalon.studio.staged" in loaded
+    assert loaded.isdisjoint(f"etalon.studio.{name}" for name in u1)
