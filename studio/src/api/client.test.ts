@@ -81,7 +81,7 @@ describe("V6: client", () => {
     renderApp("/", server);
     expect(await screen.findByRole("heading", { name: "This Studio session has ended" })).toBeVisible();
     expect(screen.getByText("etalon studio")).toHaveAttribute("translate", "no");
-    await waitFor(() => expect(document.title).toBe("This Studio session has ended · etalon Studio"));
+    await waitFor(() => expect(document.title).toBe("This Studio session has ended · Etalon Studio"));
     expect(server.calls.every((call) => call.token === TEST_TOKEN)).toBe(true);
   });
 });

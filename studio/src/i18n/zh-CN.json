@@ -1,8 +1,8 @@
 {
   "app": {
-    "brandName": "etalon",
+    "brandName": "Etalon",
     "brandProduct": "Studio",
-    "documentTitle": "{{screen}} · etalon Studio"
+    "documentTitle": "{{screen}} · Etalon Studio"
   },
   "nav": {
     "label": "主导航",
@@ -16,7 +16,7 @@
     "backend": "后端",
     "workspace": "工作区",
     "simulations_other": "个仿真",
-    "version": "etalon",
+    "version": "Etalon",
     "offline": "离线",
     "offlineHint": "Studio 不发出任何网络请求。",
     "detecting": "正在检测 GPU…",
@@ -140,7 +140,7 @@
     },
     "about": {
       "label": "关于",
-      "version": "etalon 版本",
+      "version": "Etalon 版本",
       "python": "Python",
       "platform": "平台",
       "licences": "第三方许可证",
@@ -378,7 +378,7 @@
     },
     "meta": {
       "finished": "完成于",
-      "version": "etalon 版本",
+      "version": "Etalon 版本",
       "backend": "后端",
       "precision": "精度",
       "grid": "网格",
@@ -467,7 +467,7 @@
     "fieldScale": "测试图样"
   },
   "demo": {
-    "banner": "演示：在浏览器中回放 etalon 求解器事先算出的结果。此处不进行任何计算；真正的 Studio 在您自己的计算机上运行，命令为 <cmd>etalon studio</cmd>。",
+    "banner": "演示：在浏览器中回放 Etalon 求解器事先算出的结果。此处不进行任何计算；真正的 Studio 在您自己的计算机上运行，命令为 <cmd>etalon studio</cmd>。",
     "needsLocal": "需要本地 Studio：此演示只回放已记录的运行。"
   }
 }

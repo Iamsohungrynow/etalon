@@ -1,8 +1,8 @@
 {
   "app": {
-    "brandName": "etalon",
+    "brandName": "Etalon",
     "brandProduct": "Studio",
-    "documentTitle": "{{screen}} · etalon Studio"
+    "documentTitle": "{{screen}} · Etalon Studio"
   },
   "nav": {
     "label": "Main",
@@ -17,7 +17,7 @@
     "workspace": "Workspace",
     "simulations_one": "simulation",
     "simulations_other": "simulations",
-    "version": "etalon",
+    "version": "Etalon",
     "offline": "Offline",
     "offlineHint": "Studio makes no network requests.",
     "detecting": "Detecting GPU…",
@@ -142,7 +142,7 @@
     },
     "about": {
       "label": "About",
-      "version": "etalon version",
+      "version": "Etalon version",
       "python": "Python",
       "platform": "Platform",
       "licences": "Third-party licences",
@@ -380,7 +380,7 @@
     },
     "meta": {
       "finished": "Finished",
-      "version": "etalon",
+      "version": "Etalon",
       "backend": "Backend",
       "precision": "Precision",
       "grid": "Grid",
@@ -469,7 +469,7 @@
     "fieldScale": "Test pattern"
   },
   "demo": {
-    "banner": "Demo: results the etalon solver computed earlier, replayed in your browser. Nothing is computed here; the real Studio runs on your own machine with <cmd>etalon studio</cmd>.",
+    "banner": "Demo: results the Etalon solver computed earlier, replayed in your browser. Nothing is computed here; the real Studio runs on your own machine with <cmd>etalon studio</cmd>.",
     "needsLocal": "Needs the local Studio: this demo only replays recorded runs."
   }
 }

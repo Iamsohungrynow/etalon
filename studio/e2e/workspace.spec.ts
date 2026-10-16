@@ -37,7 +37,7 @@ test("P1: the fixture workspace lists every status, and skips what it should", a
     await expect(page.getByText(skipped)).toHaveCount(0);
   }
   await expect(page).toHaveURL(/\/$/); // the token left the address bar
-  await expect(page).toHaveTitle("Workspace · etalon Studio");
+  await expect(page).toHaveTitle("Workspace · Etalon Studio");
 });
 
 test("P2: a 50-script workspace lists all 50; rows lead to their screens", async ({ page, request }) => {

@@ -27,6 +27,7 @@ export const LATIN_TERMS = [
   "M2",
   "JetBrains Mono",
   "etalon",
+  "Etalon",
   "Studio",
   "CUDA",
   "GPU",
