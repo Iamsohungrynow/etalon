@@ -19,3 +19,6 @@ etalon/studio/static/
 Thumbs.db
 .vscode/
 .idea/
+
+# Landing page: copied in from bench/results/ at deploy time
+site/m0_vacuum.png

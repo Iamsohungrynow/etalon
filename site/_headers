@@ -1,0 +1,8 @@
+# Same policy as the Studio demo: nothing loads from any other origin.
+/*
+  Content-Security-Policy: default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

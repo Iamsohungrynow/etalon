@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>etalon — photonic FDTD on your own GPU</title>
+  <meta name="description" content="etalon: GPU-accelerated, on-premise photonic FDTD with a Python-native API. Every field on this page was computed by the etalon solver.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="frame">
+
+  <div class="ticker ticker-top" aria-hidden="true">
+    <div class="marquee" data-ticker="top"><span></span><span></span></div>
+  </div>
+  <div class="ticker ticker-bottom" aria-hidden="true">
+    <div class="marquee">
+      <span>c = 299,792,458 m/s • μ0 = 1.25663706212 × 10⁻⁶ H/m • ε0 = 8.8541878128 × 10⁻¹² F/m • η0 = 376.730 Ω • Δt = 0.99 · Δ / (c√2) •</span>
+      <span>c = 299,792,458 m/s • μ0 = 1.25663706212 × 10⁻⁶ H/m • ε0 = 8.8541878128 × 10⁻¹² F/m • η0 = 376.730 Ω • Δt = 0.99 · Δ / (c√2) •</span>
+    </div>
+  </div>
+  <div class="ticker ticker-left" aria-hidden="true">
+    <div class="marquee" data-ticker="left"><span></span><span></span></div>
+  </div>
+  <div class="ticker ticker-right" aria-hidden="true">
+    <div class="marquee" data-ticker="right"><span></span><span></span></div>
+  </div>
+
+  <main>
+    <section class="archive" aria-labelledby="archive-title">
+      <div class="archive-header">
+        <h1 id="archive-title">etalon</h1>
+        <p class="tagline" data-i18n="tagline"></p>
+        <div class="actions">
+          <a class="action primary" id="studio-link" data-i18n="openStudio" href="#"></a>
+          <a class="action" href="m0_vacuum.png" data-i18n="report"></a>
+          <button class="action lang" id="lang-btn" type="button"></button>
+        </div>
+      </div>
+      <p class="archive-description" data-i18n="description"></p>
+      <ul class="archive-list" id="archive-list"></ul>
+    </section>
+
+    <section class="stage" aria-label="Field viewport">
+      <div class="stage-header">
+        <div id="exp-id">—</div>
+        <div id="exp-date">—</div>
+        <button class="close-btn" id="close-btn" type="button" aria-label="Unload entry">✕</button>
+      </div>
+      <div class="visual-frame">
+        <div class="main-canvas">
+          <canvas id="field" width="600" height="600" role="img" aria-label="Field computed by etalon"></canvas>
+          <div class="scale-note" id="scale-note"></div>
+          <div class="experiment-overlay">
+            <b data-i18n="result"></b>
+            <span id="exp-log">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="stage-footer">
+        <h2 class="stage-title" id="exp-title">—</h2>
+        <p class="stage-abstract"><b id="exp-team"></b> <span id="exp-abstract"></span></p>
+      </div>
+    </section>
+
+    <aside class="inspector" aria-label="Inspector">
+      <div class="panel">
+        <span class="panel-label" data-i18n="subject"></span>
+        <div class="subject-name" id="subject-name">—</div>
+        <div class="subject-role" id="subject-role"></div>
+      </div>
+      <div class="panel">
+        <span class="panel-label" data-i18n="keywords"></span>
+        <div class="tag-cloud" id="tag-cloud"></div>
+      </div>
+      <div class="panel">
+        <span class="panel-label" data-i18n="params"></span>
+        <div class="spectrum-bar"></div>
+        <div class="knobs" id="knobs"></div>
+        <div class="figure">
+          <canvas id="figure" width="400" height="260" role="img" aria-label="Figure"></canvas>
+          <div class="figure-caption" id="figure-caption">FIG. —</div>
+        </div>
+      </div>
+      <div class="panel panel-live">
+        <span class="panel-label" data-i18n="liveStream"></span>
+        <div id="live-data" aria-live="off"></div>
+      </div>
+    </aside>
+  </main>
+</div>
+</body>
+</html>
