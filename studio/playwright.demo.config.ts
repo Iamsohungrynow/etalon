@@ -1,11 +1,13 @@
 /**
  * Playwright smoke test of the static demo build (docs/plan-demo.md), served by
  * `vite preview` exactly as Netlify serves it: no Studio server, no Python, no GPU.
- * Run `pnpm build:demo` first (it needs studio/demo-data/ from record_demo.py).
+ * Run `pnpm build:demo` first (it needs studio/demo-data/ from record_demo.py), with the
+ * same ETALON_BASE as here: the site's build serves it under /studio/.
  */
 import { defineConfig, devices } from "@playwright/test";
 
 const ORIGIN = "http://127.0.0.1:8792";
+const BASE = process.env.ETALON_BASE ?? "/";
 
 export default defineConfig({
   testDir: "e2e-demo",
@@ -27,7 +29,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "pnpm exec vite preview --mode demo",
-    url: `${ORIGIN}/`,
+    url: `${ORIGIN}${BASE}`,
     reuseExistingServer: false,
     timeout: 60_000,
     stdout: "pipe",
