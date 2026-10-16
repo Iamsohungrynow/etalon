@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
+from starlette.websockets import WebSocketDisconnect
 
 import etalon as et
 from etalon.grid.materials import permittivity_on_nodes
@@ -253,16 +254,19 @@ def test_a_late_socket_gets_the_whole_story(cpu_client, workspace):
 )
 def test_socket_needs_the_token_and_studios_origin(workspace, config_dir, token, origin):
     client = make_client(make_state(workspace, config_dir), token=None)
-    with pytest.raises(Exception), socket(client, "anything", token=token, origin=origin):
+    with pytest.raises(WebSocketDisconnect), socket(client, "anything", token=token, origin=origin):
         pass
 
 
 def test_socket_with_studios_origin_reaches_the_route(workspace, config_dir):
     client = make_client(make_state(workspace, config_dir), token=None)
     # An unknown job is closed by the route itself, after the guard let it through.
-    with pytest.raises(Exception) as raised, socket(client, "nope", origin="http://127.0.0.1:8787"):
+    with (
+        pytest.raises(WebSocketDisconnect) as raised,
+        socket(client, "nope", origin="http://127.0.0.1:8787"),
+    ):
         pass
-    assert getattr(raised.value, "reason", "") == "job_not_found"
+    assert raised.value.reason == "job_not_found"
 
 
 def test_cancel_unknown_job_is_404(client):
