@@ -299,7 +299,7 @@ Departures from the plan:
 - **The 3D view was blank on first load** until the window resized: it framed its camera before the canvas had a size. Found by looking, since the test only checked that the canvas existed. Fixed (`viewport/SizeWatcher.tsx`), and the Setup test now checks that the viewport actually draws.
 - **Not done:** parameters (`et.param`, a core API), the shutoff threshold line on the energy chart, and S-parameters, modes and 3D (M1–M2).
 
-### 14.1 P3 open time: findings and proposal (2026-10-16, side session; awaiting OK)
+### 14.1 P3 open time: findings, proposal and outcome (2026-10-16, side session)
 
 Measured on the Windows dev machine (Ryzen 5 5600), with the CPU load checked before each series. "Moderate load" below is 5 busy processes on 12 threads (30–40 % CPU). Each option was prototyped in a scratch copy of the package and timed against the others in alternation; nothing is committed.
 
@@ -350,3 +350,21 @@ FastAPI + uvicorn alone take 0.93 s in a fresh process here. Nothing Studio does
    - New tests for the wrapper: a U1 request before the build waits and succeeds; the first Workspace response starts the build; a failing build answers 500.
    - Then P3 three times, idle and under the 5-process load.
 4. **(c) only if (a) + (b) is not enough.** Setting `sys.modules["pydantic.v1"] = None` in `launch.py` makes FastAPI's v1 check take its `ImportError` path and saves ≈0.08 s. It relies on a FastAPI internal and affects the whole server process, so I would not add it unless P3 still fails.
+
+**Outcome so far: (b) is done (`50ef7e6`); (a) still needs your OK.**
+- **What changed.** `etalon studio` listens with the quick app and builds the full app after the first Workspace response, as proposed in point 2. Nothing outside `etalon/studio/` and `tests/studio/` changed.
+- **P3 with (b) alone** is better than the prototypes predicted. Building all of U1's routes and response models was costing more at start-up than the per-step numbers above suggest.
+
+| P3 (three or four runs each) | Low load (3–20 %) | Moderate load (5 busy processes) |
+| --- | --- | --- |
+| Baseline (a874fda) | 1.84–2.02 s | 2.11–2.23 s |
+| (b), committed | 1.70–1.92 s (one 2.24 s, the first run after the pytest suite) | 1.88–1.93 s |
+| (a) + (b), prototype | 1.52–1.70 s | 1.71–1.76 s |
+
+- **Checks.**
+  - pytest: 362 pass, 2 skipped.
+  - Playwright: 21 of 21 pass.
+  - vitest: 257 pass.
+  - ruff and mypy: clean.
+  - Note: the GPU job test needs `cupy-cuda12x[ctk]` in the venv (CUDA headers and NVRTC). A fresh `uv sync --extra gpu` does not install them.
+- **What's left.** P3 now passes under moderate load by 0.07–0.12 s. (a) would widen that margin to ≈0.25 s. It is a 60-line change to `etalon/__init__.py` plus two tests in `tests/unit/test_package_import.py`, ready to apply when you say so.
