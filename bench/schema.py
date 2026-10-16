@@ -82,7 +82,7 @@ class RunRecord(Model):
     extrapolated: bool = False
     """True when wall_time_s is extrapolated from a partial run (then there is no ``s``)."""
     final_decay: float | None = None
-    """Largest |field|² at an output port over the last 10 % of the run / its peak."""
+    """Largest late |field|² at the output ports (last 10 % of the run) / their largest peak."""
     s: dict[str, list[Complex]] = {}
     n_eff: dict[str, list[float]] = {}
     extra: dict[str, Any] = {}

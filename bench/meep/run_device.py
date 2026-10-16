@@ -66,9 +66,15 @@ class DecayProbe:
 
         return sample
 
-    @property
-    def decay(self) -> float:
-        return self.late / self.peak if self.peak > 0 else float("nan")
+
+def final_decay(probes: list[DecayProbe]) -> float:
+    """Largest late |field|² over all output probes / largest peak over all of them.
+
+    Normalising by the overall peak, not each probe's own, keeps a nearly dark port
+    (a ring's add port, a coupler's isolated port) from reading as unconverged noise.
+    """
+    peak = max(probe.peak for probe in probes)
+    return max(probe.late for probe in probes) / peak if peak > 0 else float("nan")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -281,7 +287,7 @@ def run_device(
         run_time_s=device.run_time_fs * 1e-15,
         wall_time_s=wall,
         stepping_time_s=stepping,
-        final_decay=max(probe.decay for probe in decay_probes),
+        final_decay=final_decay(decay_probes),
         s=s,
         n_eff=n_eff,
         extra=extra,

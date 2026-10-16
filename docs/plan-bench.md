@@ -330,3 +330,32 @@ Say "OK" to take every recommendation.
 - **WSL file access.** WSL reads the repository through `/mnt/c`, which is slow for many small files but irrelevant for a few JSON files. Outputs are written by rank 0 only (`mp.am_master()`).
 - **Meep 3D timings** in §2 are estimates until P5.
 - **Tight gates.** The straight-waveguide phase gate and the ring Q gate may prove unreachable even with both codes correct. If so, I stop and report the measured numbers with Meep's own P4 discretisation error. The gate is not moved quietly.
+
+## 14. Outcome (2026-10-16)
+
+Built as planned: every file in §4, tests B1–B9 (88 tests in `tests/bench/`; the whole suite is 154 tests and passes), ruff and mypy clean on `etalon/` and `bench/`.
+
+**Meep environment.** WSL2 Ubuntu 24.04 with micromamba. Exact package pins are in `bench/meep/env.lock.txt`:
+- pymeep 1.35.0 (`mpi_mpich` build), MPB 1.12.0, MPICH 4.3.2
+- Python 3.12.15, numpy 2.5.4, pydantic 2.14.1, pyyaml 6.0.3
+
+**point2d (the convention check).** max |ΔT21| = 2.1e-6 (etalon CUDA) and 2.3e-6 (NumPy) against Meep. The grids were identical: 500 × 300 cells and 8994 steps on both sides. The conventions agree: µm and Meep units, courant = S·√D, PML outside vs inside, grid alignment and e^(−iωt).
+- Meep's DFT grid confirms that Hz sits at odd multiples of Δ/2 from the region centre, as in etalon.
+- CUDA vs NumPy differ by 4e-7 (float32).
+
+**Pilots.** All in 2D, Meep on 6 ranks.
+
+| | Result |
+| --- | --- |
+| P1 PML 0.5 / 1.0 / 2.0 µm | straight and bend: \|ΔS11\| ≤ 1.2e-5, \|ΔS21\| ≤ 5e-8. The 3D tier keeps 0.5 µm. |
+| P2 run times | final decay with the config run times: straight 6.5e-16, bend 1.2e-16, dc 5.3e-12, mmi 5.5e-9 (all ≪ 1e-5). Run times frozen as configured. The ring's decay is in its reference result. |
+| P3 MPB phase | Deterministic: n_eff is identical at both straight-guide ports to 1e-15, and \|S21\| = 1 ± 2e-5. arg S21 − 2π n_eff L/λ = 0.43–0.46 rad, because MPB solves at 2× resolution while the FDTD propagates with Yee dispersion at Δ = 20 nm (Δn_eff ≈ 1e-2 in 2D). The complex S21 gate therefore tests whether etalon reproduces Meep's discretisation (both are Yee at the same Δ and Δt), not the true phase. |
+| P4 self-convergence | see below |
+| P5 3D throughput | see below |
+
+Departures from the plan:
+- **Out files are `bench/<solver>/out/<tier>/<device>.json`.** A tier directory was added so the 2D and 3D results of a device can coexist.
+- **Ring ports at x = ±13.0 µm, region 28.0 µm wide.** The planned ±13.25 sits half a cell off the grid; every port and source plane is now on a grid node in both codes, and B2 checks this.
+- **Meep point probes.** A zero-size DFT volume returns 0 in Meep. The script records a 2Δ × 2Δ box and reads the Hz node at its centre, after checking the coordinates.
+- **Ring extraction uses an Airy line shape.** A Lorentzian fit biased Q by 1 % through the neighbouring resonances' tails, which is as large as the gate.
+- **`bench/` is a Python package.** Both environments import its shared modules. The Meep side runs as `python -m mpi4py -m bench.meep.run_device` from the repository root. Pilot runs use `--set key=value` overrides, which change the config hash and so can never pass as references.
