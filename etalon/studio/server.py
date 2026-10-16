@@ -20,12 +20,15 @@ from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 
 from etalon import __version__
+from etalon.studio.capture import SpecCache
 from etalon.studio.contract import EXTRA_SCHEMA_MODELS
 from etalon.studio.errors import ApiError, ModelError, StudioError
+from etalon.studio.jobs import Job, JobManager
 from etalon.studio.routes import register_routes
 from etalon.studio.security import HTML_SECURITY_HEADERS, GuardMiddleware
 from etalon.studio.settings import SettingsStore, StudioSettings
 from etalon.studio.system import GpuProbe, SystemInfo, system_info
+from etalon.studio.throughput import ThroughputStore
 from etalon.studio.workspace import Workspace, scan
 
 STATIC_DIR = Path(__file__).with_name("static")
@@ -71,6 +74,24 @@ class StudioState:
     static_dir: Path = field(default=STATIC_DIR)
     config_dir: Path | None = None
     """Where measured throughput is kept for estimates; None keeps it in memory."""
+    specs: SpecCache = field(init=False)
+    throughput: ThroughputStore = field(init=False)
+    jobs: JobManager = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.specs = SpecCache()
+        self.throughput = ThroughputStore(self.config_dir)
+        self.jobs = JobManager(on_finished=self._record_throughput)
+
+    def _record_throughput(self, job: Job) -> None:
+        """A run that stepped for a second or more tells the estimate this machine's speed."""
+        if job.done is None or job.done["status"] == "failed" or not job.progress:
+            return
+        last = job.progress[-1]
+        if job.started is not None and last["elapsed_s"] >= 1.0:
+            self.throughput.record(
+                "measured", job.started["backend"], job.started["device"], last["cells_per_s"]
+            )
 
 
 def resolve_language(language: str, accept_language: str) -> str:
@@ -128,7 +149,7 @@ def create_app(state: StudioState) -> FastAPI:
     def get_workspace() -> Workspace:
         folder = Path(state.settings.get().workspace)
         try:
-            return scan(folder)
+            return scan(folder, jobs=state.jobs.running())
         except FileNotFoundError:
             raise StudioError(
                 404, "workspace_missing", f"workspace folder not found: {folder}"

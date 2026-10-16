@@ -235,3 +235,20 @@ def scan(
             continue  # deleted between listing and reading
     rows.sort(key=lambda row: (row.path.casefold(), row.path))
     return Workspace(folder=str(folder), simulations=rows, truncated=truncated)
+
+
+def find_script(folder: Path, sim_id: str) -> Path | None:
+    """The script whose id is ``sim_id``, or None."""
+    if not folder.is_dir():
+        return None
+    scripts, _ = find_scripts(folder)
+    for script in scripts:
+        if simulation_id(script.relative_to(folder).as_posix()) == sim_id:
+            return script
+    return None
+
+
+def read_sidecar_status(script: Path) -> SidecarStatus | None:
+    """The script's status.json, or None when it has none or it cannot be read."""
+    found = _read_sidecar(script)
+    return found if isinstance(found, SidecarStatus) else None

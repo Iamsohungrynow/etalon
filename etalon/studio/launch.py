@@ -78,6 +78,7 @@ def prepare(folder: Path, port: int) -> tuple[uvicorn.Server, socket.socket, str
         probe=GpuProbe().start(),
         token=token,
         port=port,
+        config_dir=directory,
     )
     config = uvicorn.Config(
         create_app(state), host=HOST, port=port, log_level="warning", access_log=False

@@ -2,8 +2,12 @@
 
 - Token: random, created on first launch in the config directory and reused. It
   reaches the browser once as ``?token=``; the SPA then sends it as
-  ``X-Etalon-Token`` on every ``/api`` request. Other local processes and other
-  users on the machine do not have it.
+  ``X-Etalon-Token`` on every ``/api`` request. A browser cannot set headers on
+  a WebSocket, so the job socket carries it as the subprotocol ``token.<token>``
+  (plan-u1 §13.3). Other local processes and other users on the machine do not
+  have it.
+- Origin: a WebSocket is not covered by the browser's same-origin rules, so its
+  ``Origin`` must be Studio's own.
 - Host: only ``127.0.0.1:<port>`` and ``localhost:<port>``, which blocks DNS
   rebinding (a web page whose own domain resolves to 127.0.0.1).
 - No CORS headers at all, so the browser refuses cross-origin reads.
@@ -21,6 +25,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 TOKEN_FILE = "studio-token"
 TOKEN_HEADER = "X-Etalon-Token"
 TOKEN_ENV = "ETALON_STUDIO_TOKEN"
+TOKEN_SUBPROTOCOL = "token."
 
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; font-src 'self'; "
@@ -68,6 +73,7 @@ class GuardMiddleware:
         self.app = app
         self.token = token.encode()
         self.hosts = allowed_hosts(port)
+        self.origins = frozenset(f"http://{host}" for host in self.hosts)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] not in ("http", "websocket"):
@@ -79,12 +85,27 @@ class GuardMiddleware:
             await _reject(scope, send, 400, "bad_host", f"Host {host!r} is not allowed")
             return
         path: str = scope["path"]
+        if scope["type"] == "websocket":
+            origin = headers.get(b"origin")
+            if origin is not None and origin.decode("latin-1").lower() not in self.origins:
+                await _reject(scope, send, 403, "bad_origin", "foreign Origin")
+                return
         if path == "/api" or path.startswith("/api/"):
             given = headers.get(TOKEN_HEADER.lower().encode(), b"")
+            if scope["type"] == "websocket" and not given:
+                given = _subprotocol_token(scope)
             if not secrets.compare_digest(given, self.token):
                 await _reject(scope, send, 401, "unauthorized", "missing or wrong Studio token")
                 return
         await self.app(scope, receive, send)
+
+
+def _subprotocol_token(scope: Scope) -> bytes:
+    """The token a WebSocket offered as the subprotocol ``token.<token>``."""
+    for protocol in scope.get("subprotocols", []):
+        if protocol.startswith(TOKEN_SUBPROTOCOL):
+            return str(protocol[len(TOKEN_SUBPROTOCOL) :]).encode()
+    return b""
 
 
 async def _reject(scope: Scope, send: Send, status: int, code: str, message: str) -> None:
