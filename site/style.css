@@ -190,6 +190,29 @@ main > * { min-height: 0; min-width: 0; }
 .stage-abstract { font-size: 11px; line-height: 1.5; color: var(--ink-2); max-width: 70ch; }
 .stage-abstract b { font-weight: 700; color: var(--fg); }
 
+[hidden] { display: none !important; }
+
+/* ---------- About (the first archive entry) ---------- */
+.about {
+  width: min(100%, 780px);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--panel);
+  border: var(--border);
+}
+.about-title { font-size: 28px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; text-wrap: balance; margin-bottom: 16px; }
+.about-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+.about-grid p { font-size: 12.5px; line-height: 1.55; color: var(--ink-2); }
+.about-video { margin-top: 18px; }
+.about-video video { display: block; width: 100%; aspect-ratio: 16 / 9; border: var(--border); background: var(--well); }
+.about-video figcaption { margin-top: 5px; font-family: var(--mono); font-size: 9px; }
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: minmax(0, 1fr); }
+  .visual-frame:has(.about:not([hidden])) { height: auto; container-type: normal; }
+  .about { max-height: none; }
+}
+
 /* ---------- Inspector (right) ---------- */
 .inspector { display: flex; flex-direction: column; border-left: var(--border); overflow-y: auto; font-size: 12px; }
 .panel { padding: 15px; border-bottom: var(--border); }

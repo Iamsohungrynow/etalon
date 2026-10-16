@@ -9,6 +9,24 @@ const STUDIO_DEMO_URL = "studio/";
 const TEXT = {
   en: {
     tagline: "GPU photonic FDTD · on your own machine · Python-native",
+    aboutName: "About etalon",
+    aboutTitle: "Photonic simulation that stays on your machine",
+    aboutAbstract: "What etalon is, the problem it solves, and where it stands today.",
+    aboutRole: "v0.0.1 · milestone M0",
+    whatLabel: "What it is",
+    whatText:
+      "etalon simulates passive photonic devices (waveguides, bends, couplers, MMIs, ring resonators) with the finite-difference time-domain method, on one local NVIDIA GPU. You describe the device in Python; etalon Studio shows the setup, the run and the results in your browser, served by your own computer.",
+    problemLabel: "The problem",
+    problemText:
+      "Photonic design teams depend on a few commercial solvers, all licensed from abroad: one can be cut off by export rules, another only runs in the vendor's cloud, so designs leave the building. Clusters and per-core licences make every run expensive.",
+    approachLabel: "Our approach",
+    approachText:
+      "Everything runs on your hardware: no cloud, no telemetry. One GPU does the work of a cluster. Every CUDA kernel has a NumPy reference that it matches bit for bit, and the Python API is shaped so that an existing design script ports in a day.",
+    statusLabel: "Where it stands",
+    statusText:
+      "Today (M0): 2D FDTD with CPML, sources and DFT monitors, validated against theory: dispersion within 1.3 × 10⁻⁴ of the Yee relation, CPML −91 dB, 2.9 × 10⁹ cell-updates/s on an RTX 4060 Ti. Next: 3D, mode solver and S-parameters (M1), then five reference devices within 1 % of Meep (M2).",
+    videoCaption: "VIDEO: THE STUDIO DEMO, SCREEN-RECORDED: SETUP IN 3D, A RECORDED RUN REPLAYED, RESULTS",
+    aboutKnobs: ["ON-PREMISE · NO CLOUD", "1 NVIDIA GPU", "PYTHON API", "CPU FALLBACK, SAME RESULT"],
     openStudio: "Open the Studio demo →",
     report: "M0 validation report",
     langButton: "中文",
@@ -36,6 +54,7 @@ const TEXT = {
     tickerLeft: ["Yee lattice", "CPML", "running DFT", "courant 0.99", "float32"],
     tickerRight: ["Data node: your GPU", "No cloud", "No telemetry"],
     results: {
+      ABOUT: "",
       "SIM-01": "The cylindrical wave spreads evenly outward and leaves through the PML without a visible echo.",
       "SIM-02": "Most of the light stays in the silicon core and travels along x; a little radiates into the oxide.",
       "SIM-03": "A sharp corner scatters strongly; that is why real devices use arc or Euler bends.",
@@ -45,6 +64,24 @@ const TEXT = {
   },
   zh: {
     tagline: "GPU 光子 FDTD · 在你自己的机器上运行 · 原生 Python",
+    aboutName: "关于 etalon",
+    aboutTitle: "留在你自己机器上的光子仿真",
+    aboutAbstract: "etalon 是什么、解决什么问题、现在进展到哪里。",
+    aboutRole: "v0.0.1 · 里程碑 M0",
+    whatLabel: "是什么",
+    whatText:
+      "etalon 用时域有限差分法（FDTD）仿真无源光子器件（波导、弯曲、耦合器、MMI、环形谐振腔），只需一块本地 NVIDIA GPU。你用 Python 描述器件；etalon Studio 在浏览器里显示设置、运行过程和结果，由你自己的电脑提供服务。",
+    problemLabel: "问题",
+    problemText:
+      "光子设计团队依赖少数几款商业求解器，而且都来自国外授权：有的可能因出口管制被断供，有的只能在厂商的云上运行，设计文件必须离开公司。集群和按核计费的授权让每次运行都很昂贵。",
+    approachLabel: "我们的做法",
+    approachText:
+      "一切都在你的硬件上运行：不上云，无遥测。一块 GPU 完成集群的工作。每个 CUDA 内核都有逐位一致的 NumPy 参考实现，Python API 的设计让现有的设计脚本一天之内就能迁移过来。",
+    statusLabel: "现在的进展",
+    statusText:
+      "目前（M0）：带 CPML、光源和 DFT 监视器的二维 FDTD，已对照理论验证：色散与 Yee 关系相差 1.3 × 10⁻⁴ 以内，CPML −91 dB，RTX 4060 Ti 上每秒 2.9 × 10⁹ 次网格更新。下一步：三维、模式求解器和 S 参数（M1），然后五个参考器件与 Meep 相差 1 % 以内（M2）。",
+    videoCaption: "视频：STUDIO 演示录屏——三维设置、回放录制的运行、结果",
+    aboutKnobs: ["本地部署 · 不上云", "1 块 NVIDIA GPU", "PYTHON API", "CPU 回退，结果一致"],
     openStudio: "打开 Studio 演示 →",
     report: "M0 验证报告",
     langButton: "EN",
@@ -72,6 +109,7 @@ const TEXT = {
     tickerLeft: ["Yee 网格", "CPML", "实时 DFT", "Courant 0.99", "float32"],
     tickerRight: ["数据节点：你的 GPU", "不上云", "无遥测"],
     results: {
+      ABOUT: "",
       "SIM-01": "柱面波均匀向外传播，穿过 PML 离开，没有可见的回波。",
       "SIM-02": "大部分光留在硅芯中沿 x 传播，少量辐射进氧化层。",
       "SIM-03": "急转直角散射很强——这就是实际器件用圆弧弯或欧拉弯的原因。",
@@ -79,6 +117,7 @@ const TEXT = {
       "VAL-M0": "测得的相速度与 Yee 色散关系相差 1.3 × 10⁻⁴ 以内（验收要求 5 × 10⁻³）；CUDA 与 NumPy 逐位一致。",
     },
     entries: {
+      ABOUT: { name: "关于 etalon", title: "留在你自己机器上的光子仿真", abstract: "etalon 是什么、解决什么问题、现在进展到哪里。" },
       "SIM-01": { name: "真空脉冲", title: "自由空间中的点源", abstract: "磁线源向二维真空辐射 1.55 µm 脉冲，边界处的 CPML 将其吸收。" },
       "SIM-02": { name: "条形波导", title: "氧化硅中的 500 nm 硅条", abstract: "0.5 µm 硅芯（n = 3.476）中的面内偶极子，周围是 SiO2（n = 1.444）：TE 导模沿 x 传播。" },
       "SIM-03": { name: "直角弯", title: "硅条形波导的 90° 拐角", abstract: "同样的硅条做一个急转直角：一部分光跟着拐弯，其余散射进氧化层。" },
@@ -176,6 +215,9 @@ function fill(parent, items, className) {
 
 function render(e) {
   if (!e) {
+    $("#about").hidden = true;
+    $(".main-canvas").hidden = false;
+    $("#demo-video").pause();
     $("#exp-id").textContent = "EXP_ID: —";
     $("#exp-date").textContent = "—";
     $("#exp-log").textContent = t("empty");
@@ -194,20 +236,32 @@ function render(e) {
     return;
   }
   const sim = e.field;
+  $("#about").hidden = !e.about;
+  $(".main-canvas").hidden = Boolean(e.about);
+  const video = $("#demo-video");
+  if (e.about && !reduced) video.play().catch(() => {});
+  else video.pause();
   $("#exp-id").textContent = "EXP_ID: " + e.id;
   $("#exp-date").textContent = e.date;
   $("#exp-log").textContent = t("results")[e.id];
-  $("#exp-title").textContent = entryText(e, "title");
+  // the intro already carries its own heading; the footer just names the entry
+  $("#exp-title").textContent = e.about ? entryText(e, "name") : entryText(e, "title");
   $("#exp-team").textContent = t("computedOn", { version: DATA.etalon_version, device: sim.device.replace(/^cuda:0 /, "") });
   $("#exp-abstract").textContent = entryText(e, "abstract");
   $("#subject-name").textContent = entryText(e, "name");
-  $("#subject-role").textContent = e.validation
+  $("#subject-role").textContent = e.about
+    ? t("aboutRole")
+    : e.validation
     ? t("roleValidation")
     : t("role", { wl: sim.wavelength_um.toFixed(2), c: sim.component });
   $("#scale-note").textContent = t("scale", { wl: sim.wavelength_um.toFixed(2) });
   fill($("#tag-cloud"), e.keys, "tag");
   const n = String(current + 1).padStart(2, "0");
-  if (e.validation) {
+  if (e.about) {
+    fill($("#knobs"), t("aboutKnobs"), "knob");
+    $("#figure-caption").textContent = t("figDispersion", { n });
+    drawDispersion();
+  } else if (e.validation) {
     const v = DATA.validation;
     fill($("#knobs"), [
       `MAX |v/vYee − 1|: ${v.max_residual.toExponential(1)}`,
@@ -431,6 +485,16 @@ function init(data) {
     .join(".");
   entries = data.cases.map((c) => ({ ...c, date: stamp, field: c }));
   entries.push({ ...VALIDATION_ENTRY, date: "15.10.26", field: data.cases[0], validation: true });
+  entries.unshift({
+    id: "ABOUT",
+    name: TEXT.en.aboutName,
+    title: TEXT.en.aboutTitle,
+    abstract: TEXT.en.aboutAbstract,
+    keys: ["ON-PREMISE", "FDTD", "ONE GPU", "PYTHON"],
+    date: "—",
+    field: data.cases[0],
+    about: true,
+  });
   applyText();
   buildList();
   select(0);

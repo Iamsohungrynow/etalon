@@ -51,6 +51,19 @@
         <button class="close-btn" id="close-btn" type="button" aria-label="Unload entry">✕</button>
       </div>
       <div class="visual-frame">
+        <article class="about" id="about" hidden>
+          <h2 class="about-title" data-i18n="aboutTitle"></h2>
+          <div class="about-grid">
+            <section><span class="panel-label" data-i18n="whatLabel"></span><p data-i18n="whatText"></p></section>
+            <section><span class="panel-label" data-i18n="problemLabel"></span><p data-i18n="problemText"></p></section>
+            <section><span class="panel-label" data-i18n="approachLabel"></span><p data-i18n="approachText"></p></section>
+            <section><span class="panel-label" data-i18n="statusLabel"></span><p data-i18n="statusText"></p></section>
+          </div>
+          <figure class="about-video">
+            <video id="demo-video" src="media/studio-demo.webm" muted loop playsinline controls preload="metadata"></video>
+            <figcaption data-i18n="videoCaption"></figcaption>
+          </figure>
+        </article>
         <div class="main-canvas">
           <canvas id="field" width="600" height="600" role="img" aria-label="Field computed by etalon"></canvas>
           <div class="scale-note" id="scale-note"></div>
