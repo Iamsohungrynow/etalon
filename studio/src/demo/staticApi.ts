@@ -150,7 +150,14 @@ export function createDemoFetch(base = DEMO_DATA_BASE): typeof fetch {
     const manifest = await loadManifest(base);
     const key = requestKey(request.method, url);
 
-    if (key === "GET /api/settings" && settings) return json(settings, 200);
+    if (key === "GET /api/settings") {
+      if (!settings) {
+        const answer = await recorded(manifest, key);
+        // The demo opens in the light (paper) theme; Settings can still switch it.
+        if (answer) settings = { ...((await answer.json()) as Record<string, unknown>), theme: "light" };
+      }
+      if (settings) return json(settings, 200);
+    }
     if (key === "PUT /api/settings") {
       const body = (await request.json()) as Record<string, unknown>;
       if (body.workspace !== manifest.workspace) {
