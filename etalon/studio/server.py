@@ -1,4 +1,7 @@
-"""Studio's FastAPI app: the U0 endpoints of ui-ux-spec §9, and the SPA.
+"""Studio's FastAPI app: the endpoints of ui-ux-spec §9, and the SPA.
+
+U0's routes (workspace, settings, system) are here; U1's (templates, spec,
+jobs, results; contract in docs/plan-u1.md §13) are in ``routes.py``.
 
 Nothing here talks to the network beyond answering 127.0.0.1 (see
 ``security.py``). FastAPI's Swagger/ReDoc pages are off because they load from a
@@ -14,11 +17,18 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
+from pydantic.json_schema import models_json_schema
 
 from etalon import __version__
+from etalon.studio.capture import SpecCache
+from etalon.studio.contract import EXTRA_SCHEMA_MODELS
+from etalon.studio.errors import ApiError, ModelError, StudioError
+from etalon.studio.jobs import Job, JobManager
+from etalon.studio.routes import register_routes
 from etalon.studio.security import HTML_SECURITY_HEADERS, GuardMiddleware
 from etalon.studio.settings import SettingsStore, StudioSettings
 from etalon.studio.system import GpuProbe, SystemInfo, system_info
+from etalon.studio.throughput import ThroughputStore
 from etalon.studio.workspace import Workspace, scan
 
 STATIC_DIR = Path(__file__).with_name("static")
@@ -53,21 +63,6 @@ NOT_BUILT_PAGE = """<!doctype html>
 """
 
 
-class ApiError(BaseModel):
-    """Body of every error response the API sends itself (validation errors excepted)."""
-
-    code: str
-    message: str
-
-
-class StudioError(Exception):
-    def __init__(self, status: int, code: str, message: str) -> None:
-        super().__init__(message)
-        self.status = status
-        self.code = code
-        self.message = message
-
-
 @dataclass
 class StudioState:
     """Everything one running Studio server holds."""
@@ -77,6 +72,26 @@ class StudioState:
     token: str
     port: int
     static_dir: Path = field(default=STATIC_DIR)
+    config_dir: Path | None = None
+    """Where measured throughput is kept for estimates; None keeps it in memory."""
+    specs: SpecCache = field(init=False)
+    throughput: ThroughputStore = field(init=False)
+    jobs: JobManager = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.specs = SpecCache()
+        self.throughput = ThroughputStore(self.config_dir)
+        self.jobs = JobManager(on_finished=self._record_throughput)
+
+    def _record_throughput(self, job: Job) -> None:
+        """A run that stepped for a second or more tells the estimate this machine's speed."""
+        if job.done is None or job.done["status"] == "failed" or not job.progress:
+            return
+        last = job.progress[-1]
+        if job.started is not None and last["elapsed_s"] >= 1.0:
+            self.throughput.record(
+                "measured", job.started["backend"], job.started["device"], last["cells_per_s"]
+            )
 
 
 def resolve_language(language: str, accept_language: str) -> str:
@@ -122,6 +137,10 @@ def create_app(state: StudioState) -> FastAPI:
         body = ApiError(code=error.code, message=error.message)
         return JSONResponse(body.model_dump(), status_code=error.status)
 
+    @app.exception_handler(ModelError)
+    async def model_error(request: Request, error: ModelError) -> JSONResponse:
+        return JSONResponse(error.body.model_dump(mode="json"), status_code=error.status)
+
     @app.get(
         "/api/workspace",
         operation_id="getWorkspace",
@@ -130,7 +149,7 @@ def create_app(state: StudioState) -> FastAPI:
     def get_workspace() -> Workspace:
         folder = Path(state.settings.get().workspace)
         try:
-            return scan(folder)
+            return scan(folder, jobs=state.jobs.running())
         except FileNotFoundError:
             raise StudioError(
                 404, "workspace_missing", f"workspace folder not found: {folder}"
@@ -148,6 +167,8 @@ def create_app(state: StudioState) -> FastAPI:
     @app.get("/api/system", operation_id="getSystem")
     def get_system() -> SystemInfo:
         return system_info(state.probe)
+
+    register_routes(app, state)
 
     @app.get("/{path:path}", include_in_schema=False)
     def spa(path: str, request: Request) -> Response:
@@ -172,7 +193,27 @@ def create_app(state: StudioState) -> FastAPI:
         html = index.read_text(encoding="utf-8").replace(INDEX_HTML_TAG, root_tag, 1)
         return HTMLResponse(html, headers={**HTML_SECURITY_HEADERS, "Cache-Control": "no-cache"})
 
+    _add_extra_schemas(app, EXTRA_SCHEMA_MODELS)
     return app
+
+
+def _add_extra_schemas(app: FastAPI, models: tuple[type[BaseModel], ...]) -> None:
+    """Put models that are no route's body (WebSocket messages, binary headers) in the schema."""
+    base_openapi = app.openapi
+
+    def openapi() -> dict[str, Any]:
+        if app.openapi_schema is None:
+            schema = base_openapi()
+            _, top = models_json_schema(
+                [(model, "serialization") for model in models],
+                ref_template="#/components/schemas/{model}",
+            )
+            components = schema.setdefault("components", {}).setdefault("schemas", {})
+            for name, definition in top.get("$defs", {}).items():
+                components.setdefault(name, definition)
+        return app.openapi_schema or base_openapi()
+
+    app.openapi = openapi  # type: ignore[method-assign]
 
 
 def _static_file(path: Path, immutable: bool) -> FileResponse:

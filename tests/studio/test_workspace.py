@@ -197,3 +197,42 @@ def _timed(call):
     start = time.perf_counter()
     call()
     return time.perf_counter() - start
+
+
+# U1: job and result ids, and runs that stopped sending heartbeats ---------------------
+def test_last_result_id_and_job_id(workspace):
+    script = write_script(workspace, "ring.py")
+    write_status(
+        script, {**DONE, "last_run": "20261016T060200Z", "last_result": "20261016T050000Z"}
+    )
+    sim_id = simulation_id("ring.py")
+    (row,) = scan(workspace, jobs={sim_id: "abc123"}).simulations
+    assert row.last_result_id == f"{sim_id}~20261016T050000Z"
+    assert row.job_id == "abc123"
+    (row,) = scan(workspace).simulations
+    assert row.job_id is None
+
+
+@pytest.mark.parametrize(
+    ("heartbeat_age_s", "job", "status", "reason"),
+    [
+        (5, None, "running", None),
+        (120, None, "unknown", "interrupted"),
+        (120, "abc123", "running", None),  # this server still runs it
+        (None, None, "running", None),  # no heartbeat: a U0-era sidecar
+    ],
+)
+def test_a_running_sidecar_without_heartbeat_is_interrupted(
+    workspace, heartbeat_age_s, job, status, reason
+):
+    from datetime import UTC, datetime, timedelta
+
+    script = write_script(workspace, "ring.py")
+    raw = {"status": "running", "started_at": "2026-10-16T05:59:00Z", "step": 10, "total_steps": 99}
+    if heartbeat_age_s is not None:
+        beat = datetime.now(UTC) - timedelta(seconds=heartbeat_age_s)
+        raw["heartbeat_at"] = beat.isoformat()
+    write_status(script, raw)
+    jobs = {simulation_id("ring.py"): job} if job else None
+    (row,) = scan(workspace, jobs=jobs).simulations
+    assert (row.status, row.status_reason) == (status, reason)

@@ -1,0 +1,16 @@
+{
+  "status": "done",
+  "started_at": "2026-10-16T09:38:41.816926+00:00",
+  "script_sha256": "e584ff48090fdc90444d49be96b116114dff570a5e1cc50de71e86311d4359a5",
+  "last_run": "20261016T093841Z",
+  "last_result": "20261016T093841Z",
+  "heartbeat_at": "2026-10-16T09:39:06.236733+00:00",
+  "backend": "cpu",
+  "device": "AMD Ryzen 5 5600 6-Core Processor",
+  "cells": 47196,
+  "step": 5354,
+  "total_steps": 5354,
+  "eta_s": null,
+  "finished_at": "2026-10-16T09:39:06.225581+00:00",
+  "wall_time_s": 15.128288799896836
+}

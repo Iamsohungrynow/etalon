@@ -96,6 +96,7 @@ def make_state(
         probe=probe or FakeProbe(),
         token=TOKEN,
         port=PORT,
+        config_dir=config_dir,
     )
     if static_dir is not None:
         state.static_dir = static_dir

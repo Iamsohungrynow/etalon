@@ -4,6 +4,142 @@
  */
 
 export interface paths {
+    "/api/calibrate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Calibrate */
+        post: operations["calibrate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Cancel Job */
+        delete: operations["cancelJob"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/modes/solve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Solve Modes */
+        post: operations["solveModes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/results/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Result */
+        get: operations["getResult"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/results/{id}/fields/{monitor}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Field */
+        get: operations["getField"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/results/{id}/modes/{monitor}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Modes */
+        get: operations["getModes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/results/{id}/s-matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get S Matrix */
+        get: operations["getSMatrix"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/results/{id}/spectra/{monitor}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Spectra */
+        get: operations["getSpectra"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/settings": {
         parameters: {
             query?: never;
@@ -22,6 +158,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/simulations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Simulation */
+        post: operations["createSimulation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/simulations/{id}/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Open In Editor */
+        post: operations["openInEditor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/simulations/{id}/params": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Put Params */
+        put: operations["putParams"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/simulations/{id}/permittivity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Permittivity */
+        get: operations["getPermittivity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/simulations/{id}/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Simulation */
+        post: operations["runSimulation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/simulations/{id}/spec": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Spec */
+        get: operations["getSpec"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/system": {
         parameters: {
             query?: never;
@@ -33,6 +271,57 @@ export interface paths {
         get: operations["getSystem"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Templates */
+        get: operations["listTemplates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/validation/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Validation Latest */
+        get: operations["getValidationLatest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/validation/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Validation */
+        post: operations["runValidation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -61,6 +350,24 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * AlreadyRunning
+         * @description 409 from ``POST /api/simulations/{id}/run``: one job at a time per simulation.
+         */
+        AlreadyRunning: {
+            /**
+             * Code
+             * @constant
+             */
+            code: "already_running";
+            /**
+             * Job Id
+             * @description The job that is running.
+             */
+            job_id: string;
+            /** Message */
+            message: string;
+        };
+        /**
          * ApiError
          * @description Body of every error response the API sends itself (validation errors excepted).
          */
@@ -69,6 +376,70 @@ export interface components {
             code: string;
             /** Message */
             message: string;
+        };
+        /**
+         * ArrayHeader
+         * @description Any binary array header, told apart by ``kind``.
+         */
+        ArrayHeader: components["schemas"]["PermittivityHeader"] | components["schemas"]["FieldHeader"] | components["schemas"]["SnapshotHeader"];
+        /** Background */
+        Background: {
+            /** N */
+            n: number;
+            /** Name */
+            name: string | null;
+        };
+        /**
+         * Calibration
+         * @description ``POST /api/calibrate``: this machine's measured throughput, kept for ``Estimate``.
+         */
+        Calibration: {
+            /**
+             * Backend
+             * @description ``cpu`` or ``cuda:N``.
+             */
+            backend: string;
+            /** Cells Per S */
+            cells_per_s: number;
+            /**
+             * Device
+             * @description CPU or GPU model.
+             */
+            device: string;
+        };
+        /**
+         * Cancelling
+         * @description 202 from ``DELETE /api/jobs/{job_id}``; the final status arrives on the WebSocket.
+         */
+        Cancelling: {
+            /**
+             * Status
+             * @constant
+             */
+            status: "cancelling";
+        };
+        /** ComplexSeries */
+        ComplexSeries: {
+            /** Im */
+            im: number[];
+            /** Re */
+            re: number[];
+        };
+        /**
+         * CreateSimulation
+         * @description Body of ``POST /api/simulations``.
+         */
+        CreateSimulation: {
+            /**
+             * Name
+             * @description File name without ``.py``: ``[A-Za-z0-9_-]{1,64}``; anything else is 422 ``bad_name``.
+             */
+            name: string;
+            /**
+             * Template
+             * @enum {string}
+             */
+            template: "vacuum_pulse" | "strip_waveguide" | "sharp_bend" | "phc_waveguide";
         };
         /**
          * Device
@@ -84,10 +455,806 @@ export interface components {
             /** Name */
             name: string;
         };
+        /**
+         * DoneMessage
+         * @description Last message; the server closes the socket after it.
+         */
+        DoneMessage: {
+            error: components["schemas"]["JobError"] | null;
+            /**
+             * Result Id
+             * @description Null when the run left no monitor data (it failed before or while building the solver).
+             */
+            result_id: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "done" | "failed" | "cancelled";
+            /**
+             * Suggestion
+             * @description A recognised failure: out of memory, NaN fields, or a feature this build lacks.
+             */
+            suggestion: ("out_of_memory" | "nan" | "unsupported") | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "done";
+        };
+        /**
+         * Estimate
+         * @description What a run will cost, before it starts.
+         */
+        Estimate: {
+            /**
+             * Basis
+             * @description Where ``cells_per_s`` comes from: earlier runs on this machine, ``POST
+             *     /api/calibrate``, or neither yet.
+             * @enum {string}
+             */
+            basis: "measured" | "calibration" | "unknown";
+            /**
+             * Cells
+             * @description Cells, PML included.
+             */
+            cells: number;
+            /**
+             * Cells Per S
+             * @description Cell updates per second the estimate assumes; null when ``basis`` is "unknown".
+             */
+            cells_per_s: number | null;
+            /** Dt S */
+            dt_s: number;
+            /**
+             * Memory Bytes
+             * @description Fields, coefficients, CPML and monitor accumulators on the device.
+             */
+            memory_bytes: number;
+            /**
+             * Run Time S
+             * @description Simulated time, ``Simulation.run_time``.
+             */
+            run_time_s: number;
+            /**
+             * Seconds
+             * @description Estimated wall time; null when ``basis`` is "unknown".
+             */
+            seconds: number | null;
+            /** Steps */
+            steps: number;
+        };
+        /**
+         * FieldHeader
+         * @description ``GET /api/results/{id}/fields/{monitor}``: one quantity of one component at one λ.
+         */
+        FieldHeader: {
+            /**
+             * Component
+             * @description Field component on whose nodes the data sits (Ex, Ey, Hz).
+             */
+            component: string;
+            /**
+             * Extent
+             * @description [x_first, x_last, y_first, y_last], µm, of the first and last nodes (uniform spacing).
+             */
+            extent: [
+                number,
+                number,
+                number,
+                number
+            ];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "field";
+            /**
+             * Max
+             * @description Largest finite value in the data (0 when there is none).
+             */
+            max: number;
+            /**
+             * Min
+             * @description Smallest finite value in the data (0 when there is none).
+             */
+            min: number;
+            /**
+             * Quantity
+             * @enum {string}
+             */
+            quantity: "abs" | "real" | "imag" | "phase";
+            /**
+             * Shape
+             * @description [n_x, n_y], the solver's own C order: axis 0 = x, axis 1 = y, y varying fastest.
+             */
+            shape: [
+                number,
+                number
+            ];
+            /**
+             * Unit
+             * @description Unit of the values, free text (e.g. "1", "A/m", "V·s/m", "rad").
+             */
+            unit: string;
+            /** Wavelength Um */
+            wavelength_um: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HistoryMessage
+         * @description Second message on connect: everything so far.
+         */
+        HistoryMessage: {
+            /**
+             * Log
+             * @description The last 500 log lines.
+             */
+            log: components["schemas"]["LogLine"][];
+            /**
+             * Progress
+             * @description Every progress point so far.
+             */
+            progress: components["schemas"]["Progress"][];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "history";
+        };
+        /** JobError */
+        JobError: {
+            /**
+             * Line
+             * @description Line in the script where it failed, if the traceback passes through the script.
+             */
+            line: number | null;
+            /** Message */
+            message: string;
+            /** Traceback */
+            traceback: string;
+        };
+        /**
+         * JobMessage
+         * @description A JSON text frame on ``WS /api/jobs/{job_id}``, told apart by ``type``.
+         *
+         *     The socket opens with subprotocols ``["etalon.v1", "token.<token>"]`` and the
+         *     server accepts ``etalon.v1``. Binary frames are snapshots (§13.1, ``kind:
+         *     "snapshot"``).
+         */
+        JobMessage: components["schemas"]["StartedMessage"] | components["schemas"]["HistoryMessage"] | components["schemas"]["Progress"] | components["schemas"]["LogLine"] | components["schemas"]["DoneMessage"];
+        /**
+         * JobStarted
+         * @description 202 from ``POST /api/simulations/{id}/run``.
+         */
+        JobStarted: {
+            /** Job Id */
+            job_id: string;
+            /**
+             * Result Id
+             * @description Id the run's result will have; ``GET /api/results/{id}`` answers once the run has data.
+             */
+            result_id: string;
+        };
+        /** LogLine */
+        LogLine: {
+            /** Line */
+            line: string;
+            /**
+             * Stream
+             * @description What the script printed, or Studio's own runner lines ("etalon").
+             * @enum {string}
+             */
+            stream: "stdout" | "stderr" | "etalon";
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "log";
+        };
+        /** MemoryLargeParams */
+        MemoryLargeParams: {
+            /** Bytes */
+            bytes: number;
+        };
+        /**
+         * MemoryLargeWarning
+         * @description The run needs more than 4 GB.
+         */
+        MemoryLargeWarning: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            code: "memory_large";
+            /**
+             * Object Id
+             * @description Preview id of the object the warning is about, if any.
+             */
+            object_id: string | null;
+            params: components["schemas"]["MemoryLargeParams"];
+            /**
+             * Severity
+             * @description "error" disables Run; warnings never do.
+             * @enum {string}
+             */
+            severity: "warning" | "error";
+        };
+        /** MeshCoarseParams */
+        MeshCoarseParams: {
+            /** Cells Per Wavelength */
+            cells_per_wavelength: number;
+            /**
+             * Medium
+             * @description Name of the highest-index medium (null when it has none).
+             */
+            medium: string | null;
+            /** Minimum */
+            minimum: number;
+            /**
+             * Wavelength Um
+             * @description The shortest wavelength of interest (source band edge or monitor wavelength).
+             */
+            wavelength_um: number;
+        };
+        /**
+         * MeshCoarseWarning
+         * @description Fewer than ``minimum`` cells per wavelength in the highest-index medium.
+         */
+        MeshCoarseWarning: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            code: "mesh_coarse";
+            /**
+             * Object Id
+             * @description Preview id of the object the warning is about, if any.
+             */
+            object_id: string | null;
+            params: components["schemas"]["MeshCoarseParams"];
+            /**
+             * Severity
+             * @description "error" disables Run; warnings never do.
+             * @enum {string}
+             */
+            severity: "warning" | "error";
+        };
+        /** NearPmlParams */
+        NearPmlParams: {
+            /**
+             * Cells
+             * @description Whole cells between the object and the PML (0, 1 or 2).
+             */
+            cells: number;
+        };
+        /**
+         * NearPmlWarning
+         * @description A source or monitor within 3 cells of the PML.
+         */
+        NearPmlWarning: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            code: "near_pml";
+            /**
+             * Object Id
+             * @description Preview id of the object the warning is about, if any.
+             */
+            object_id: string | null;
+            params: components["schemas"]["NearPmlParams"];
+            /**
+             * Severity
+             * @description "error" disables Run; warnings never do.
+             * @enum {string}
+             */
+            severity: "warning" | "error";
+        };
+        /**
+         * NotImplementedBody
+         * @description 501 from an endpoint of ui-ux-spec §9 that a later milestone adds.
+         */
+        NotImplementedBody: {
+            /**
+             * Arrives In
+             * @description The milestone that adds it, e.g. "M2".
+             */
+            arrives_in: string;
+            /**
+             * Code
+             * @constant
+             */
+            code: "not_implemented";
+            /**
+             * Endpoint
+             * @description The endpoint, e.g. ``GET /api/results/{id}/s-matrix``.
+             */
+            endpoint: string;
+        };
+        /**
+         * PermittivityHeader
+         * @description ``GET /api/simulations/{id}/permittivity``: the solver's own εr, PML included.
+         */
+        PermittivityHeader: {
+            /**
+             * Component
+             * @description Field component on whose nodes the data sits (Ex, Ey, Hz).
+             */
+            component: string;
+            /**
+             * Extent
+             * @description [x_first, x_last, y_first, y_last], µm, of the first and last nodes (uniform spacing).
+             */
+            extent: [
+                number,
+                number,
+                number,
+                number
+            ];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "permittivity";
+            /**
+             * Max
+             * @description Largest finite value in the data (0 when there is none).
+             */
+            max: number;
+            /**
+             * Min
+             * @description Smallest finite value in the data (0 when there is none).
+             */
+            min: number;
+            /**
+             * Pml Cells
+             * @description PML cells on each face; the region starts this many nodes in from each edge.
+             */
+            pml_cells: number;
+            /**
+             * Shape
+             * @description [n_x, n_y], the solver's own C order: axis 0 = x, axis 1 = y, y varying fastest.
+             */
+            shape: [
+                number,
+                number
+            ];
+            /**
+             * Unit
+             * @description Unit of the values, free text (e.g. "1", "A/m", "V·s/m", "rad").
+             */
+            unit: string;
+        };
+        /** PmlThinParams */
+        PmlThinParams: {
+            /**
+             * Half Wavelength Um
+             * @description Half the longest source wavelength in the background medium.
+             */
+            half_wavelength_um: number;
+            /** Thickness Um */
+            thickness_um: number;
+        };
+        /**
+         * PmlThinWarning
+         * @description The PML is thinner than half a wavelength.
+         */
+        PmlThinWarning: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            code: "pml_thin";
+            /**
+             * Object Id
+             * @description Preview id of the object the warning is about, if any.
+             */
+            object_id: string | null;
+            params: components["schemas"]["PmlThinParams"];
+            /**
+             * Severity
+             * @description "error" disables Run; warnings never do.
+             * @enum {string}
+             */
+            severity: "warning" | "error";
+        };
+        /**
+         * Preview
+         * @description What the Setup screen draws: the simulation's objects, in µm.
+         *
+         *     Ids: ``medium:<i>``, ``structure:<i>``, ``source:<i>``, ``monitor:<name>``,
+         *     ``boundary``, ``grid``.
+         */
+        Preview: {
+            background: components["schemas"]["Background"];
+            /** @description Null when this build of the solver cannot grid the simulation (3D, until M1). */
+            grid: components["schemas"]["PreviewGrid"] | null;
+            /** Is 2D */
+            is_2d: boolean;
+            /** Media */
+            media: components["schemas"]["PreviewMedium"][];
+            /** Monitors */
+            monitors: components["schemas"]["PreviewMonitor"][];
+            /**
+             * Plane Z
+             * @description The simulated plane of a 2D simulation (the region's centre z).
+             */
+            plane_z: number;
+            pml: components["schemas"]["PreviewPml"];
+            region: components["schemas"]["Region"];
+            /** Sources */
+            sources: components["schemas"]["PreviewSource"][];
+            /** Structures */
+            structures: components["schemas"]["PreviewStructure"][];
+        };
+        /**
+         * PreviewGrid
+         * @description The Yee grid the solver builds.
+         */
+        PreviewGrid: {
+            /** Courant */
+            courant: number;
+            /** Dt S */
+            dt_s: number;
+            /**
+             * Dx
+             * @description Cell size along x, µm.
+             */
+            dx: number;
+            /**
+             * Dy
+             * @description Cell size along y, µm.
+             */
+            dy: number;
+            /**
+             * Nx
+             * @description Cells along x, PML included.
+             */
+            nx: number;
+            /**
+             * Ny
+             * @description Cells along y, PML included.
+             */
+            ny: number;
+            /**
+             * Region Cells
+             * @description [rx, ry]: cells inside the simulation region, PML excluded.
+             */
+            region_cells: [
+                number,
+                number
+            ];
+            /** Steps */
+            steps: number;
+        };
+        /**
+         * PreviewMedium
+         * @description A medium used by at least one structure, in order of first use.
+         */
+        PreviewMedium: {
+            /**
+             * Id
+             * @description ``medium:<i>``.
+             */
+            id: string;
+            /** N */
+            n: number;
+            /** Name */
+            name: string | null;
+        };
+        /** PreviewMonitor */
+        PreviewMonitor: {
+            /** Center */
+            center: [
+                number,
+                number,
+                number
+            ];
+            /**
+             * Components
+             * @description The components it records (all the simulation computes when the script names none).
+             */
+            components: ("Ex" | "Ey" | "Ez" | "Hx" | "Hy" | "Hz")[];
+            /**
+             * Geometry
+             * @description How many axes have size > 0: 0 point, 1 line, 2 plane, 3 box.
+             * @enum {string}
+             */
+            geometry: "point" | "line" | "plane" | "box";
+            /**
+             * Id
+             * @description ``monitor:<name>``.
+             */
+            id: string;
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "DFTMonitor";
+            /** Name */
+            name: string;
+            /** Size */
+            size: [
+                number,
+                number,
+                number
+            ];
+            /** Wavelengths Um */
+            wavelengths_um: number[];
+        };
+        /** PreviewPml */
+        PreviewPml: {
+            /**
+             * Layers
+             * @description PML cells on each face.
+             */
+            layers: number;
+            /**
+             * Thickness
+             * @description [tx, ty, tz], µm, of the PML on each face of each axis (0 along a flat axis).
+             */
+            thickness: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** PreviewSource */
+        PreviewSource: {
+            /**
+             * Bandwidth Um
+             * @description Full width of the pulse's wavelength band.
+             */
+            bandwidth_um: number;
+            /** Center */
+            center: [
+                number,
+                number,
+                number
+            ];
+            /**
+             * Component
+             * @enum {string}
+             */
+            component: "Ex" | "Ey" | "Ez" | "Hx" | "Hy" | "Hz";
+            /**
+             * Id
+             * @description ``source:<i>``, i = index in ``Simulation.sources``.
+             */
+            id: string;
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "PointSource";
+            /** Name */
+            name: string | null;
+            /**
+             * Wavelength Um
+             * @description Centre wavelength of the pulse.
+             */
+            wavelength_um: number;
+        };
+        /** PreviewStructure */
+        PreviewStructure: {
+            /** Center */
+            center: [
+                number,
+                number,
+                number
+            ];
+            /**
+             * Id
+             * @description ``structure:<i>``, i = index in ``Simulation.structures``.
+             */
+            id: string;
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "Box";
+            /**
+             * Medium Id
+             * @description Id of its entry in ``media``.
+             */
+            medium_id: string;
+            /** Name */
+            name: string | null;
+            /** Size */
+            size: [
+                number,
+                number,
+                number
+            ];
+        };
+        /**
+         * Progress
+         * @description At most 4 per second while the solver steps.
+         */
+        Progress: {
+            /** Cells Per S */
+            cells_per_s: number;
+            /**
+             * Elapsed S
+             * @description Wall time since stepping began.
+             */
+            elapsed_s: number;
+            /**
+             * Energy
+             * @description Discrete field energy W = ½ΔxΔy Σ(ε0 εr E² + μ0 H²), absolute, J/m in 2D.
+             */
+            energy: number;
+            /** Eta S */
+            eta_s: number;
+            /** Step */
+            step: number;
+            /** Total */
+            total: number;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "progress";
+        };
+        /** Region */
+        Region: {
+            /** Center */
+            center: [
+                number,
+                number,
+                number
+            ];
+            /**
+             * Size
+             * @description size_z = 0 for a 2D simulation; the PML is outside this box.
+             */
+            size: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** ResultGrid */
+        ResultGrid: {
+            /** Dx */
+            dx: number;
+            /** Dy */
+            dy: number;
+            /** Nx */
+            nx: number;
+            /** Ny */
+            ny: number;
+        };
+        /**
+         * ResultMeta
+         * @description ``GET /api/results/{id}``; the id is ``<simulation id>~<UTC stamp>``.
+         */
+        ResultMeta: {
+            /**
+             * Backend
+             * @description ``cpu`` or ``cuda:N``.
+             */
+            backend: string;
+            /** Cells Per S */
+            cells_per_s: number;
+            /** Device */
+            device: string;
+            /** Dt S */
+            dt_s: number;
+            /** Etalon Version */
+            etalon_version: string;
+            /**
+             * Finished At
+             * Format: date-time
+             */
+            finished_at: string;
+            grid: components["schemas"]["ResultGrid"];
+            /** Monitors */
+            monitors: components["schemas"]["ResultMonitor"][];
+            /**
+             * Precision
+             * @enum {string}
+             */
+            precision: "single" | "double";
+            /** @description The Preview at run time, for outline overlays. */
+            preview: components["schemas"]["Preview"];
+            /** Result Id */
+            result_id: string;
+            /** Script Sha256 */
+            script_sha256: string;
+            /** Simulation Id */
+            simulation_id: string;
+            /**
+             * Stale
+             * @description The script changed after this run.
+             */
+            stale: boolean;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Status
+             * @description "failed" here means the script failed after ``run()`` returned, so the data exists.
+             * @enum {string}
+             */
+            status: "done" | "failed" | "cancelled";
+            /**
+             * Steps
+             * @description Time steps actually taken (fewer than planned when cancelled).
+             */
+            steps: number;
+            /** Wall Time S */
+            wall_time_s: number;
+        };
+        /** ResultMonitor */
+        ResultMonitor: {
+            /** Components */
+            components: ("Ex" | "Ey" | "Ez" | "Hx" | "Hy" | "Hz")[];
+            /**
+             * Extent
+             * @description Extent of the first listed component's nodes, µm; null for a point monitor.
+             */
+            extent: [
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * Geometry
+             * @enum {string}
+             */
+            geometry: "point" | "line" | "plane" | "box";
+            /** Name */
+            name: string;
+            /**
+             * Shape
+             * @description [n_x, n_y] of the first listed component's nodes (each component's own shape is in
+             *     its field header); null for a point monitor.
+             */
+            shape: [
+                number,
+                number
+            ] | null;
+            /** Wavelengths Um */
+            wavelengths_um: number[];
+        };
+        /**
+         * ScriptError
+         * @description 422 from the spec, permittivity and similar routes: the script did not give a Simulation.
+         *
+         *     ``script_error``: it raised (``traceback``, and ``line`` in the script when the
+         *     traceback passes through it); ``script_timeout``: it ran 60 s without reaching
+         *     ``run()``; ``no_simulation``: it finished without calling ``run()`` and
+         *     defines no module-level Simulation.
+         */
+        ScriptError: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "script_error" | "script_timeout" | "no_simulation";
+            /**
+             * Line
+             * @description Line in the script where it failed, if the traceback passes through the script.
+             */
+            line: number | null;
+            /**
+             * Message
+             * @description The exception's own message (Python's words, not Studio's).
+             */
+            message: string;
+            /** Stdout Tail */
+            stdout_tail: string;
+            /** Traceback */
+            traceback: string;
         };
         /**
          * SimulationRow
@@ -113,6 +1280,16 @@ export interface components {
              * @description 12 hex characters of sha256(relative POSIX path): stable while the file is not moved.
              */
             id: string;
+            /**
+             * Job Id
+             * @description The job running this script in this Studio server, if any (``WS /api/jobs/{job_id}``).
+             */
+            job_id?: string | null;
+            /**
+             * Last Result Id
+             * @description ``<id>~<UTC stamp>`` of the newest run that left monitor data.
+             */
+            last_result_id?: string | null;
             /**
              * Last Run
              * @description When the last run finished (or started, while it runs).
@@ -147,15 +1324,155 @@ export interface components {
             status: "draft" | "running" | "done" | "failed" | "cancelled" | "unknown";
             /**
              * Status Reason
-             * @description Why the status is "unknown".
+             * @description Why the status is "unknown"; "interrupted": the sidecar says running, but its run
+             *     stopped sending heartbeats (Studio or the machine stopped during the run).
              */
-            status_reason?: ("unreadable" | "invalid_json" | "invalid_fields") | null;
+            status_reason?: ("unreadable" | "invalid_json" | "invalid_fields" | "interrupted") | null;
             /** Step */
             step?: number | null;
             /** Total Steps */
             total_steps?: number | null;
             /** Wall Time S */
             wall_time_s?: number | null;
+        };
+        /**
+         * SimulationSpec
+         * @description ``GET /api/simulations/{id}/spec``: what the script builds, captured at ``run()``.
+         */
+        SimulationSpec: {
+            /** @description Null when the solver cannot grid the simulation (see ``preview.grid``). */
+            estimate: components["schemas"]["Estimate"] | null;
+            preview: components["schemas"]["Preview"];
+            /** Script Sha256 */
+            script_sha256: string;
+            /**
+             * Spec
+             * @description ``Simulation.model_dump(mode="json")``, free-form.
+             */
+            spec: {
+                [key: string]: unknown;
+            };
+            /**
+             * Stdout Tail
+             * @description The last lines the script printed (stdout and stderr) while it was captured.
+             */
+            stdout_tail: string;
+            /** Warnings */
+            warnings: components["schemas"]["Warning"][];
+        };
+        /**
+         * SnapshotHeader
+         * @description A live Hz snapshot (WebSocket binary frame), downsampled to at most 256 × 256.
+         *
+         *     ``extent`` describes the downsampled nodes.
+         */
+        SnapshotHeader: {
+            /**
+             * Component
+             * @description Field component on whose nodes the data sits (Ex, Ey, Hz).
+             */
+            component: string;
+            /**
+             * Extent
+             * @description [x_first, x_last, y_first, y_last], µm, of the first and last nodes (uniform spacing).
+             */
+            extent: [
+                number,
+                number,
+                number,
+                number
+            ];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "snapshot";
+            /**
+             * Max
+             * @description Largest finite value in the data (0 when there is none).
+             */
+            max: number;
+            /**
+             * Min
+             * @description Smallest finite value in the data (0 when there is none).
+             */
+            min: number;
+            /**
+             * Shape
+             * @description [n_x, n_y], the solver's own C order: axis 0 = x, axis 1 = y, y varying fastest.
+             */
+            shape: [
+                number,
+                number
+            ];
+            /**
+             * Step
+             * @description Time step the snapshot was taken at.
+             */
+            step: number;
+            /**
+             * Unit
+             * @description Unit of the values, free text (e.g. "1", "A/m", "V·s/m", "rad").
+             */
+            unit: string;
+        };
+        /**
+         * Spectra
+         * @description ``GET /api/results/{id}/spectra/{monitor}``: a point monitor's complex spectrum.
+         */
+        Spectra: {
+            /**
+             * Components
+             * @description Keyed by component (Ex, Ey, Hz); time convention exp(−iωt).
+             */
+            components: {
+                [key: string]: components["schemas"]["ComplexSeries"];
+            };
+            /** Monitor */
+            monitor: string;
+            /** Wavelengths Um */
+            wavelengths_um: number[];
+        };
+        /**
+         * StartedMessage
+         * @description First message on ``WS /api/jobs/{job_id}``, once the solver is built.
+         *
+         *     Absent when the script fails before it reaches ``run()``: then ``history``
+         *     and ``done`` follow directly.
+         */
+        StartedMessage: {
+            /**
+             * Backend
+             * @description ``cpu`` or ``cuda:N``.
+             */
+            backend: string;
+            /** Device */
+            device: string;
+            /** Dt S */
+            dt_s: number;
+            /**
+             * Grid
+             * @description [nx, ny], PML included.
+             */
+            grid: [
+                number,
+                number
+            ];
+            /**
+             * Snapshots
+             * @description Whether binary snapshot frames will follow.
+             */
+            snapshots: boolean;
+            /**
+             * Total
+             * @description Time steps the run will take.
+             */
+            total: number;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "started";
         };
         /**
          * StudioSettings
@@ -229,6 +1546,59 @@ export interface components {
             /** Python Version */
             python_version: string;
         };
+        /**
+         * Template
+         * @description A template ``POST /api/simulations`` can copy; title and description are i18n keys.
+         */
+        Template: {
+            /**
+             * File
+             * @description File name of the template script, e.g. ``phc_waveguide.py``.
+             */
+            file: string;
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "vacuum_pulse" | "strip_waveguide" | "sharp_bend" | "phc_waveguide";
+        };
+        /** UnsupportedParams */
+        UnsupportedParams: {
+            /**
+             * Feature
+             * @description "3d": size_z > 0; "tm": a 2D TM component (Ez, Hx, Hy) in a source or monitor.
+             * @enum {string}
+             */
+            feature: "3d" | "tm";
+            /**
+             * Milestone
+             * @description Solver milestone that adds it, e.g. "M1".
+             */
+            milestone: string;
+        };
+        /**
+         * UnsupportedWarning
+         * @description Something this build of the solver cannot run; always an error.
+         */
+        UnsupportedWarning: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            code: "unsupported";
+            /**
+             * Object Id
+             * @description Preview id of the object the warning is about, if any.
+             */
+            object_id: string | null;
+            params: components["schemas"]["UnsupportedParams"];
+            /**
+             * Severity
+             * @description "error" disables Run; warnings never do.
+             * @enum {string}
+             */
+            severity: "warning" | "error";
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -242,6 +1612,11 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /**
+         * Warning
+         * @description A Setup warning: a code, its numbers, and the object it is about (§13.2).
+         */
+        Warning: components["schemas"]["MeshCoarseWarning"] | components["schemas"]["PmlThinWarning"] | components["schemas"]["NearPmlWarning"] | components["schemas"]["MemoryLargeWarning"] | components["schemas"]["UnsupportedWarning"];
         /**
          * Workspace
          * @description ``GET /api/workspace``.
@@ -272,6 +1647,320 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    calibrate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Calibration"];
+                };
+            };
+            /** @description the measurement failed (code calibration_failed) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    cancelJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cancelling"];
+                };
+            };
+            /** @description no job with this id */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description the job has already finished (code not_running) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    solveModes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotImplementedBody"];
+                };
+            };
+        };
+    };
+    getResult: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultMeta"];
+                };
+            };
+            /** @description no result with this id, or the run left no data (code no_result) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description the run is still running (code running) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getField: {
+        parameters: {
+            query?: {
+                component?: string | null;
+                quantity?: "abs" | "real" | "imag" | "phase";
+                wavelength_index?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+                monitor: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A binary float32 array with a JSON header (plan-u1 §13.1) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            /** @description no such result, monitor, component or wavelength index */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description a point monitor has no field slice (code point_monitor) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getModes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                monitor: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Successful Response */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotImplementedBody"];
+                };
+            };
+        };
+    };
+    getSMatrix: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Successful Response */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotImplementedBody"];
+                };
+            };
+        };
+    };
+    getSpectra: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                monitor: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Spectra"];
+                };
+            };
+            /** @description no such result or monitor */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description only point monitors have spectra (code not_point_monitor) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     getSettings: {
         parameters: {
             query?: never;
@@ -325,6 +2014,266 @@ export interface operations {
             };
         };
     };
+    createSimulation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSimulation"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimulationRow"];
+                };
+            };
+            /** @description a script of that name exists (code exists) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description the name is not [A-Za-z0-9_-]{1,64} (code bad_name) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    openInEditor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description no simulation with this id */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description the OS could not open an editor (code open_failed) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    putParams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Successful Response */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotImplementedBody"];
+                };
+            };
+        };
+    };
+    getPermittivity: {
+        parameters: {
+            query?: {
+                component?: "Ex" | "Ey";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A binary float32 array with a JSON header (plan-u1 §13.1) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            /** @description no simulation with this id */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description the solver cannot grid this simulation yet (code unsupported) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description the script failed, timed out or defines no Simulation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptError"];
+                };
+            };
+        };
+    };
+    runSimulation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStarted"];
+                };
+            };
+            /** @description no simulation with this id */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description a job is already running this simulation */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlreadyRunning"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getSpec: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimulationSpec"];
+                };
+            };
+            /** @description no simulation with this id */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description the script failed, timed out or defines no Simulation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptError"];
+                };
+            };
+        };
+    };
     getSystem: {
         parameters: {
             query?: never;
@@ -341,6 +2290,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SystemInfo"];
+                };
+            };
+        };
+    };
+    listTemplates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Template"][];
+                };
+            };
+        };
+    };
+    getValidationLatest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotImplementedBody"];
+                };
+            };
+        };
+    };
+    runValidation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotImplementedBody"];
                 };
             };
         };
