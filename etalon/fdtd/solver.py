@@ -42,6 +42,7 @@ class _MonitorAccumulator:
         self.acc = backend.to_device(np.zeros((n_f, sampling.flat_index.size), complex_dtype))
         self.chunk = max(1, _PHASOR_TABLE_ENTRIES // n_f)
         self.table_start = -1
+        self.table_rows = 0
         self.table: Any = None
 
 
@@ -88,10 +89,18 @@ class FDTDSolver:
             field[i, j] -= delta
 
     def _phasor_rows(self, mon: _MonitorAccumulator) -> tuple[Any, Any]:
-        """Phasors for H at (n+½)Δt and E at (n+1)Δt, from a table refilled every chunk."""
-        if mon.table is None or self.n >= mon.table_start + mon.chunk:
+        """Phasors for H at (n+½)Δt and E at (n+1)Δt, from a table refilled every chunk.
+
+        A table holds at most the steps the run has left, n_steps − n, so a run
+        shorter than a chunk computes and uploads only its own steps; stepped
+        past n_steps, the solver no longer knows the length and builds full chunks.
+        """
+        if mon.table is None or self.n >= mon.table_start + mon.table_rows:
+            left = self.n_steps - self.n
+            rows = min(mon.chunk, left) if left > 0 else mon.chunk
             mon.table_start = self.n
-            steps = np.arange(self.n, self.n + mon.chunk, dtype=np.float64)
+            mon.table_rows = rows
+            steps = np.arange(self.n, self.n + rows, dtype=np.float64)
             f = mon.sampling.frequencies
             dt = self.grid.dt
             table_h = dft_phasors(f, (steps + 0.5) * dt, dt).astype(self.complex)

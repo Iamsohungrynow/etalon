@@ -160,6 +160,26 @@ def test_g4_full_run(precision, dtype, rtol):
     print(f"\nfull run, 600 steps [{precision}]: bitwise identical = {bitwise}")
 
 
+@pytest.mark.parametrize(("precision", "dtype", "rtol"), PRECISIONS)
+def test_g4b_short_run_builds_tables_of_its_own_length(precision, dtype, rtol):
+    """A run shorter than a phasor chunk, to its end: tables of n_steps rows, same monitors."""
+    sims = [
+        full_sim(b, precision).model_copy(update={"run_time": 40e-15}) for b in ("numpy", "cuda")
+    ]
+    solvers = [FDTDSolver(sim) for sim in sims]
+    for solver in solvers:
+        solver.run()
+        for mon in solver.monitors:
+            assert mon.table[0].shape[0] == solver.n_steps < mon.chunk
+    cpu, gpu = solvers
+    bitwise = True
+    for mc, mg in zip(cpu.monitors, gpu.monitors, strict=True):
+        label = f"{mc.sampling.monitor}/{mc.sampling.component}"
+        assert np.abs(mc.acc).max() > 0
+        bitwise &= assert_close(cp.asnumpy(mg.acc), mc.acc, rtol, label)
+    print(f"\nshort run, {cpu.n_steps} steps [{precision}]: bitwise identical = {bitwise}")
+
+
 def test_g5_auto_picks_cuda():
     assert get_backend("auto", "single").name == "cuda"
     result = full_sim("auto", "single").model_copy(update={"run_time": 5e-15}).run()

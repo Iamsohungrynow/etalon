@@ -7,6 +7,7 @@ import pytest
 
 import etalon as et
 from etalon.constants import EPSILON_0, ETA_0, MU_0, UM
+from etalon.fdtd import solver as solver_module
 from etalon.fdtd.cpml import cpml_axis, pml_depth
 from etalon.fdtd.dft import axis_sampling, dft_phasors, monitor_samplings
 from etalon.fdtd.solver import FDTDSolver
@@ -157,6 +158,67 @@ def test_dft_times_are_half_step_for_h_and_full_step_for_e():
             np.testing.assert_allclose(
                 ph_e, dft_phasors(f, np.array([(n + 1.0) * dt]), dt)[0], rtol=1e-6
             )
+
+
+def test_phasor_tables_hold_no_more_steps_than_the_run_has_left(monkeypatch):
+    """A run shorter than a chunk builds one table of n_steps rows on its first step."""
+    solver = FDTDSolver(small_sim())
+    solver.step()
+    for mon in solver.monitors:
+        assert mon.chunk > solver.n_steps
+        assert mon.table[0].shape == mon.table[1].shape == (solver.n_steps, 2)
+    tables = [mon.table for mon in solver.monitors]
+    solver.run()
+    assert all(mon.table is table for mon, table in zip(solver.monitors, tables, strict=True))
+
+    # Two full chunks, then a last table of only the steps left; past the end, a full chunk.
+    n_steps = solver.n_steps
+    chunk = n_steps // 3 + 1
+    monkeypatch.setattr(solver_module, "_PHASOR_TABLE_ENTRIES", 2 * chunk)
+    solver = FDTDSolver(small_sim())
+    solver.run()
+    mon = solver.monitors[0]
+    assert mon.chunk == chunk
+    assert mon.table_start == 2 * chunk
+    assert mon.table[0].shape[0] == n_steps - 2 * chunk < chunk
+    solver.step()
+    assert mon.table_start == n_steps
+    assert mon.table[0].shape[0] == chunk
+
+
+@pytest.mark.parametrize("precision", ["single", "double"])
+def test_phasor_table_size_leaves_the_result_bitwise_unchanged(monkeypatch, precision):
+    """Capped, short-chunk and uncapped tables give identical accumulators.
+
+    A phasor depends only on its own step, so how many steps a table holds must
+    not change a bit of the result. "Uncapped" is the behaviour before tables
+    were capped at the run's end: one full chunk, whatever the run length.
+    """
+    monitors = [
+        et.DFTMonitor(name="probe", center=(0.5, 0.0, 0.0), wavelengths=[1.5, 1.55, 1.6]),
+        et.DFTMonitor(
+            name="plane", size=(1.0, 0.6, 0.0), wavelengths=[1.31, 1.55], components=("Hz",)
+        ),
+    ]
+    sim = small_sim(monitors=monitors, precision=precision)
+
+    def accumulators(entries, capped):
+        monkeypatch.setattr(solver_module, "_PHASOR_TABLE_ENTRIES", entries)
+        solver = FDTDSolver(sim)
+        n_steps = solver.n_steps
+        if not capped:
+            solver.n_steps = 10**9  # the tables no longer see the end of the run
+        for _ in range(n_steps):
+            solver.step()
+        return [solver.backend.to_host(mon.acc) for mon in solver.monitors]
+
+    capped = accumulators(1 << 22, capped=True)  # one table of n_steps rows
+    uncapped = accumulators(6 * 1000, capped=False)  # one table of 2000 or 3000 rows
+    short = accumulators(6 * 7, capped=True)  # refilled every 14 or 21 steps
+    for a, b, c in zip(capped, uncapped, short, strict=True):
+        assert np.abs(a).max() > 0
+        np.testing.assert_array_equal(a, b)
+        np.testing.assert_array_equal(a, c)
 
 
 def test_dft_of_a_tone_over_whole_periods():
