@@ -1,7 +1,7 @@
 {
   "milestone": "M0",
-  "git_sha": "4b745c7",
-  "date": "2026-10-15T16:00:24+00:00",
+  "git_sha": "8413780-dirty",
+  "date": "2026-10-16T18:43:17+00:00",
   "etalon_version": "0.0.1",
   "backend": "cuda",
   "device": "cuda:0 NVIDIA GeForce RTX 4060 Ti",
@@ -82,7 +82,7 @@
       2024
     ],
     "steps": 500,
-    "wall_time_s": 0.7081296001560986,
-    "cell_updates_per_s": 2892532665.6991596
+    "wall_time_s": 0.6956030996516347,
+    "cell_updates_per_s": 2944621726.1334863
   }
 }
