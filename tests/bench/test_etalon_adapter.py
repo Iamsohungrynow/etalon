@@ -52,7 +52,7 @@ def test_five_devices_need_m1(cfg, device):
 
 
 def test_3d_tier_also_needs_3d(cfg):
-    run = adapter.run_backend(cfg, "3d", layout(cfg, "dc"), "cuda")
+    run = adapter.run_backend(cfg, "3d", layout(cfg, "straight"), "cuda")
     assert run.status == "unsupported"
     assert run.message.endswith(f"(not in etalon {et.__version__} yet)")
     assert "3D" in run.message

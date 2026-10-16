@@ -350,7 +350,7 @@ Built as planned: every file in §4, tests B1–B9 (90 tests in `tests/bench/`; 
 | P1 PML 0.5 / 1.0 / 2.0 µm | straight and bend: \|ΔS11\| ≤ 1.2e-5, \|ΔS21\| ≤ 5e-8. The 3D tier keeps 0.5 µm. |
 | P2 run times | straight 6.5e-16, bend 1.2e-16, dc 1.2e-13, mmi 5.5e-9 at their configured run times (all ≪ 1e-5), so those are frozen. The ring did not converge at 10 ps (6.6e-4; Q ≈ 2400 in 2D, more than the ≈ 900 estimated in §12). Its 10.6 nm FSR also left one whole resonance in 1.54–1.56 µm. It now runs 24 ps over 1.535–1.565 µm (601 points) and decays to 1.1e-6. |
 | P3 MPB phase | Deterministic: n_eff is identical at both straight-guide ports to 1e-15, and \|S21\| = 1 ± 2e-5. arg S21 − 2π n_eff L/λ = 0.43–0.46 rad, because MPB solves at 2× resolution while the FDTD propagates with Yee dispersion at Δ = 20 nm (Δn_eff ≈ 1e-2 in 2D). The complex S21 gate therefore tests whether etalon reproduces Meep's discretisation (both are Yee at the same Δ and Δt), not the true phase. |
-| P4 self-convergence | not run yet: the res-100 runs (≈ 2 h) were deferred so the 2D references could run on an idle machine |
+| P4 self-convergence | Meep at resolution 100 vs the resolution-50 references. Straight: \|S21\| changes by 1.4e-5, but the phase by 0.13 rad over 10 µm (Δn_eff 3.1e-3), so complex \|ΔS21\| = 0.13, 13× the 0.01 gate. Bend: \|S21\| changes by 1.4e-4. The DC and MMI runs were stopped to keep the MVP lean. **So the straight guide's complex-S21 gate is stricter than Meep's own discretisation error at 20 nm** (open question below). |
 | P5 3D throughput | straight, 3D, 2.76e7 cells, 1199 steps: 5.5e7 cell-updates/s on 6 ranks (approximate; a test run overlapped), plus ≈ 3 min setup (eps averaging, 3D MPB). This is 3× slower than §2 assumed. Meep 3D references therefore take ≈ 4 h (straight), ≈ 6 h (bend) and ≈ 35 h (DC, which also needs about 22 GB, more than WSL's default 15 GB). |
 
 In 2D, Meep reaches 7e8 cell-updates/s on the small cells (straight, bend) and 1.6–2e8 on the large ones (DC, MMI, ring). Setup is dominated by subpixel averaging of the polygons: 160 s for the DC's two 416-vertex S-bend polygons.
@@ -372,6 +372,13 @@ In 2D, Meep reaches 7e8 cell-updates/s on the small cells (straight, bend) and 1
 - Meep: 2.6 s on 6 ranks.
 
 This is an M4 (performance) observation, not a bench issue.
+
+**MVP scope (2026-10-16, "most efficient MVP").**
+- The MVP gate is the 2D tier: all five devices plus point2d, with Meep references already committed. The 3D tier is the straight guide only: one Meep run of ≈ 4 h, done once M1 has 3D.
+- 3D bend, DC, MMI and ring come after the MVP.
+- Further Meep work before M1: none.
+
+**Open question: the straight-guide phase gate.** P4 shows that Meep's own phase moves 0.13 rad between 20 nm and 10 nm cells, while the gate allows 0.01. *Recommended:* gate \|S21\| < 0.01 and the phase as \|Δn_eff\| < 3e-3 (Meep's own resolution-50 error; equivalent to 0.12 rad over 10 µm), instead of the complex \|ΔS21\| < 0.01. The alternative is to keep the complex gate, which then tests whether etalon reproduces Meep's discretisation almost exactly.
 
 Departures from the plan:
 - **Out files are `bench/<solver>/out/<tier>/<device>.json`.** A tier directory was added so the 2D and 3D results of a device can coexist.

@@ -46,7 +46,10 @@ tiers:
     pml: 0.5             # set to 1.0 if pilot P1 shows 0.5 µm moves S by more than 1e-3
     courant_meep: 0.5    # etalon courant = S·√3 = 0.8660
     z_span: 2.4          # region z ∈ [−1.2, 1.2]: 1.09 µm of oxide beyond the core
-    devices: [straight, bend, dc]   # mmi and ring need ≥ 16 GB GPU / ≥ 64 GB RAM (plan §2)
+    # MVP: the 3D check is the straight guide alone (Meep ≈ 4 h, run once when M1 has 3D).
+    # bend, dc, mmi and ring in 3D come after the MVP: Meep 6–35 h each on this machine, and
+    # mmi and ring need ≥ 16 GB GPU and ≥ 64 GB RAM (plan §2, §14).
+    devices: [straight]
 
 etalon:
   precision: single

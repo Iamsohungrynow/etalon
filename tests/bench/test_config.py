@@ -160,4 +160,4 @@ def test_hash_is_stable_and_sensitive(raw, cfg):
     solver_only["etalon"]["precision"] = "double"
     assert validate(solver_only).config_sha256("2d", "dc") == cfg.config_sha256("2d", "dc")
     # the same device in another tier is a different comparison
-    assert cfg.config_sha256("3d", "dc") != cfg.config_sha256("2d", "dc")
+    assert cfg.config_sha256("3d", "straight") != cfg.config_sha256("2d", "straight")
