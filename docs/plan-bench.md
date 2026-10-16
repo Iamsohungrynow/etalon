@@ -195,7 +195,7 @@ In 3D, every polygon is a 0.22 µm slab centred on z = 0 in SiO₂ above and bel
 | Device | Gated metric | Gate |
 | --- | --- | --- |
 | point2d | max_λ \|T_e − T_m\| | < 1e-3 |
-| straight | max_λ \|S21_e − S21_m\| (complex) | < 0.01. This also means \|Δφ\| ≲ 0.01 rad, i.e. Δn_eff < 2.5e-4 over 10 µm, so it really tests M1's subpixel smoothing. |
+| straight | max_λ \| \|S21_e\| − \|S21_m\| \| and max_λ \|Δn_eff\| = \|arg(S21_e/S21_m)\| / (2πL/λ) | < 0.01 and < 3e-3 (Meep's own resolution-50 error, P4; changed from complex \|ΔS21\| < 0.01 on 2026-10-16). Complex \|ΔS21\| is still reported. |
 | bend | max_λ \| \|S21_e\| − \|S21_m\| \| | < 0.01 |
 | dc | max_λ \|Δ\|S31\|²\| and \|Δ\|S41\|²\| | < 0.01 (one point of power) |
 | mmi | max_λ \|Δ\|S21\|²\| and \|Δ\|S31\|²\| | < 0.01; imbalance in dB reported |
@@ -378,7 +378,7 @@ This is an M4 (performance) observation, not a bench issue.
 - 3D bend, DC, MMI and ring come after the MVP.
 - Further Meep work before M1: none.
 
-**Open question: the straight-guide phase gate.** P4 shows that Meep's own phase moves 0.13 rad between 20 nm and 10 nm cells, while the gate allows 0.01. *Recommended:* gate \|S21\| < 0.01 and the phase as \|Δn_eff\| < 3e-3 (Meep's own resolution-50 error; equivalent to 0.12 rad over 10 µm), instead of the complex \|ΔS21\| < 0.01. The alternative is to keep the complex gate, which then tests whether etalon reproduces Meep's discretisation almost exactly.
+**Decided (2026-10-16): the straight-guide phase gate.** P4 shows that Meep's own phase moves 0.13 rad between 20 nm and 10 nm cells, while the complex gate allowed 0.01. The straight guide is now gated on \|S21\| < 0.01 and \|Δn_eff\| < 3e-3 (equivalent to 0.12 rad over 10 µm), and complex \|ΔS21\| is reported without a gate (§8).
 
 Departures from the plan:
 - **Out files are `bench/<solver>/out/<tier>/<device>.json`.** A tier directory was added so the 2D and 3D results of a device can coexist.

@@ -64,18 +64,25 @@ def test_metric_pass_rules():
     assert Metric("x", 5.0).passed is None
 
 
-def test_straight_phase_gate_and_implied_neff():
+def test_straight_gates_magnitude_and_neff():
     beta_l = 2 * np.pi * 2.5 * 10 / WL
     meep = {"S21": np.exp(1j * beta_l)}
-    # etalon with n_eff higher by 1e-4: phase 2π·1e-4·L/λ ≈ 4e-3 rad → passes
-    etalon = {"S21": np.exp(1j * beta_l * (2.5 + 1e-4) / 2.5)}
-    result = compare("straight", WL, meep, etalon, length=10.0)
-    by_name = {m.name: m for m in result.metrics}
-    assert by_name["max |ΔS21| (complex)"].passed
-    assert by_name["max |Δn_eff| implied by the phase"].value == pytest.approx(1e-4, rel=1e-6)
-    # n_eff higher by 5e-4: ≈ 0.02 rad → fails the complex gate
-    etalon = {"S21": np.exp(1j * beta_l * (2.5 + 5e-4) / 2.5)}
-    assert not compare("straight", WL, meep, etalon, length=10.0).metrics[0].passed
+
+    def gates(n_shift, magnitude=1.0):
+        etalon = {"S21": magnitude * np.exp(1j * beta_l * (2.5 + n_shift) / 2.5)}
+        result = compare("straight", WL, meep, etalon, length=10.0)
+        return {m.name: m for m in result.metrics}
+
+    # n_eff higher by 2e-3 (0.08 rad over 10 µm): passes, although complex |ΔS21| ≈ 0.08
+    by_name = gates(2e-3)
+    assert by_name["max |Δn_eff| implied by the S21 phase"].value == pytest.approx(2e-3, rel=1e-6)
+    assert by_name["max |Δn_eff| implied by the S21 phase"].passed
+    assert by_name["max | |S21|e − |S21|m |"].passed
+    assert by_name["max |ΔS21| (complex)"].gate is None
+    # n_eff higher by 4e-3: fails the n_eff gate (3e-3, Meep's own resolution-50 error)
+    assert gates(4e-3)["max |Δn_eff| implied by the S21 phase"].passed is False
+    # |S21| lower by 0.02: fails the magnitude gate
+    assert gates(0.0, magnitude=0.98)["max | |S21|e − |S21|m |"].passed is False
 
 
 def test_dc_and_mmi_power_gates():

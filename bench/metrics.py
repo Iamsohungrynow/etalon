@@ -18,6 +18,14 @@ from scipy.signal import find_peaks
 GATE = 0.01
 """|ΔS| < 1 %, made concrete per device in ``compare``."""
 POINT2D_GATE = 1e-3
+NEFF_GATE = 3e-3
+"""Straight guide: |Δn_eff| implied by the S21 phase over the port spacing L,
+
+    Δn_eff = |arg(S21_e / S21_m)| / (2π L / λ),
+
+must stay below Meep's own discretisation error at resolution 50 (pilot P4: Meep's
+phase moves 0.13 rad over 10 µm, Δn_eff 3.1e-3, from 20 nm to 10 nm cells). The
+wrapped phase assumes |Δn_eff| < λ / (2L), i.e. < 0.075 for L = 10 µm."""
 DECAY_LIMIT = 1e-5
 """A run whose output-port field has not decayed below this (energy) is not converged."""
 
@@ -169,14 +177,15 @@ def compare(
     if device == "straight":
         s_e, s_m = etalon["S21"], meep["S21"]
         dphi = np.angle(s_e / s_m)
+        dn = float(np.max(np.abs(dphi) / (2 * np.pi * length / wl))) if length else None
         metrics = [
-            Metric("max |ΔS21| (complex)", float(np.max(np.abs(s_e - s_m))), GATE),
-            Metric("max | |S21|e − |S21|m |", float(np.max(np.abs(np.abs(s_e) - np.abs(s_m))))),
+            Metric(
+                "max | |S21|e − |S21|m |", float(np.max(np.abs(np.abs(s_e) - np.abs(s_m)))), GATE
+            ),
+            Metric("max |Δn_eff| implied by the S21 phase", dn, NEFF_GATE),
             Metric("max |Δ arg S21|", float(np.max(np.abs(dphi))), unit="rad"),
+            Metric("max |ΔS21| (complex)", float(np.max(np.abs(s_e - s_m)))),
         ]
-        if length:
-            dn = np.abs(dphi) / (2 * np.pi * length / wl)
-            metrics.append(Metric("max |Δn_eff| implied by the phase", float(np.max(dn))))
         return Comparison(metrics, headline)
     if device == "bend":
         value = float(np.max(np.abs(np.abs(etalon["S21"]) - np.abs(meep["S21"]))))

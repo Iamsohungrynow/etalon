@@ -31,7 +31,7 @@ from bench.schema import (
 
 COMPARED = {
     "point2d": "T21 = Hz(probe 2) / Hz(probe 1), complex",
-    "straight": "S21 complex (|S21| and phase)",
+    "straight": "|S21| and phase (as Δn_eff)",
     "bend": "|S21|",
     "dc": "|S31|², |S41|² (coupling ratio)",
     "mmi": "|S21|², |S31|², imbalance",
