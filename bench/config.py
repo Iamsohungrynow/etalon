@@ -19,6 +19,7 @@ Unit conventions (docs/plan-bench.md §5):
 import hashlib
 import json
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -299,11 +300,33 @@ class BenchConfig(Model):
         return sha256_json(self.device_spec(tier, device))
 
 
-def load_config(path: Path = CONFIG_PATH) -> BenchConfig:
-    """Read and validate config.yaml."""
+def load_config(path: Path = CONFIG_PATH, overrides: Sequence[str] = ()) -> BenchConfig:
+    """Read and validate config.yaml, with optional ``dotted.key=value`` overrides.
+
+    Overrides exist for pilot and convergence runs (``--set tiers.2d.pml=0.5``). They
+    change the config hash, so an overridden result is never compared with a reference.
+    """
     with open(path, encoding="utf-8") as stream:
         data = yaml.safe_load(stream)
+    for item in overrides:
+        apply_override(data, item)
     return BenchConfig.model_validate(data)
+
+
+def apply_override(data: dict[str, Any], item: str) -> None:
+    """Set ``a.b.c=value`` in nested ``data``; the value is parsed as YAML (numbers, lists)."""
+    key, sep, value = item.partition("=")
+    if not sep:
+        raise ValueError(f"override {item!r} must look like dotted.key=value")
+    *parents, leaf = key.strip().split(".")
+    node = data
+    for part in parents:
+        if not isinstance(node.get(part), dict):
+            raise ValueError(f"override {item!r}: {part!r} is not a section of config.yaml")
+        node = node[part]
+    if leaf not in node:
+        raise ValueError(f"override {item!r}: {leaf!r} is not a key of that section")
+    node[leaf] = yaml.safe_load(value)
 
 
 def sha256_json(data: Any) -> str:
