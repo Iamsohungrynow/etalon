@@ -21,3 +21,5 @@ etalon/studio/static/
 Thumbs.db
 .vscode/
 .idea/
+studio/demo-data/
+studio/dist-demo/

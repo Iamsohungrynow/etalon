@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -28,11 +28,40 @@ function licences(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), licences()],
+/**
+ * The demo build (`pnpm build:demo`, docs/plan-demo.md) ships the recorded answers in
+ * studio/demo-data/ (studio/scripts/record_demo.py) at /demo-data/.
+ */
+function demoData(): Plugin {
+  const root = here("demo-data");
+  return {
+    name: "etalon-demo-data",
+    apply: "build",
+    buildStart() {
+      if (!existsSync(`${root}/manifest.json`)) {
+        this.error("studio/demo-data/ is empty: run studio/scripts/record_demo.py first");
+      }
+    },
+    generateBundle() {
+      for (const name of readdirSync(root, { recursive: true, encoding: "utf-8" })) {
+        const path = `${root}/${name.replaceAll("\\", "/")}`;
+        if (!name.endsWith(".json") && !name.endsWith(".bin")) continue;
+        this.emitFile({
+          type: "asset",
+          fileName: `demo-data/${name.replaceAll("\\", "/")}`,
+          source: readFileSync(path),
+        });
+      }
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), tailwindcss(), licences(), ...(mode === "demo" ? [demoData()] : [])],
   build: {
-    // Served by etalon/studio/server.py and shipped in the wheel (gitignored).
-    outDir: here("../etalon/studio/static"),
+    // Served by etalon/studio/server.py and shipped in the wheel (gitignored); the demo
+    // build goes to studio/dist-demo/ for Netlify (netlify.toml).
+    outDir: mode === "demo" ? here("dist-demo") : here("../etalon/studio/static"),
     emptyOutDir: true,
     modulePreload: { polyfill: false }, // no inline script, so the CSP can stay script-src 'self'
     assetsInlineLimit: 0, // no data: fonts either, so the CSP can stay font-src 'self'
@@ -52,4 +81,9 @@ export default defineConfig({
     setupFiles: ["src/test/setup.ts"],
     css: false,
   },
-});
+  preview: {
+    host: "127.0.0.1",
+    port: 8792,
+    strictPort: true,
+  },
+}));

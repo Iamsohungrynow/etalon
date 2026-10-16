@@ -467,5 +467,9 @@
     "field": "Field canvas and colour scales",
     "fieldLabel": "Test pattern: the shape of a 2D cylindrical wave",
     "fieldScale": "Test pattern"
+  },
+  "demo": {
+    "banner": "Demo: results the etalon solver computed earlier, replayed in your browser. Nothing is computed here; the real Studio runs on your own machine with <cmd>etalon studio</cmd>.",
+    "needsLocal": "Needs the local Studio: this demo only replays recorded runs."
   }
 }

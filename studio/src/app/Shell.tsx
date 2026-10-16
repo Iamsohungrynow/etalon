@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { NavLink, Outlet } from "react-router";
 import { cx } from "../components/cx";
 import { Value } from "../components/Value";
+import { DemoBanner } from "../demo/DemoBanner";
+import { DEMO } from "../demo/mode";
 import { StatusStrip } from "./StatusStrip";
 import { useApplySettings } from "./useApplySettings";
 
@@ -20,7 +22,15 @@ export function Shell() {
         : "border-transparent text-secondary hover:text-text",
     );
   return (
-    <div className="grid h-full grid-rows-[40px_2px_minmax(0,1fr)_24px]">
+    <div
+      className={cx(
+        "grid h-full",
+        DEMO
+          ? "grid-rows-[auto_40px_2px_minmax(0,1fr)_24px]"
+          : "grid-rows-[40px_2px_minmax(0,1fr)_24px]",
+      )}
+    >
+      {DEMO ? <DemoBanner /> : null}
       <header className="flex items-center gap-8 bg-surface px-4">
         <Value mono={false} className="text-h3 font-semibold tracking-tight">
           {t("app.brandName")} <span className="font-normal text-secondary">{t("app.brandProduct")}</span>

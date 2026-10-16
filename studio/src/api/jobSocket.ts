@@ -3,6 +3,8 @@
  * `type`; binary frames are live field snapshots in the §13.1 layout. The token rides
  * as a subprotocol because browsers cannot set headers on a WebSocket.
  */
+import { DEMO } from "../demo/mode";
+import { openReplay } from "../demo/replaySocket";
 import { decodeArray } from "../field/binary";
 import type { components } from "./schema";
 
@@ -34,6 +36,7 @@ export function openJobSocket(
   handlers: JobSocketHandlers,
   WebSocketImpl: typeof WebSocket = WebSocket,
 ): () => void {
+  if (DEMO) return openReplay(jobId, handlers); // the static demo replays a recorded run
   const protocols = token ? [JOB_PROTOCOL, `token.${token}`] : [JOB_PROTOCOL];
   const socket = new WebSocketImpl(jobSocketUrl(jobId), protocols);
   socket.binaryType = "arraybuffer";

@@ -15,6 +15,7 @@ import { IconButton } from "../../components/IconButton";
 import { Skeleton } from "../../components/Skeleton";
 import { TextField } from "../../components/TextField";
 import { Value } from "../../components/Value";
+import { DEMO } from "../../demo/mode";
 import { NewSimulationForm } from "./NewSimulationForm";
 import { WorkspaceTable } from "./WorkspaceTable";
 
@@ -117,6 +118,8 @@ export function WorkspaceScreen({ now }: WorkspaceScreenProps) {
           icon={<Plus size={14} aria-hidden />}
           aria-expanded={creating}
           onClick={() => setCreating((open) => !open)}
+          disabled={DEMO}
+          title={DEMO ? t("demo.needsLocal") : undefined}
         >
           {t("workspace.new.open")}
         </Button>

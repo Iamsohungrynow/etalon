@@ -6,7 +6,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["node_modules", "playwright-report", "test-results", "src/api/schema.ts"] },
+  { ignores: ["dist-demo", "demo-data", "node_modules", "playwright-report", "test-results", "src/api/schema.ts"] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {
@@ -25,7 +25,7 @@ export default tseslint.config(
   },
   {
     files: ["src/**/*.tsx"],
-    ignores: ["src/**/*.test.tsx", "src/test/**"],
+    ignores: ["dist-demo", "demo-data", "src/**/*.test.tsx", "src/test/**"],
     plugins: { i18next },
     rules: {
       "i18next/no-literal-string": [

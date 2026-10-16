@@ -14,6 +14,7 @@ import { Value } from "../../components/Value";
 import { formatCount, formatDuration, formatEta } from "../../format/numbers";
 import { SimulationGate } from "../simulation/SimulationGate";
 import { SimulationHeader } from "../simulation/SimulationHeader";
+import { DEMO } from "../../demo/mode";
 import { EnergyChart } from "./EnergyChart";
 import { LiveField } from "./LiveField";
 import { RunOutcome } from "./RunOutcome";
@@ -81,7 +82,12 @@ function Run({ row }: { row: SimulationRow }) {
 
   const live = Boolean(jobId) && !done;
   const actions = live ? (
-    <Button icon={<Square size={14} aria-hidden />} onClick={stop} disabled={cancel.isPending}>
+    <Button
+      icon={<Square size={14} aria-hidden />}
+      onClick={stop}
+      disabled={DEMO || cancel.isPending}
+      title={DEMO ? t("demo.needsLocal") : undefined}
+    >
       {cancel.isPending ? t("run.cancelling") : t("run.cancel")}
     </Button>
   ) : (

@@ -465,5 +465,9 @@
     "field": "场画布与色标",
     "fieldLabel": "测试图样：二维柱面波的形状",
     "fieldScale": "测试图样"
+  },
+  "demo": {
+    "banner": "演示：在浏览器中回放 etalon 求解器事先算出的结果。此处不进行任何计算；真正的 Studio 在您自己的计算机上运行，命令为 <cmd>etalon studio</cmd>。",
+    "needsLocal": "需要本地 Studio：此演示只回放已记录的运行。"
   }
 }

@@ -6,6 +6,7 @@ import { useUpdateSettings } from "../../api/queries";
 import { Button } from "../../components/Button";
 import { Cmd } from "../../components/Cmd";
 import { TextField } from "../../components/TextField";
+import { DEMO } from "../../demo/mode";
 import { SettingsSection } from "./SettingsSection";
 import { workspaceErrorMessage } from "./workspaceError";
 
@@ -50,11 +51,13 @@ export function WorkspaceFolderSection({ settings }: WorkspaceFolderSectionProps
             setError(null);
           }}
           error={error}
+          readOnly={DEMO}
+          title={DEMO ? t("demo.needsLocal") : undefined}
           spellCheck={false}
           autoComplete="off"
           className="w-[36rem] max-w-full"
         />
-        <Button type="submit" variant="primary" disabled={unchanged || update.isPending}>
+        <Button type="submit" variant="primary" disabled={DEMO || unchanged || update.isPending}>
           {update.isPending ? t("settings.saving") : t("settings.workspace.apply")}
         </Button>
       </form>

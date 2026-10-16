@@ -7,6 +7,7 @@ import { cx } from "../../components/cx";
 import { Value } from "../../components/Value";
 import { formatBytes, formatCount, formatDuration } from "../../format/numbers";
 import { formatQuantity } from "../../format/units";
+import { DEMO } from "../../demo/mode";
 import { WarningText } from "./WarningText";
 
 interface EstimateBarProps {
@@ -63,7 +64,7 @@ export function EstimateBar({ spec, objectName, onSelect }: EstimateBarProps) {
                 <span className="text-secondary">{t("setup.estimate.unknown")}</span>
               )}
             </span>
-            {estimate.basis !== "measured" ? (
+            {estimate.basis !== "measured" && !DEMO ? (
               <Button
                 variant="ghost"
                 onClick={() => calibrate.mutate()}
