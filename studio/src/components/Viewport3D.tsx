@@ -1,5 +1,5 @@
 import { Canvas, type RootState, type ThreeEvent } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BoxGeometry,
   BufferGeometry,
@@ -47,6 +47,7 @@ import {
   type Vec3,
   type ViewName,
 } from "../viewport/scene";
+import { SizeWatcher } from "../viewport/SizeWatcher";
 import { cx } from "./cx";
 
 export interface Viewport3DProps {
@@ -457,9 +458,15 @@ export function Viewport3D({
     };
   }, [root]);
 
-  // The 3/4 view of the whole scene, once, when the canvas is ready.
-  useEffect(() => {
-    if (!root || framedRef.current) return;
+  // The 3/4 view of the whole scene, once the canvas has a size (it is measured after it
+  // is created; framing earlier fits the camera to 0 × 0 and draws nothing). Later size
+  // changes just redraw.
+  const onSize = useCallback(() => {
+    if (!root) return;
+    if (framedRef.current) {
+      root.invalidate();
+      return;
+    }
     framedRef.current = true;
     frameCamera(root, controlsRef.current, scene, viewDirection("iso", scene.is2d), null);
   }, [root, scene]);
@@ -520,6 +527,7 @@ export function Viewport3D({
         <ambientLight intensity={AMBIENT} />
         <directionalLight position={[0.4, -0.6, 1]} intensity={KEY_LIGHT} />
         <primitive object={objects.root} onClick={onClick} />
+        <SizeWatcher onSize={onSize} />
       </Canvas>
     </div>
   );

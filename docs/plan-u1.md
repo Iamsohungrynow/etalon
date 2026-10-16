@@ -271,9 +271,9 @@ Built as planned: the server side in its own session (`claude/u1-server-af24bb`,
 | U1 Setup: the template renders; a wrong layer is visibly wrong | Playwright: the photonic-crystal template shows its tree, 3D view, estimate and slice. Hovering the slice centre reads εr = 12.08 (Si, the line defect). For `misplaced_strip.py` it reads 2.085 (SiO2): the strip is not where the script meant it |
 | U2 Run: progress ≥ 2 Hz, cancel within 2 s | Playwright: a real CPU run of the strip template from "New from template" streams progress at ≥ 2 Hz, live Hz frames, the log, finishes and opens its Results. Cancel shows "cancelled" within 2 s and keeps the data |
 | Field viewer, float32 over HTTP, canvas | Playwright: on the recorded photonic-crystal run, the hover value equals the stored array at that node (to 1e-4), and PNG and CSV export download |
-| pytest (whole repository) | 344 pass, 2 skipped (POSIX-only), as reported by the server session; tests/studio here: 274 pass |
+| pytest (whole repository) | 344 pass, 2 skipped (POSIX-only) |
 | vitest | 257 pass |
-| Playwright | 20 of 21 pass; P3 (open time) fails, see below |
+| Playwright | 20 of 21 pass; P3 (open time) fails, see below. Checked by hand in the browser too: Setup's 3D view of the photonic crystal, a live GPU run (13 s, the guided wave forming in the line defect), the recorded run's field |
 | ruff, mypy, ESLint, tsc | clean |
 
 **P3, open time, now over budget.** `etalon studio` to 50 rows measured 2.28–2.38 s over three runs at 35–50 % background CPU load, against the 2 s budget (U0: 1.65–1.68 s).
@@ -296,4 +296,5 @@ Departures from the plan:
   - Boxes are clipped to the domain.
   - Translucent boxes (the photonic crystal's air holes) cut themselves out of the slab.
 - **Colour scale and image share one range** (`resolveRange`), as the field-canvas subagent pointed out.
+- **The 3D view was blank on first load** until the window resized: it framed its camera before the canvas had a size. Found by looking, since the test only checked that the canvas existed. Fixed (`viewport/SizeWatcher.tsx`), and the Setup test now checks that the viewport actually draws.
 - **Not done:** parameters (`et.param`, a core API), the shutoff threshold line on the energy chart, and S-parameters, modes and 3D (M1–M2).

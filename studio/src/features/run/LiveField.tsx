@@ -51,7 +51,7 @@ export function LiveField({ job, outlines }: LiveFieldProps) {
             unit={header.unit}
             label={t("run.live.scale")}
           />
-          <span className="ml-auto text-secondary">
+          <span className="ml-auto shrink-0 whitespace-nowrap text-secondary">
             {t("run.live.step")} <Value>{header.step}</Value>
             {" · "}
             <Value>{`${header.shape[0]} × ${header.shape[1]}`}</Value>

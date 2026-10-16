@@ -41,9 +41,13 @@ test("Setup: the photonic-crystal template shows its tree, 3D view, estimate and
     tree.getByRole("treeitem", { name: /Structures/ }),
   ).toBeVisible();
   await expect(tree.getByRole("treeitem", { name: /dipole/ })).toBeVisible();
-  await expect(
-    page.getByRole("img", { name: "The simulation in 3D" }),
-  ).toBeVisible();
+  const viewport = page.getByRole("img", { name: "The simulation in 3D" });
+  await expect(viewport).toBeVisible();
+  // It must actually draw on first load (it once stayed blank until the window resized):
+  // a blank region compresses to a few KB of PNG, the photonic crystal to far more.
+  await expect
+    .poll(async () => (await viewport.screenshot()).length, { timeout: 10_000 })
+    .toBeGreaterThan(30_000);
   await expect(page.getByText("Estimate")).toBeVisible();
   await expect(page.getByRole("button", { name: "Run" })).toBeEnabled();
 

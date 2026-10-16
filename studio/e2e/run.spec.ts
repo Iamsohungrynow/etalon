@@ -1,18 +1,21 @@
 // U2 Run: a real CPU run from a template, live over the WebSocket, then cancel.
-import { mkdirSync, rmSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import { mkdirSync } from "node:fs";
+import { join } from "node:path";
 import type { APIRequestContext, Page, WebSocket as PwWebSocket } from "@playwright/test";
 import { DEFAULT_SETTINGS, RUN_WS } from "./env";
 import { expect, open, putSettings, test } from "./guards";
 
 /**
- * An empty workspace for the run, on the CPU so no GPU is needed, with live snapshots on
- * so frames arrive on the CPU too. Called inside each test: the guarded `page` fixture
- * resets Settings to the defaults when it is set up.
+ * A fresh, empty workspace for each run, on the CPU so no GPU is needed, with live
+ * snapshots on so frames arrive on the CPU too. A new folder each time: on Windows the
+ * previous test's job may still hold its files open. Called inside each test, because
+ * the guarded `page` fixture resets Settings to the defaults when it is set up.
  */
 async function useRunWorkspace(request: APIRequestContext): Promise<void> {
-  rmSync(RUN_WS, { recursive: true, force: true });
-  mkdirSync(RUN_WS, { recursive: true });
-  await putSettings(request, { ...DEFAULT_SETTINGS, workspace: RUN_WS, backend: "cpu", live_snapshots: true });
+  const workspace = join(RUN_WS, randomUUID());
+  mkdirSync(workspace, { recursive: true });
+  await putSettings(request, { ...DEFAULT_SETTINGS, workspace, backend: "cpu", live_snapshots: true });
 }
 
 /** Text frames of type progress, with the time each arrived. */

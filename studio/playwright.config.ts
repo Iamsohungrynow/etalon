@@ -5,11 +5,17 @@
  */
 import { rmSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
-import { CONFIG_DIR, FIXTURE, ORIGIN, PORT, PYTHON, REPO_ROOT, TOKEN, makeWorkspace50 } from "./e2e/env";
+import { CONFIG_DIR, FIXTURE, ORIGIN, PORT, PYTHON, REPO_ROOT, RUN_WS, TOKEN, makeWorkspace50 } from "./e2e/env";
 
 if (process.env.TEST_WORKER_INDEX === undefined) {
   // Main process only: start from fresh settings, and make sure the 50-script workspace exists.
   rmSync(CONFIG_DIR, { recursive: true, force: true });
+  // Earlier runs' folders; a file still held open on Windows is left for next time.
+  try {
+    rmSync(RUN_WS, { recursive: true, force: true, maxRetries: 2 });
+  } catch {
+    // Each Run test uses a fresh folder inside RUN_WS anyway.
+  }
   makeWorkspace50();
 }
 
