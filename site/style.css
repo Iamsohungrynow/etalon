@@ -94,6 +94,8 @@ main > * { min-height: 0; min-width: 0; }
 .archive { display: flex; flex-direction: column; border-right: var(--border); }
 .archive-header { padding: 15px; border-bottom: var(--border); }
 .archive-header h1 { font-size: 42px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.9; }
+.archive-header h1 { display: flex; align-items: center; gap: 0.22em; }
+.logo-mark { width: 1.05em; height: 1.05em; flex: none; }
 .tagline { margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--ink-2); }
 .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .action {

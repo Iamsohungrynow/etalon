@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Etalon">
+  <!-- Etalon mark: a Fabry–Pérot etalon drawn as a capital E.
+       The spine is the first mirror, the thin line on the right the second
+       (partly transmitting) mirror, and the three arms the standing waves
+       trapped between them; the middle arm carries the spectrum. -->
+  <defs>
+    <linearGradient id="etalon-spectrum" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff0000"/>
+      <stop offset="0.17" stop-color="#ff7f00"/>
+      <stop offset="0.33" stop-color="#ffff00"/>
+      <stop offset="0.5" stop-color="#00ff00"/>
+      <stop offset="0.67" stop-color="#0000ff"/>
+      <stop offset="0.83" stop-color="#4b0082"/>
+      <stop offset="1" stop-color="#8f00ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="8" width="9" height="48" fill="#000"/>
+  <rect x="10" y="8" width="37" height="9" fill="#000"/>
+  <rect x="19" y="27.5" width="25" height="9" fill="url(#etalon-spectrum)"/>
+  <rect x="10" y="47" width="37" height="9" fill="#000"/>
+  <rect x="51.5" y="8" width="2.5" height="48" fill="#000"/>
+</svg>

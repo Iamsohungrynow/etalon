@@ -1,5 +1,5 @@
-/* etalon landing page. Everything drawn here comes from site/data.json, which
-   site/build_data.py writes from real etalon runs: fields are the solver's DFT
+/* Etalon landing page. Everything drawn here comes from site/data.json, which
+   site/build_data.py writes from real Etalon runs: fields are the solver's DFT
    at one wavelength, animated as Re[F·exp(−iωt)] on white; the run log is what the run
    recorded; the validation curve is the M0 measurement. Nothing is random. */
 "use strict";
@@ -9,13 +9,13 @@ const STUDIO_DEMO_URL = "studio/";
 const TEXT = {
   en: {
     tagline: "GPU photonic FDTD · on your own machine · Python-native",
-    aboutName: "About etalon",
+    aboutName: "About Etalon",
     aboutTitle: "Photonic simulation that stays on your machine",
-    aboutAbstract: "What etalon is, the problem it solves, and where it stands today.",
+    aboutAbstract: "What Etalon is, the problem it solves, and where it stands today.",
     aboutRole: "v0.0.1 · milestone M0",
     whatLabel: "What it is",
     whatText:
-      "etalon simulates passive photonic devices (waveguides, bends, couplers, MMIs, ring resonators) with the finite-difference time-domain method, on one local NVIDIA GPU. You describe the device in Python; etalon Studio shows the setup, the run and the results in your browser, served by your own computer.",
+      "Etalon simulates passive photonic devices (waveguides, bends, couplers, MMIs, ring resonators) with the finite-difference time-domain method, on one local NVIDIA GPU. You describe the device in Python; Etalon Studio shows the setup, the run and the results in your browser, served by your own computer.",
     problemLabel: "The problem",
     problemText:
       "Photonic design teams depend on a few commercial solvers, all licensed from abroad: one can be cut off by export rules, another only runs in the vendor's cloud, so designs leave the building. Clusters and per-core licences make every run expensive.",
@@ -31,13 +31,13 @@ const TEXT = {
     report: "M0 validation report",
     langButton: "中文",
     description:
-      "A photonic FDTD solver that runs on one local NVIDIA GPU, with an identical-result CPU fallback. Select an entry: the viewport replays a field the etalon solver computed.",
+      "A photonic FDTD solver that runs on one local NVIDIA GPU, with an identical-result CPU fallback. Select an entry: the viewport replays a field the Etalon solver computed.",
     result: "RESULT:",
     subject: "Simulation",
     keywords: "Keywords",
     params: "Run parameters",
     liveStream: "Run log · recorded",
-    computedOn: "Computed by etalon {version} on {device}.",
+    computedOn: "Computed by Etalon {version} on {device}.",
     empty: "No entry loaded. Select an entry to replay its field.",
     emptyTitle: "No entry loaded",
     emptyAbstract: "The viewport is idle.",
@@ -47,7 +47,7 @@ const TEXT = {
     roleValidation: "2D vacuum · 0° and 45° · Δ = 50 and 100 nm",
     scale: "Re[F·e^(−iωt)] · λ = {wl} µm",
     tickerTop: [
-      "etalon", "photonic FDTD on one local GPU", "M0: 2D TE solver, NumPy + CUDA",
+      "Etalon", "photonic FDTD on one local GPU", "M0: 2D TE solver, NumPy + CUDA",
       "CUDA = NumPy bit for bit", "2.9 × 10⁹ cell-updates/s on RTX 4060 Ti",
       "CPML −91 dB", "dispersion within 1.3 × 10⁻⁴ of Yee theory", "your data never leaves your machine",
     ],
@@ -64,13 +64,13 @@ const TEXT = {
   },
   zh: {
     tagline: "GPU 光子 FDTD · 在你自己的机器上运行 · 原生 Python",
-    aboutName: "关于 etalon",
+    aboutName: "关于 Etalon",
     aboutTitle: "留在你自己机器上的光子仿真",
-    aboutAbstract: "etalon 是什么、解决什么问题、现在进展到哪里。",
+    aboutAbstract: "Etalon 是什么、解决什么问题、现在进展到哪里。",
     aboutRole: "v0.0.1 · 里程碑 M0",
     whatLabel: "是什么",
     whatText:
-      "etalon 用时域有限差分法（FDTD）仿真无源光子器件（波导、弯曲、耦合器、MMI、环形谐振腔），只需一块本地 NVIDIA GPU。你用 Python 描述器件；etalon Studio 在浏览器里显示设置、运行过程和结果，由你自己的电脑提供服务。",
+      "Etalon 用时域有限差分法（FDTD）仿真无源光子器件（波导、弯曲、耦合器、MMI、环形谐振腔），只需一块本地 NVIDIA GPU。你用 Python 描述器件；Etalon Studio 在浏览器里显示设置、运行过程和结果，由你自己的电脑提供服务。",
     problemLabel: "问题",
     problemText:
       "光子设计团队依赖少数几款商业求解器，而且都来自国外授权：有的可能因出口管制被断供，有的只能在厂商的云上运行，设计文件必须离开公司。集群和按核计费的授权让每次运行都很昂贵。",
@@ -86,13 +86,13 @@ const TEXT = {
     report: "M0 验证报告",
     langButton: "EN",
     description:
-      "在一块本地 NVIDIA GPU 上运行的光子 FDTD 求解器，CPU 回退结果完全一致。选择一个条目，视窗会回放 etalon 求解器算出的场。",
+      "在一块本地 NVIDIA GPU 上运行的光子 FDTD 求解器，CPU 回退结果完全一致。选择一个条目，视窗会回放 Etalon 求解器算出的场。",
     result: "结果：",
     subject: "仿真",
     keywords: "关键词",
     params: "运行参数",
     liveStream: "运行日志 · 已录制",
-    computedOn: "由 etalon {version} 在 {device} 上计算。",
+    computedOn: "由 Etalon {version} 在 {device} 上计算。",
     empty: "未加载条目。选择一个条目来回放它的场。",
     emptyTitle: "未加载条目",
     emptyAbstract: "视窗空闲。",
@@ -102,7 +102,7 @@ const TEXT = {
     roleValidation: "二维真空 · 0° 与 45° · Δ = 50 和 100 nm",
     scale: "Re[F·e^(−iωt)] · λ = {wl} µm",
     tickerTop: [
-      "etalon", "单块本地 GPU 上的光子 FDTD", "M0：二维 TE 求解器，NumPy + CUDA",
+      "Etalon", "单块本地 GPU 上的光子 FDTD", "M0：二维 TE 求解器，NumPy + CUDA",
       "CUDA 与 NumPy 逐位一致", "RTX 4060 Ti 上 2.9 × 10⁹ 次网格更新/秒",
       "CPML −91 dB", "色散与 Yee 理论相差 1.3 × 10⁻⁴ 以内", "数据不离开你的机器",
     ],
@@ -117,7 +117,7 @@ const TEXT = {
       "VAL-M0": "测得的相速度与 Yee 色散关系相差 1.3 × 10⁻⁴ 以内（验收要求 5 × 10⁻³）；CUDA 与 NumPy 逐位一致。",
     },
     entries: {
-      ABOUT: { name: "关于 etalon", title: "留在你自己机器上的光子仿真", abstract: "etalon 是什么、解决什么问题、现在进展到哪里。" },
+      ABOUT: { name: "关于 Etalon", title: "留在你自己机器上的光子仿真", abstract: "Etalon 是什么、解决什么问题、现在进展到哪里。" },
       "SIM-01": { name: "真空脉冲", title: "自由空间中的点源", abstract: "磁线源向二维真空辐射 1.55 µm 脉冲，边界处的 CPML 将其吸收。" },
       "SIM-02": { name: "条形波导", title: "氧化硅中的 500 nm 硅条", abstract: "0.5 µm 硅芯（n = 3.476）中的面内偶极子，周围是 SiO2（n = 1.444）：TE 导模沿 x 传播。" },
       "SIM-03": { name: "直角弯", title: "硅条形波导的 90° 拐角", abstract: "同样的硅条做一个急转直角：一部分光跟着拐弯，其余散射进氧化层。" },
