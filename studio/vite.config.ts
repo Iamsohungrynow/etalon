@@ -57,6 +57,8 @@ function demoData(): Plugin {
 }
 
 export default defineConfig(({ mode }) => ({
+  // ETALON_BASE=/studio/ serves the demo under a sub-path (the landing page owns /).
+  base: process.env.ETALON_BASE ?? "/",
   plugins: [react(), tailwindcss(), licences(), ...(mode === "demo" ? [demoData()] : [])],
   build: {
     // Served by etalon/studio/server.py and shipped in the wheel (gitignored); the demo

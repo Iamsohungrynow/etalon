@@ -21,13 +21,13 @@ export function AboutSection() {
         <dd>{value(system.data?.platform)}</dd>
         <dt className="text-secondary">{t("settings.about.licences")}</dt>
         <dd className="flex flex-wrap gap-x-4">
-          <a className={link} href="/licenses/THIRD_PARTY.md" target="_blank" rel="noreferrer">
+          <a className={link} href={`${import.meta.env.BASE_URL}licenses/THIRD_PARTY.md`} target="_blank" rel="noreferrer">
             {t("settings.about.thirdParty")}
           </a>
-          <a className={link} href="/licenses/inter-OFL.txt" target="_blank" rel="noreferrer">
+          <a className={link} href={`${import.meta.env.BASE_URL}licenses/inter-OFL.txt`} target="_blank" rel="noreferrer">
             {t("settings.about.interLicence")}
           </a>
-          <a className={link} href="/licenses/jetbrains-mono-OFL.txt" target="_blank" rel="noreferrer">
+          <a className={link} href={`${import.meta.env.BASE_URL}licenses/jetbrains-mono-OFL.txt`} target="_blank" rel="noreferrer">
             {t("settings.about.monoLicence")}
           </a>
         </dd>

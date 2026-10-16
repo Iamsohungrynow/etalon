@@ -15,7 +15,9 @@ import { createI18n, initialLanguage } from "./i18n";
 // Before the router reads the URL: move ?token= into storage and out of the address bar.
 // The static demo has no server and so no token: it answers from the recording.
 const token = DEMO ? null : adoptToken();
-const router = createBrowserRouter(routes);
+// Under a sub-path (vite base, e.g. /studio/) every route lives below it.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || undefined;
+const router = createBrowserRouter(routes, { basename });
 
 const root = document.getElementById("root");
 if (!root) throw new Error("index.html has no #root");

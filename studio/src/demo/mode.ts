@@ -6,4 +6,4 @@
 export const DEMO = import.meta.env.VITE_ETALON_DEMO === "1";
 
 /** Where the demo build serves the recorded answers (studio/demo-data/). */
-export const DEMO_DATA_BASE = "/demo-data/";
+export const DEMO_DATA_BASE = `${import.meta.env.BASE_URL}demo-data/`;
