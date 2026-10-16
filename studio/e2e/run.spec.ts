@@ -46,7 +46,8 @@ test("Run: a template runs on the CPU with progress ≥ 2 Hz, live frames, and o
   await form.getByRole("textbox", { name: "File name" }).fill("e2e_strip");
   await form.getByRole("button", { name: "Create" }).click();
   await expect(page).toHaveURL(/\/sim\/[0-9a-f]{12}\/setup$/);
-  await expect(page.getByRole("heading", { name: "e2e_strip.py" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Strip waveguide" })).toBeVisible(); // the template's title
+  await expect(page.getByText("e2e_strip.py", { exact: true })).toBeVisible();
 
   await page.getByRole("button", { name: "Run" }).click();
   await expect(page).toHaveURL(/\/run$/);

@@ -1,4 +1,4 @@
-"""Studio e2e fixture: a script that fails at line 12, for the traceback view."""
+"""Broken script: a Studio e2e fixture that fails at line 12, for the traceback view."""
 
 import etalon as et
 

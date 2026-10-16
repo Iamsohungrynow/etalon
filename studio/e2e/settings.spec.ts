@@ -107,9 +107,9 @@ test("P4: after switching to 简体中文, every route shows only Chinese UI tex
   const routes: [string, string][] = [
     ["/", "工作区"],
     ["/settings", "设置"],
-    [`/sim/${id}/setup`, "straight_wg.py"],
-    [`/sim/${id}/run`, "straight_wg.py"],
-    [`/sim/${id}/results`, "straight_wg.py"],
+    [`/sim/${id}/setup`, "Straight strip waveguide"],
+    [`/sim/${id}/run`, "Straight strip waveguide"],
+    [`/sim/${id}/results`, "Straight strip waveguide"],
     ["/modes", "模式求解器"],
     ["/validation", "验证"],
     ["/sim/000000000000/setup", "工作区中没有此 ID 的仿真。"],
@@ -119,7 +119,8 @@ test("P4: after switching to 简体中文, every route shows only Chinese UI tex
     await page.goto(path);
     await expect(page.getByRole("heading", { name: heading, exact: true }).first()).toBeVisible();
     await expect(page.getByText("正在检测 GPU…")).toHaveCount(0, { timeout: 30_000 });
-    expect(await untranslated(page, ["straight_wg.py"]), path).toEqual([]);
+    // The script's path and title are data, as written in the script.
+    expect(await untranslated(page, ["straight_wg.py", "Straight strip waveguide"]), path).toEqual([]);
   }
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");

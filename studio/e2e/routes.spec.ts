@@ -14,7 +14,7 @@ test.describe("P7: a script without a Simulation", () => {
     )?.id;
     await open(page, `/sim/${id}/setup`);
     await expect(
-      page.getByRole("heading", { name: "ring_r10_g200.py" }),
+      page.getByRole("heading", { name: "Add-drop ring, radius 10 um, gap 200 nm" }),
     ).toBeVisible();
     await expect(
       page.getByText("This script defines no etalon Simulation"),

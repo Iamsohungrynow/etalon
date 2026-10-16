@@ -6,5 +6,5 @@
   "device": "NVIDIA GeForce RTX 4060 Ti",
   "cells": 1250000,
   "wall_time_s": 192.0,
-  "script_sha256": "676af756616645805422f2e94ad5096493a94b94ec6d9e722557fb7b7969962f"
+  "script_sha256": "b8197e2d7a19775ec80987baf050271b62323125a94a3a02143a3a7a8c136745"
 }

@@ -4,25 +4,30 @@ import { rmSync } from "node:fs";
 import { DEFAULT_SETTINGS, PYTHON, REPO_ROOT, TIMING_CONFIG_DIR, TIMING_PORT, TOKEN, WS50 } from "./env";
 import { expect, open, putSettings, test, workspaceRows } from "./guards";
 
-const LISTED = [
-  "bend_euler.py",
-  "broken_script.py",
-  "broken_status.py",
-  "dc_gap200.py",
-  "misplaced_strip.py",
-  "mmi_1x2_sweep.py",
-  "phc_waveguide.py",
-  "rings/ring_r10_g180.py",
-  "rings/ring_r10_g200.py",
-  "straight_wg.py",
+/** [path, title]: sorted by path; the title is the docstring's first line up to ":". */
+const LISTED: [path: string, title: string][] = [
+  ["bend_euler.py", "Euler bend, 90 degrees"],
+  ["broken_script.py", "Broken script"],
+  ["broken_status.py", "Corrupt status file"],
+  ["dc_gap200.py", "Directional coupler, gap 200 nm"],
+  ["misplaced_strip.py", "Misplaced strip"],
+  ["mmi_1x2_sweep.py", "MMI 1x2 length sweep"],
+  ["phc_waveguide.py", "Photonic-crystal waveguide"],
+  ["rings/ring_r10_g180.py", "Add-drop ring, radius 10 um, gap 180 nm"],
+  ["rings/ring_r10_g200.py", "Add-drop ring, radius 10 um, gap 200 nm"],
+  ["straight_wg.py", "Straight strip waveguide"],
 ];
 
 test("P1: the fixture workspace lists every status, and skips what it should", async ({ page }) => {
   await open(page, "/");
   await expect(page.getByTestId("workspace-count")).toHaveText("10 simulations");
-  const names = await page.getByRole("table").getByRole("link").allTextContents();
-  expect(names).toEqual(LISTED);
-  const row = (path: string) => page.getByRole("row").filter({ has: page.getByRole("link", { name: path, exact: true }) });
+  const titles = await page.getByRole("table").getByRole("link").allTextContents();
+  expect(titles).toEqual(LISTED.map(([, title]) => title));
+  // Each title leads its row; the script's path stays visible under it.
+  const row = (path: string) => page.getByRole("row").filter({ has: page.getByText(path, { exact: true }) });
+  for (const [path, title] of LISTED) {
+    await expect(row(path).getByRole("link", { name: title, exact: true })).toBeVisible();
+  }
   await expect(row("straight_wg.py")).toContainText("done");
   await expect(row("straight_wg.py")).not.toContainText("stale");
   await expect(row("rings/ring_r10_g200.py")).toContainText("stale");
@@ -46,13 +51,15 @@ test("P2: a 50-script workspace lists all 50; rows lead to their screens", async
   await expect(page.getByTestId("workspace-count")).toHaveText("50 simulations");
   await expect(page.getByRole("table")).toHaveAttribute("aria-rowcount", "51");
   await page.getByTestId("table-scroll").evaluate((el) => el.scrollTo(0, el.scrollHeight));
-  const last = page.getByRole("link", { name: "group_4/device_49.py", exact: true });
+  const last = page.getByRole("link", { name: "Generated e2e script 49.", exact: true });
   await expect(last).toBeVisible();
+  await expect(page.getByText("group_4/device_49.py", { exact: true })).toBeVisible();
   await last.click();
   await expect(page).toHaveURL(/\/sim\/[0-9a-f]{12}\/results$/);
-  await expect(page.getByRole("heading", { name: "device_49.py" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Generated e2e script 49." })).toBeVisible();
+  await expect(page).toHaveTitle("Generated e2e script 49. · Etalon Studio");
   await page.goBack();
-  await page.getByRole("link", { name: "group_0/device_00.py", exact: true }).click();
+  await page.getByRole("link", { name: "Generated e2e script 0.", exact: true }).click();
   await expect(page).toHaveURL(/\/sim\/[0-9a-f]{12}\/setup$/);
 });
 
@@ -82,7 +89,7 @@ test.describe("P3: opening time", () => {
       const serving = performance.now() - started;
       await page.goto(`${origin}/?token=${TOKEN}`);
       await expect(page.getByTestId("workspace-count")).toHaveText("50 simulations");
-      await expect(page.getByRole("link", { name: "group_0/device_00.py", exact: true })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Generated e2e script 0.", exact: true })).toBeVisible();
       const opened = performance.now() - started;
       test.info().annotations.push({
         type: "open-time",
@@ -107,12 +114,12 @@ test("P9: the keyboard reaches navigation, filter and rows; Enter opens a row", 
       return el ? `${el.tagName.toLowerCase()}:${el.getAttribute("aria-label") ?? el.textContent?.trim() ?? ""}` : "";
     });
     visited.push(label);
-    if (label === "a:bend_euler.py") break;
+    if (label === "a:Euler bend, 90 degrees") break;
   }
   expect(visited).toContain("a:Workspace");
   expect(visited).toContain("a:Settings");
   expect(visited).toContain("input:");
-  expect(visited.at(-1)).toBe("a:bend_euler.py");
+  expect(visited.at(-1)).toBe("a:Euler bend, 90 degrees"); // the first row, by its title
   const ring = await page.evaluate(() => getComputedStyle(document.activeElement?.closest("[role=row]") as Element).outlineStyle);
   expect(ring).toBe("solid");
   const id = (await workspaceRows(request)).find((r) => r.path === "bend_euler.py")?.id;

@@ -1,4 +1,4 @@
-"""Studio e2e fixture: the strip template with its strip in the wrong place.
+"""Misplaced strip: a Studio e2e fixture, the strip template with its strip in the wrong place.
 
 The strip was meant to run along y = 0, through the dipole; a sign slip moved it
 to y = 0.6 µm. The script runs, but the dipole sits in SiO2 and nothing is
