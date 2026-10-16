@@ -43,8 +43,10 @@ def git_sha() -> str:
 
     try:
         sha = git("rev-parse", "--short", "HEAD")
-        # this script's own outputs in bench/results do not make the tree dirty
-        dirty = git("status", "--porcelain", "--", ".", ":(exclude)bench/results")
+        # untracked files and this script's own outputs in bench/results do not make it dirty
+        dirty = git(
+            "status", "--porcelain", "--untracked-files=no", "--", ".", ":(exclude)bench/results"
+        )
         return sha + ("-dirty" if dirty else "")
     except (OSError, subprocess.CalledProcessError):
         return "nogit"
