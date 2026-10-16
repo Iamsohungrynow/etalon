@@ -351,7 +351,7 @@ FastAPI + uvicorn alone take 0.93 s in a fresh process here. Nothing Studio does
    - Then P3 three times, idle and under the 5-process load.
 4. **(c) only if (a) + (b) is not enough.** Setting `sys.modules["pydantic.v1"] = None` in `launch.py` makes FastAPI's v1 check take its `ImportError` path and saves ≈0.08 s. It relies on a FastAPI internal and affects the whole server process, so I would not add it unless P3 still fails.
 
-**Outcome so far: (b) is done (`50ef7e6`); (a) still needs your OK.**
+**Outcome: (b) is done (`50ef7e6`), and (a) after your OK (next commit).**
 - **What changed.** `etalon studio` listens with the quick app and builds the full app after the first Workspace response, as proposed in point 2. Nothing outside `etalon/studio/` and `tests/studio/` changed.
 - **P3 with (b) alone** is better than the prototypes predicted. Building all of U1's routes and response models was costing more at start-up than the per-step numbers above suggest.
 
@@ -368,3 +368,18 @@ FastAPI + uvicorn alone take 0.93 s in a fresh process here. Nothing Studio does
   - ruff and mypy: clean.
   - Note: the GPU job test needs `cupy-cuda12x[ctk]` in the venv (CUDA headers and NVRTC). A fresh `uv sync --extra gpu` does not install them.
 - **What's left.** P3 now passes under moderate load by 0.07–0.12 s. (a) would widen that margin to ≈0.25 s. It is a 60-line change to `etalon/__init__.py` plus two tests in `tests/unit/test_package_import.py`, ready to apply when you say so.
+
+**(a) applied (approved 2026-10-16).**
+- **What changed.** `etalon/__init__.py` loads every public name on first use. `tests/unit/test_package_import.py` checks two things: `import etalon` loads no NumPy and no `etalon.*` module, and every name in `__all__` resolves, including through `from etalon import *`. The Studio guard in `tests/studio/test_cli.py` now also asserts that start-up loads no NumPy and no `etalon.core`.
+- **Checks.**
+  - pytest: 364 pass, 2 skipped.
+  - Playwright: 21 of 21 pass.
+  - ruff and mypy (whole package): clean.
+
+| P3 with (a) + (b) | Result |
+| --- | --- |
+| Idle (10 %) | 1.59, 1.64, 1.79 s |
+| 51 % load | 1.87, 1.97, 1.99 s |
+| ≈60–67 % load, alternating with (b) alone | (a) + (b): 1.86, 1.86, 1.89, 2.04, 2.07, 2.29 s; (b) alone: 2.15, 2.24, 2.26, 2.34, 3.22, 3.23 s |
+
+In the alternating runs, (a) answers about 0.3 s sooner on the server side. Above about 55 % background load, P3 can still exceed 2 s. What remains is FastAPI, pydantic and uvicorn (≈0.93 s idle), plus the browser.
