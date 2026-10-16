@@ -64,7 +64,8 @@
     "reason": {
       "unreadable": "无法读取运行状态文件。",
       "invalid_json": "运行状态文件不是有效的 JSON。",
-      "invalid_fields": "运行状态文件的内容不符合预期。"
+      "invalid_fields": "运行状态文件的内容不符合预期。",
+      "interrupted": "运行在结束前停止了报告：其进程意外终止。"
     }
   },
   "time": {

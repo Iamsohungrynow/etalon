@@ -66,7 +66,8 @@
     "reason": {
       "unreadable": "The run status file cannot be read.",
       "invalid_json": "The run status file is not valid JSON.",
-      "invalid_fields": "The run status file has unexpected contents."
+      "invalid_fields": "The run status file has unexpected contents.",
+      "interrupted": "The run stopped reporting before it finished: its process ended unexpectedly."
     }
   },
   "time": {
